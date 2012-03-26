@@ -1,0 +1,250 @@
+\documentclass[phd,tocprelim]{cornell}
+%
+% tocprelim option must be included to put the roman numeral pages in the
+% table of contents
+%
+% The cornellheadings option will make headings completely consistent with
+% guidelines.
+%
+% This sample document was originally provided by Blake Jacquot, and
+% fixed up by Andrew Myers.
+%
+%Some possible packages to include
+\usepackage{graphicx,pstricks}
+\usepackage{graphics}
+\usepackage{moreverb}
+\usepackage{subfigure}
+\usepackage{epsfig}
+\usepackage{subfigure}
+\usepackage{hangcaption}
+\usepackage{txfonts}
+\usepackage{palatino}
+
+%if you're having problems with overfull boxes, you may need to increase
+%the tolerance to 9999
+\tolerance=9999
+
+\bibliographystyle{plain}
+%\bibliographystyle{IEEEbib}
+
+\renewcommand{\caption}[1]{\singlespacing\hangcaption{#1}\normalspacing}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+
+\title {Your Title Goes Here}
+\author {Scott Clark}
+\conferraldate {August}{2012}
+\degreefield {Ph.D.}
+\copyrightholder{Scott Clark}
+\copyrightyear{2012}
+
+\begin{document}
+
+\maketitle
+\makecopyright
+
+\begin{abstract}
+Your abstract goes here. Make sure it sits inside the brackets. If not,
+your biosketch page may not be roman numeral iii, as required by the
+graduate school.
+\end{abstract}
+
+\begin{biosketch}
+Scott Clark grew up in Tigard, Oregon and graduated from Central Catholic High School in Portland, Oregon in 2004. He recieved Bachelor of Science degrees in Mathematics, Computational Physics and Physics (Magna Cum Laude) from Oregon State University in 2008.
+
+In 2008 Scott was awarded a Department of Energy Compuational Science Graduate Fellowship (CSGF) for his doctoral work at Cornell University Center for Applied Mathematics (CAM).
+\end{biosketch}
+
+\begin{dedication}
+This document is dedicated to ...
+\end{dedication}
+
+\begin{acknowledgements}
+Your acknowledgements go here. Make sure it sits inside the brackets.
+
+My research was supported by a Department of Energy Computational Science Graduate Fellowship, which is supported by the Office of Science of the U.S. Department of Energy under Contract No. DE-FG02-97ER25308. I was also supported by a Startup and Production Allocation Award from the National Energy Research Scientific Computing Center (NERSC), which is supportedby the Office of Science of the U.S. Department of Energy under Contract No. DE-AC02-05CH11231.
+\end{acknowledgements}
+
+\contentspage
+\tablelistpage
+\figurelistpage
+
+\normalspacing \setcounter{page}{1} \pagenumbering{arabic}
+\pagestyle{cornell} \addtolength{\parskip}{0.5\baselineskip}
+
+\part{ALE: Assembly Likelihood Evaluation} % (fold)
+\label{prt:ALE: Assembly Likelihood Evaluation}
+
+\chapter{ALE Introduction} % (fold)
+\label{cha:ALE Introduction}
+
+% chapter ALE Introduction (end)
+
+\chapter{ALE Methods} % (fold)
+\label{cha:ALE Methods}
+
+\section{The ALE Score and the likelihood of an assembly} % (fold)
+\label{sec:The ALE Score and the likelihood of an assembly}
+
+The ALE framework is founded upon a statistical model that describes how reads are generated from an assembly.  Given a proposed assembly (a set of scaffolds or contigs), S, and a set of reads R, this probabilistic model gives the likelihood of observing this set of reads if the proposed assembly were correct.  We write this likelihood, $P(R|S)$, and its calculation includes information about read quality, agreement between the mapped reads and the proposed assembly, mate pair orientation, insert length (for paired end reads), and sequencing depth.  This statistical model also provides a Bayesian prior probability distribution $P(S)$ describing how likely an assembly $S$ would be, if we were unable to observe any read information.   This prior probability is computed using the k-mer distribution of the assembly.
+
+The ALE score is computed from these two values, and it is proportional to the probability that the assembly S is correct.  We write this probability as $P(S|R)$.  Bayes’ rule tells us that this probability is
+\begin{equation}
+    P\left(S|R\right) = \frac{P\left(S|R\right)P(S)}{Z}
+\end{equation}
+where Z is a proportionality constant that ensures that P(S|R) is a probability distribution.  We see P(S|R) as a statistical measure of the overall quality of an assembly S.  As is typical in large-scale applications of Bayesian statistics, it is computationally intractable to compute the constant Z exactly.  The ALE score is computed by replacing the constant Z with an approximation described in the Methods section.
+
+Although the ALE score can be reported as a standalone value, and understood as an approximation to P(R|S), it is most useful for comparing two different assemblies of the same genome, using the same set of reads to evaluate them.  As shown in the Methods section, the assembly with the higher ALE score is then also the one with the larger probability of being correct.  Moreover, we show that the difference between two assemblies’ ALE scores describes their relative probabilities of correctness.  If one assembly’s ALE score is larger than the other’s, with a difference of x between their ALE scores, then the assembly with the larger ALE score is more likely to be correct by a multiplicative factor of ex.  Below, we refer to the ALE score more precisely as the total ALE score, to differentiate it from the sub-scores (described below) used to construct it.
+
+Figure 1 shows the pipeline used to compute the total ALE score. Given a set of reads and a proposed assembly, ALE first takes as input the alignments of the reads onto the assembly in the form of a SAM or BAM file (Li and Durbin 2009), which can be produced by a third-party alignment algorithm such as bowtie (Langmead et al. 2009) or bwa (Li et al. 2009). ALE then determines the probabilistic placement of each read and a corresponding placement sub-score for each mapped base, which describes how well the read agrees with the assembly.  In the case of paired end reads, ALE also calculates an insert sub-score for all mapped bases of the assembly from the read pair, which describes how well the distance between the mapped reads matches the distribution of lengths that we would expect from the library.  ALE also calculates a depth sub-score, which describes the quality of the sequencing depth accounting for the GC bias prevalent in some NGS techniques.  The placement, insert and depth scores together determine P(R|S).  Independently, with only the assembly and not the reads, ALE calculates the k-mer sub-score and P(S). Each sub-score is calculated for each scaffold or contig within an assembly independently, allowing for variations commonly found in metagenomes. The four sub-scores are then combined to form the total ALE score. The constituent calculations in this pipeline are described in the Methods section.
+
+In addition, these four sub-scores are reported by ALE as a function of position within the assembly, and can be visualized with the included plotting package or imported in table form to another package such as the Integrative Genomics Viewer (IGV) (Nicol et al. 2009), or the UCSC genome browser (Kent et al. 2002).  When used in this way, these sub-scores can be used to locate specific errors in an assembly.
+
+% section The ALE Score and the likelihood of an assembly (end)
+
+\section{Probabilistic ingredients of the total ALE score} % (fold)
+\label{sec:Probabilistic ingredients of the total ALE score}
+
+
+\subsection{Placement sub-score} % (fold)
+\label{sub:Placement sub-score}
+
+% subsection Placement sub-score (end)
+
+\subsection{Insert sub-score} % (fold)
+\label{sub:Insert sub-score}
+
+% subsection Insert sub-score (end)
+
+\subsection{Depth sub-score} % (fold)
+\label{sub:Depth sub-score}
+
+% subsection Depth sub-score (end)
+
+\subsection{k-mer sub-score} % (fold)
+\label{sub:k-mer sub-score}
+
+% subsection k-mer sub-score (end)
+
+% section Probabilistic ingredients of the total ALE score (end)
+
+\section{Approximating Z} % (fold)
+\label{sec:Approximating Z}
+
+\subsection{Aprroximating $Z_{placement}$} % (fold)
+\label{sub:Aprroximating $Z_{placement}$}
+
+% subsection Aprroximating $Z_{placement}$ (end)
+
+\subsection{Aprroximating $Z_{insert}$} % (fold)
+\label{sub:Aprroximating $Z_{insert}$}
+
+% subsection Aprroximating $Z_{insert}$ (end)
+
+\subsection{Aprroximating $Z_{depth}$} % (fold)
+\label{sub:Aprroximating $Z_{depth}$}
+
+% subsection Aprroximating $Z_{depth}$ (end)
+
+\subsection{Aprroximating $Z_{kmer}$} % (fold)
+\label{sub:Aprroximating $Z_{kmer}$}
+
+% subsection Aprroximating $Z_{kmer}$ (end)
+
+% section Approximating Z (end)
+
+\section{Relationship of the difference of total ALE scores to probability of correctness} % (fold)
+\label{sec:Relationship of the difference of total ALE scores to probability of correctness}
+
+% section Relationship of the difference of total ALE scores to probability of correctness (end)
+
+\section{Thresholding the total ALE score} % (fold)
+\label{sec:Thresholding the total ALE score}
+
+In the plotting program distributed with ALE we use a thresholding algorithm to highlight potential areas of poor assembly quality using the per-base ALE scores. We do this by averaging scores within windows, allowing for the discovery of large errors in the assembly while smoothing out the noise. By the Central Limit Theorem, when we average many independent and identically distributed random variables the result is approximately normally distributed. This allows us to create a “threshold” for which to delineate “good” scores from “bad” and pinpoint problematic regions. This is represented by a solid black line in the figures labeled “$5\sigma$.” This line is calculated by assuming that the individual scores at each position in the assembly are drawn from a mixture of two normal distributions: one for high accuracy and another for low accuracy. We use maximum likelihood to determine the mean and variance of the two underlying distributions. The threshold is set as five standard deviations from the mean of the “high accuracy” distribution. This allows us to readily find areas of inaccuracy that are unlikely to be drawn from an accurate region. Five standard deviations corresponds to 1 false positive in 2 million positions if the joint normal distribution assumptions hold.  The number of standard deviations at which the black line is drawn can be set from the command line by the user.
+
+A black bar is drawn on the plot if the likelihood falls below the threshold at a significant fraction of the positions in any contiguous region with a given length (this fraction and length are user defined, and are initially set to 0.01\% and 1000bp respectively) see figure XXX. These red bars correspond to regions of potential inaccuracy in the assembly that should be examined further. The plotter outputs these regions in a tab delineated text file for easy input into genome viewing software programs like IGV.
+
+% section Thresholding the total ALE score (end)
+
+\section{Influence of alignment input} % (fold)
+\label{sec:Influence of alignment input}
+
+ALE takes as input a proposed assembly and a SAM/BAM (Li 2009) file of alignments of reads onto this proposed assembly. This allows ALE to calculate the probability of observing the assembly given the reads. ALE assumes that this mapping will include, if not all possible mappings, at least the "best" mapping for each read in the library (if such a mapping exists). For assemblies with many repeat regions (>100) or libraries with large insert sizes, this can be difficult to obtain due to the bias introduced using default parameters of standard aligners. While an extensive review of alignment packages and their optimization is beyond the scope of this paper a review can be found in (Li and Homer 2010). If an assembly has many repeats and the aligner bias causes the reporting of reads only mapping to a fraction of possible regions, then ALE will see the unmapped regions as having 0 depth (no supporting reads) which will result in artificially low depth sub-scores. The robustness of ALE will still allow for comparison between assemblies with similar biases, but should be taken into account if the input to ALE is biased for only certain assemblies. To avoid this bias some mappers must be explicitly forced to search for all possible placements (-a in bowtie).
+
+In summary, ALE determines the likelihood of an assembly given the reads and an accurate, unbiased alignment of those reads onto the assembly, without which the model assumptions are violated. These preconditions are usually met except for certain pathological genomes, and even in these cases can be readily corrected for by changing the parameters of the aligner used to make ALE’s input.
+
+% section Influence of alignment input (end)
+
+% chapter ALE Methods (end)
+
+\chapter{ALE Results} % (fold)
+\label{cha:ALE Results}
+
+% chapter ALE Results (end)
+
+\chapter{ALE Implementation} % (fold)
+\label{cha:ALE Implementation}
+
+% chapter ALE Implementation (end)
+
+% part ALE: Assembly Likelihood Evaluation (end)
+
+\part{EPI: Expected Parallel Improvement} % (fold)
+\label{prt:EPI: Expected Parallel Improvement}
+
+\chapter{EPI Introduction} % (fold)
+\label{cha:EPI Introduction}
+
+% chapter EPI Introduction (end)
+
+\chapter{EPI Methods} % (fold)
+\label{cha:EPI Methods}
+
+% chapter EPI Methods (end)
+
+\chapter{EPI Results} % (fold)
+\label{cha:EPI Results}
+
+% chapter EPI Results (end)
+
+\chapter{EPI Implementation} % (fold)
+\label{cha:EPI Implementation}
+
+% chapter EPI Implementation (end)
+
+% part EPI: Expected Parallel Improvement (end)
+
+\part{Velvetrope} % (fold)
+\label{prt:Velvetrope}
+
+\chapter{Velvetrope Introduction} % (fold)
+\label{cha:Velvetrope Introduction}
+
+% chapter Velvetrope Introduction (end)
+
+\chapter{Velvetrope Methods} % (fold)
+\label{cha:Velvetrope Methods}
+
+% chapter Velvetrope Methods (end)
+
+\chapter{Velvetrope Results} % (fold)
+\label{cha:Velvetrope Results}
+
+% chapter Velvetrope Results (end)
+
+\chapter{Velvetrope Implementation} % (fold)
+\label{cha:Velvetrope Implementation}
+
+% chapter Velvetrope Implementation (end)
+
+% part Velvetrope (end)
+
+\appendix
+\chapter{Chapter 1 of appendix}
+Appendix chapter 1 text goes here
+
+\bibliography{ScottClark_thesis}
+
+\end{document}

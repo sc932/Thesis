@@ -1,0 +1,70 @@
+cornell-thesis 2.9
+------------------
+
+This package provides a "style file" for producing Ph.D. dissertations
+at Cornell University using the new version of LaTeX, LaTeX 2e
+which is now the only officially supported one. (If you haven't
+upgraded to it yet, this file won't be of much use to you. Consider
+upgrading.)
+
+The distribution contains two source files:
+cornell.dtx -- self-documenting LaTeX source code for the style file.
+cornell.ins -- installation "script" for the docstrip package.
+
+To install, you need to say "latex cornell.ins", then move the resulting
+cornell.cls file somewhere where latex will find it.
+
+Detailed (albeit still incomplete in places) documentation can be be
+found in the file "cornell.pdf". This documentation can also be generated
+by saying "pdflatex cornell.dtx" twice (or use latex if you want a .dvi file).
+
+There is also a sample thesis document that you can use as a template
+for writing your thesis, in "sampleThesis.tex". You can build this by
+running "latex sampleThesis" and "bibtex sampleThesis" until things
+converge (usually this takes three runs of "latex").
+
+If you don't like typing "latex" so much, and you have "make" available,
+you can type "make" to build the document class file and the sample
+thesis document. You may also want to use the supplied Makefile as a starting
+point for building your own thesis.
+
+Comments from Sergio:
+
+    This style file does not have official status: I just happen to have
+    typeset my thesis with the new LateX 2e, using this style file, and the
+    thesis secretary seemed fairly pleased with the result. I am making it
+    available in the hope that the horror stories about people's encounters
+    with the thesis secretary may become a thing of the past... but remember:
+    requirements do change, and this style file doesn't remove the need for you
+    to heed TeX's warning messages about overfull boxes and pages.
+
+    An older style file for LaTeX 2.09 is still available in various places on
+    campus. I used it as a starting point, but added a few enhancements of my
+    own.
+
+    I have no plans to maintain this thing. Users are on their own.  But at
+    least I tried to document it as fully as time allowed me.
+
+Change Log
+
+v1.0d Converted ## to # as per changes in June 1995 LaTeX release.
+v1.1  Changed openbib conditionals to a single command as per changes
+           in December 1995 LaTeX release.
+v1.2  Moved headers for opening pages to top of page.
+v2.0  Chapter headers now consistent throughout.
+      Fixed margins.
+v2.1  Bug fix for titles containing \\
+v2.5  Addition of halfcornellheadings and smallerheadings options
+v2.6  Addition of draft, semifinal and final options
+v2.7  Corrected interline spacing to really be double spacing
+      (i.e, 24pt for 12pt text).  Changed ``cornell'' pagestyle to
+      center page numbers at the bottom of the page.
+v2.8  When using pdflatex, page size is set to 8.5x11 automatically.
+      Copyright and dedication now center properly on page without special hacks.
+      \ifpdf macro added to detect use of pdflatex
+      A sample thesis document is included in the package.
+      A sample Makefile is included in the package (use is optional).
+v2.9  Made "cornellheadings" the default, as the thesis guidelines now
+      require them for appendices. Also fixed line spacing and margins
+      on the title page. Changed sample document to palatino, since
+      Times 12 is not approved.

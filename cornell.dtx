@@ -1,0 +1,1197 @@
+% \iffalse    (METACOMMENT)
+%% Document class `cornell' to use with LaTeX 2e.
+%% Based on `crnlphd' class.  The following is from the file `crnlphd.dtx':
+%%   Based loosely on old cuphdthesis style file.
+%%   Found to give good results, according to the thesis secretary.
+%%   File: crnlphd.dtx Copyright (C) 1994 Sergio Gelato
+%%   Made available without any warranty, express or implied.
+%%
+%% $Id: cornell.dtx,v 1.11 2008/04/17 16:56:31 andru Exp $
+% \fi
+%
+% \CheckSum{846}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+% ^^A \MakeShortVerb{\|}
+% \newcommand{\crnlphd}{\textsf{crnlphd}}
+% \newcommand{\cornell}{\textsf{cornell}}
+% \newcommand{\dst}{\texttt{docstrip}}
+%
+% \GetFileInfo{cornell.drv}
+%
+% \title{The \cornell{} document class for \LaTeXe\thanks{%
+%    This file has version number \fileversion{} dated \filedate{}.
+%        }}
+%
+% \author{Sergio Gelato\thanks{%
+%    The author acknowledges inspiration from a preexisting style
+%    file for \LaTeX~2.09, adapted from Leslie Lamport's
+%    \textsf{report} style by Rob McCurley, Alex Aiken, Donna
+%    Bergmark, and other anonymous contributors.}
+%    \and Daniel Kartch\thanks{Most of the work of converting the old
+%    \LaTeX2.09{} thesis style files to a \LaTeXe{} document class was
+%    done by the first author, who distributed it as \crnlphd.
+%    I only made a few modifications to allow it to handle Master's theses
+%    and fixed a few minor bugs
+%    caused by updates in the \LaTeXe source release.}
+%    \and Steve Holland\thanks{I made only a few bugfixes and changes to keep
+%    it up to date with the current instructions from the thesis secretary. In
+%    particular, I added the ``halfcornellheadings'' and ``smallerheadings'' 
+%    options.}
+%    \and Aleksey Nogin\thanks{Added ``draft'', ``semifinal'' and ``final''
+%    options.}
+%    \and Andrew Myers, Nate Nystrom\thanks{Corrected interline spacing to
+%    really be double spacing (i.e, 24pt for 12pt text).
+%    Changed ``cornell'' pagestyle to center page numbers at the
+%    bottom of the page, and fixed centering of copyright and dedication.
+%    Automatically sized page in PDF mode.}}
+%
+% \date{\filedate}
+%
+% \maketitle
+%
+% \begin{abstract}
+%    This document class modifies the standard \textsf{report} class
+%    to conform with the requirements of the Graduate School
+%    at Cornell University for the layout of Ph.D.{} dissertations and
+%    Master's theses.
+%    It is a modified version of Sergio Gelato's \textsf{crnlphd} class,
+%    which was an update of the old \textsf{cuphdthesis} 
+%    and \textsf{cuphdtitlepage} style files, incorporating changes for
+%    the new \LaTeXe\space as well as a few other improvements.
+% \end{abstract}
+%
+% \tableofcontents
+%
+% \section{Introduction}
+% 
+% This document describes the \LaTeXe{} document class \cornell, 
+% suitable\footnote{In the authors' opinion, but with no guarantee
+% that other users will agree. The authors shall not be liable for
+% any consequence, good or bad, of other people's use of this software.}
+% for the production of dissertations and theses at Cornell University.
+% The latest version of this document class should be available at
+% http://tam.cornell.edu/Computer/cuthesis/.
+%
+% \subsection{Usage}
+%
+% This document class can be used both in \LaTeXe\space native mode
+% and in compatibility mode.
+% To use it in native mode, say
+% \begin{verbatim}
+% \documentclass{cornell}
+% \end{verbatim}%
+% at the beginning of your \LaTeX\space source file.
+% To use it in compatibility mode, say
+% \begin{verbatim}
+% \documentstyle{cornell}
+% \end{verbatim}%
+% If you are only starting to key in the text of your dissertation,
+% can rely on continued availability of \LaTeXe, and do not need any
+% packages that do have not yet been updated for \LaTeXe, you should
+% probably use native mode. If you have significant amounts of text
+% already in existence, you should try using native mode: in the
+% author's experience, the conversion is trivial if you didn't use
+% too many undocumented tricks (or style options that rely on such).
+%
+% This document class can be used with either
+% \texttt{pdflatex} or with \texttt{latex}. The \DescribeMacro{\ifpdf}
+% macro can be used to test whether \texttt{pdflatex} is being used.
+%
+% Many TeX installations are configured so that A4 paper is the default paper
+% size, whereas Cornell theses are printed on letter size paper.
+% If \texttt{pdflatex} is being used, the page size should be automatically
+% set correctly by the document class.
+% Otherwise, if text is not centered on the page, check that ``letter'' size
+% (8.5in by 11in) is the default. For \texttt{dvips}, this is set by
+% a configuration file under the TeX distribution, typically in a path
+% like \texttt{/usr/share/texmf/dvips/config/config.ps}. The default size
+% for \texttt{pdflatex} is set in a configuration file like
+% \texttt{.../pdftexconfig.tex} or \texttt{.../pdftex.cfg}.
+%
+% \subsection{Options and packages}
+%
+% \DescribeMacro{phd} \DescribeMacro{master}
+% The author can specify whether the document is to be typeset as a
+% Ph.D.{} dissertation or a Master's thesis with the \textsf{phd} and
+% \textsf{master} options.  The default is \textsf{phd}.
+%
+% \DescribeMacro{latexheadings} \DescribeMacro{cornellheadings} \DescribeMacro{halfcornellheadings}
+% The author can choose between the standard \LaTeXe{} chapter 
+% headings, those shown in the example in the grad school thesis guidelines
+% (all caps centered at the top
+% of the page), or half way in between with the \textsf{latexheadings}, \textsf{cornellheadings}, 
+% or \textsf{halfcornellheadings}
+% options. The default is \textsf{cornellheadings}, which
+% follows the format specification of November 2006.
+% The \textsf{halfcornellheadings} option is apparently no longer acceptable.
+%
+% \DescribeMacro{draft} \DescribeMacro{twoside} \DescribeMacro{11pt} \DescribeMacro{12pt}
+% Formally, all style options supported by the \textsf{report}
+% document class are also supported by the \cornell{} class, although
+% support for some options, like \textsf{twocolumn}, may be
+% incomplete.
+% The \textsf{draft} option causes the text to be formatted with
+% ``single'' spacing instead of the required ``double'' spacing. This may be
+% of use in drafting, or for formatting private copies. For such purposes, the
+% \textsf{twoside} option may also be of use, as well as \textsf{11pt} or
+% \textsf{12pt} (when \textsf{draft} is used, the \textsf{10pt} is the
+% default).
+%
+% \DescribeMacro{final} \DescribeMacro{semifinal}
+% The \textsf{final} style option (which is the default) will produce the
+% ``double'' spacing 12pt document as required for the production of the
+% archival copies of the dissertation. 10pt and 11pt options specify font
+% sizes that are too small and will be overridden (and a warning will be
+% issued to inform you of this) if used in conjunction with the \textsf{final}
+% option. The \textsf{semifinal} is identical to \textsf{final}, except that
+% it highlights all horizontal overflows with a black solid rule.
+%
+% \DescribeMacro{\ifdraft} \DescribeMacro{\iffinal}
+% The |\ifdraft| and |\iffinal| macros (which will always be
+% the opposites of one another) may be used to check whether the
+% \textsf{draft} option or the \textsf{[semi]final} one
+% is in effect.
+% 
+% \DescribeMacro{tocprelim}
+% \textsf{tocprelim} option causes the preliminary sections to be listed in
+% the table of contents.
+% By default, preliminary sections are not listed in the table of contents.
+%
+% \DescribeMacro{smallerheadings} \DescribeMacro{normalsizeheadings} 
+% A new option (now the default) \textsf{smallerheadings} reduces 
+% the size of 
+% the normally-huge LaTeX headings to something more reasonable. 
+% \textsf{normalsizeheadings} is used to select the conventional 
+% LaTeX chapter and heading sizes. 
+%
+% In both native and compatibility mode, the options should be
+% specified as optional arguments to the |\documentclass|
+% (respectively |\documentstyle|) command. But note that many
+% former options are now regarded as {\em packages}, and should
+% be loaded (in native mode) by |\usepackage{|\meta{name}|}| instead.
+% In compatibility mode, they are still named in the optional argument
+% to |\documentstyle|.
+%
+% A number of packages have been tested with this format and appear to
+% work. These are: \textsf{array}, \textsf{dcolumn},
+% \textsf{indentfirst}, \textsf{longtable}, \textsf{epsf},
+% \textsf{drafthead}, \textsf{showkeys}, \textsf{hyperref}.
+% There is no known reason why other packages like \textsf{epsfig},
+% \textsf{color}, \textsf{graphics} should not
+% also work.
+% As for options, some of these packages may not be appropriate when
+% producing copies to be filed with the Graduate school. The author
+% finds \textsf{drafthead} and \textsf{showkeys} useful in draft
+% copies generated during the revision process.
+%
+% Please be careful about using packages that change the default
+% fonts. There is no guarantee that these fonts will be acceptable to the
+% thesis secretary. The 12pt Times font is not currently accepted, but
+% 12pt Palatino, Bookman, and Helvetica, and are. (Use packages
+% \texttt{palatino}, \texttt{helvet}, and \texttt{bookman}
+% respectively to get these fonts.)
+%
+% \DescribeMacro{hangcaption}
+% If you want more sensible caption wrapping (single spaced, second 
+% line indents), insert the commands \begin{verbatim} \usepackage{hangcaption} 
+% \renewcommand{\caption}[1]{\singlespacing\hangcaption{#1}\normalspacing} \end{verbatim}
+% after the |\documentclass| line in your LaTeX file.
+%
+% \subsection{Sample thesis}
+%
+% A sample thesis document is included with the distribution of this
+% style file, named \texttt{sampleThesis.tex}. This is a good starting
+% point for writing the thesis.
+%
+% \section{Arrangement of contents}
+%
+% A dissertation must contain the following parts, in the order
+% listed.
+% Only parts explicitly designated as optional may be omitted.
+% The current version of this file does not support all of the
+% optional parts.
+%
+% \begin{enumerate}
+%   \item Title page
+%   \item Copyright page
+%   \item Abstract
+%   \item Biographical sketch
+%   \item Dedication ({\em optional})
+%   \item Acknowledgements
+%   \item Table of Contents
+%   \item List of Tables
+%   \item List of Figures (or List of Illustrations)
+%   \item List of abbreviations ({\em optional})
+%   \item List of symbols ({\em optional})  
+%   \item Preface ({\em optional})
+%   \item Text
+%   \item Appendix (or Appendices) (apparently {\em not} optional,
+%         at least according to the letter of the instructions)
+%   \item Bibliography (or References, or Works Cited)
+%   \item Glossary ({\em optional})
+%   \item Index ({\em optional})
+% \end{enumerate}
+%
+% Some macros and environments are provided to ease the formatting of
+% these parts.
+%
+% \subsection{Title page}
+%
+% \DescribeMacro{\maketitle} The title page is produced by the
+% standard \LaTeX\space macro |\maketitle|, with no arguments.
+% Prior to invoking it, you should declare the title of the
+% document using the \DescribeMacro{\title}|\title| macro, 
+% your name (exactly as registered with the Graduate School)
+% with the \DescribeMacro{\author}|\author| macro, 
+% and the conferraldate with the \DescribeMacro{\conferraldate}
+% |\conferraldate| macro. The syntax of this last macro is
+% \begin{quote}
+% |\conferraldate{|\meta{month}|}{|\meta{year}|}|
+% \end{quote}
+% For Master's theses you will also need to specify the field of
+% the degree (i.e. Master of Science, Master of Engineering, etc...)
+% with the \DescribeMacro{\degreefield}|\degreefield| macro.
+% The default is Master of Science.
+%
+% \subsection{Copyright page}
+%
+% The \DescribeMacro{\makecopyright}|\makecopyright| macro should be
+% invoked after |\maketitle| to produce a copyright page.
+% Alternatively, you can use 
+% \DescribeMacro{\makepublicdomain}|\makepublicdomain| to produce
+% a page with the message ``This document is in the public domain.''
+% Or you can produce a blank page simply by typing |\mbox{}\clearpage|,
+% or by inserting one by hand.  
+% Note that the absence of a copyright
+% declaration does \emph{not} place your dissertation in the public
+% domain.  In order to place your dissertation in the public domain,
+% you must declare it as such explicitly.
+% \changes{v2.0}{1998/09/17}{Clarification of copyright / public
+%                domain issues in documentation - thanks to T. Joseph
+%		 W. Lazio}
+% 
+% Prior to calling |\makecopyright|, you may specify a different name
+% for the copyright holder (the default is the name given through the
+% |\author| macro) and for the copyright year (the default being the
+% conferral year listed on the title page). You should do this with
+% the macros \DescribeMacro{\copyrightholder}|\copyrightholder| and
+% \DescribeMacro{\copyrightyear}|\copyrightyear| which are invoked as
+% follows:
+% \begin{quote}
+% |\copyrightholder{|\meta{name}|}|
+%
+% |\copyrightyear{|\meta{year}|}|
+% \end{quote}
+%
+% \subsection{Abstract page(s)}
+%
+% The \DescribeEnv{abstract}\textsf{abstract} environment has been
+% modified to comply with the requirements of the Graduate School.
+% Should you wish to change the title used in the abstract from its
+% default (which is the title used on the title page of the
+% dissertation), the macro
+% \DescribeMacro{\abstracttitle}|\abstracttitle|, to be used exactly
+% as |\title|, is provided.
+%
+% \subsection{Biographical sketch}
+%
+% A special environment \DescribeEnv{biosketch}\textsf{biosketch} is
+% provided for the biographical sketch.
+%
+% \subsection{Dedication}
+%
+% The format of the dedication is essentially free, but you may want
+% to use the \DescribeEnv{dedication}\textsf{dedication} environment
+% for this purpose. This environment will center the text of your
+% dedication vertically on the page.
+% The dedication is optional.
+%
+% \subsection{Acknowledgements}
+%
+% An environment
+% \DescribeEnv{acknowledgements}\textsf{acknowledgements} is provided
+% for the acknowledgements section.
+%
+% \subsection{Table of Contents, List of Tables, List of Figures}
+%
+% Use the macros \DescribeMacro{\contentspage}|\contentspage|,
+% \DescribeMacro{\tablelistpage}|\tablelistpage|, and
+% \DescribeMacro{\figurelistpage}|\figurelistpage|, in this order,
+% to produce the required table of contents and lists of tables and
+% figures.
+%
+% \subsection{List of Abbreviations, List of Symbols, Preface}
+%
+% These sections are optional. Macros
+% \DescribeMacro{\abbrlist}|\abbrlist|,
+% \DescribeMacro{\symlist}|\symlist|,
+% and \DescribeMacro{\preface}|\preface|
+% should be invoked to indicate the beginning of each of these
+% sections.
+% These macros act much like |\chapter*|, which they invoke.
+% The main difference is that if the \textsf{tocprelim} option is
+% used, entries will be made into the table of contents.
+%
+% \subsection{Text}
+%
+% You should begin the text section of the thesis (normally divided
+% into chapters) with the following commands:
+% \begin{verbatim}
+% \normalspacing
+% \setcounter{page}{1}
+% \pagenumbering{arabic}
+% \pagestyle{cornell}
+% \end{verbatim}%
+% The last of these commands controls the way pages are numbered
+% throughout the text (except for the first page of each chapter,
+% which uses |\pagestyle{plain}|; this happens automatically, without
+% the need for you to take any special precautions).
+% The default is to place page numbers in the upper right corner
+% of each page (except that
+% if you use the \textsf{twoside} option, even-numbered
+% pages will have the number in the upper left corner).
+% The graduate school allows, and some departments require, the
+% numbers to be centered at the top of each page.
+% Use |\pagestyle{cornellc}| if you wish page numbers to be centered.
+%
+% \subsection{Appendix}
+%
+% \DescribeMacro{\appendix}
+% As in the \textsf{report} style, use the |\appendix| macro to mark
+% the end of the last ordinary chapter and the start of the
+% appendices.
+% Then use a new |\chapter{|\meta{title}|}| to start each appendix.
+% Appendices will automatically be ``numbered'' alphabetically.
+%
+% \subsection{Bibliography}
+%
+% Use the \DescribeEnv{thebibliography}\textsf{thebibliography}
+% environment to generate the bibliography. Or have \textsc{Bib\TeX}
+% do the work for you\footnote{The author has not actually tried
+% this.}
+% The \textsf{cornell} document class modifies this environment
+% slightly.
+% You probably shouldn't use the \textsf{openbib} option for
+% production of the archival copies of your dissertation.
+%
+% \DescribeMacro{\bibname}
+% The default name for this section is \textbf{Bibliography}.
+% You may change it by changing the expansion of |\bibname|, as in
+% \begin{verbatim}
+% \renewcommand{\bibname}{References}
+% \end{verbatim}%
+%
+% \subsection{Glossary, Index}
+%
+% These sections are optional. The author didn't have time to think
+% about how to generate them. If you want them, you are on your own.
+%
+% \section{Configurable parameters}
+%
+% \subsection{Interline spacing}
+%
+% The dissertation is double spaced by default.
+% If you want to modify the spacings, use the
+% \DescribeMacro{\changespacing}|\changespacing| macro. For example,
+% \begin{verbatim}
+% \changespacing{\normalspacing}{1}
+% \end{verbatim}%
+% will cause everything to be single spaced by default, while
+% \begin{verbatim}
+% \changespacing{\singlespacing}{2}
+% \end{verbatim}%
+% will cause everything to be double spaced, even the text within
+% footnotes and bibliography entries which is normally single spaced.
+%
+% \DescribeMacro{\singlespacing}
+% The |\singlespacing| macro switches to single interline spacing.
+% This can be useful within long tables that don't otherwise fit on a
+% page. This is not true single spacing, which would have six lines per
+% inch and would appear too dense. Rather, it is single spacing as
+% the {\LaTeX} |article| class understands it, with lines 14.5 points apart.
+%
+% \DescribeMacro{\doublespacing}
+% The |\doublespacing| macro switches to double spacing between lines,
+% with six lines per inch and 24 points between lines. This is not
+% double spacing as {\LaTeX} typically understands it, but rather as the
+% rest of the world does.
+%
+% \DescribeMacro{\normalspacing}
+% The |\normalspacing| macro restores normal interline spacing,
+% whatever that is (|\doublespacing| by default).
+%
+% \DescribeMacro{\footnotespacing}
+% The |\footnotespacing| macro switches to footnote spacing.
+% This is equivalent to |\singlespacing| by default, but you
+% may want to redefine this with, {\em e.g.,}
+% \begin{verbatim}
+% \renewcommand{\footnotespacing}{\doublespacing}
+% \end{verbatim}%
+%
+% \DescribeMacro{\singlespacingplus}
+% \DescribeMacro{\realsinglespacing}
+% \DescribeMacro{\realdoublespacing}
+% \DescribeMacro{\listspacing}
+% Four other macros are provided to set potentially useful spacings.
+% Ordinarily you should not need to use any of these macros.
+% |\singlespacingplus| sets $1.5$ spacing, while |\realsinglespacing|
+% sets real six-lines-per-inch spacing. The |\realdoublespacing| macro
+% has the same effect as the |\doublespacing| macro and is included
+% for backward compatibility with old versions of this document class.
+% |\listspacing| sets the spacing between lines in various
+% list-like sections of the thesis, such as the table of contents and
+% the lists of tables and figures. By default it is the same as
+% |\singlespacing|.
+%
+% \subsection{Font sizes}
+%
+% \DescribeMacro{\titlesize}
+% The |\titlesize| macro lets you change the font size used for the
+% title of your dissertation on the title page, should the default
+% be unsuitable for any reason.
+% For example, you could do 
+% \begin{verbatim}
+% \titlesize{\LARGE}
+% \end{verbatim}%
+% 
+% \DescribeMacro{\authorsize}
+% Similarly, the |\authorsize| macro lets you change the size of font
+% used to print the author's name.
+%
+% \DescribeMacro{\subtitlesize}
+% There is also a |\subtitlesize| macro that controls the size of font
+% used to typeset the words ``A Dissertation \ensuremath{\ldots}''
+% on the title page.
+%
+% \StopEventually{}
+%
+% \section{Internals}
+%
+%    \begin{macrocode}
+%<class>\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+%    \end{macrocode}
+%
+% \iffalse (Don't show this in the doc).
+%<*driver>
+         \ProvidesFile{cornell.drv}
+%</driver>
+% \fi
+%    \begin{macrocode}
+%<class>\ProvidesClass{cornell}
+		[2008/4/17 v2.9
+%<class>		 Cornell University thesis class]
+%    \end{macrocode}
+% \iffalse (Omitted from the doc)
+%<*driver>
+]
+%</driver>
+% \fi
+%
+% \subsection{Driver for this document}
+%
+% The \dst{} program will extract the following driver from this file:
+%    \begin{macrocode}
+%<*driver>
+\documentclass{ltxdoc}
+\EnableCrossrefs
+%\DisableCrossrefs % Say \DisableCrossrefs if index is ready
+\RecordChanges
+%\OnlyDescription % Comment out for implementation details
+\CodelineIndex
+\begin{document}
+  \DocInput{cornell.dtx}
+  \PrintIndex
+  \PrintChanges
+\end{document}
+%</driver>
+%    \end{macrocode}
+% \subsection{Option processing}
+%
+% First we set up conditionals to determine whether this is a Ph.D.{}
+%  disseration or a Master's thesis, and use Ph.D.{} by default.
+%
+%    \begin{macrocode}
+\newif\ifphd
+\DeclareOption{phd}{\phdtrue}
+\DeclareOption{master}{\phdfalse}
+\ExecuteOptions{phd}
+%    \end{macrocode}
+%
+% \changes{v2.0}{1998/09/17}{Added latexheadings and cornellheadings options}
+% \changes{v2.5}{2002/04/02}{sdh4: Added halfcornellheadings and smallerheadings options. Changed halfcornellheadings and smallerheadings to the default.}
+% Flag to tell if we need to change the default chapter headings.
+%
+%    \begin{macrocode}
+\newif\ifcornellheadings
+\newif\ifhalfcornellheadings
+\newif\ifsmallerheadings
+\DeclareOption{latexheadings}{\cornellheadingsfalse \halfcornellheadingsfalse}
+\DeclareOption{cornellheadings}{\cornellheadingstrue \halfcornellheadingsfalse}
+\DeclareOption{halfcornellheadings}{\halfcornellheadingstrue \cornellheadingsfalse}
+\DeclareOption{normalsizeheadings}{\smallerheadingsfalse}
+\DeclareOption{smallerheadings}{\smallerheadingstrue}
+\ExecuteOptions{cornellheadings}
+\ExecuteOptions{smallerheadings}
+%    \end{macrocode}
+%
+% The font size is mandated to be \textsf{12pt}. If \textsf{final} is set, we
+% override options \textsf{10pt} and \textsf{11pt} with a warning.
+% \changes{v2.6}{2002/06/14}{Changed to only override when \textsf{final} is
+% set}
+%
+%    \begin{macrocode}
+\DeclareOption{10pt}{%
+ \iffinal%
+  \OptionNotUsed%
+  \ClassWarningNoLine{cornell}{Font size 10pt not allowed; using 12pt}%
+ \else%
+  \PassOptionsToClass{10pt}{report}%
+ \fi%
+}
+\DeclareOption{11pt}{%
+ \final%
+  \OptionNotUsed%
+  \ClassWarningNoLine{cornell}{Font size 11pt not allowed; using 12pt}%
+ \else%
+  \PassOptionsToClass{11pt}{report}%
+ \fi
+}
+%    \end{macrocode}
+%
+%
+% We add an option to include the preliminary sections into the table
+% of contents. This is option \textsf{tocprelim}.
+% By default, the preliminary sections are {\em not} included.
+% \begin{macro}{\prelim@contents}
+% Internally, macro |\prelim@contents| is called with the title of the
+% section as an argument to generate the table of contents entry.
+% By default, this macro is a do-nothing; with the \textsf{tocprelim}
+% option it is changed to actually invoke
+% |\addcontentsline|. Preliminary sections are treated as sections,
+% not chapters, for the table of contents. The thesis secretary may or
+% may not approve of this.
+% \changes{v1.0d}{1995/08/19}{Changed \#\# to \# as per change in \LaTeX source}
+%    \begin{macrocode}
+\newcommand{\prelim@contents}[1]{}
+\DeclareOption{tocprelim}{%
+  \renewcommand{\prelim@contents}[1]{\addcontentsline{toc}{section}{#1}}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% Define the \textsf{draft}, \textsf{semifinal} and \textsf{final} options
+% that create the |\iffinal| and |\ifdraft| macros.
+% \begin{macrocode}
+\DeclareOption{draft}{%
+  \let\ifdraft\iftrue%
+  \let\iffinal\iffalse%
+  \PassOptionsToClass{final}{report}%
+}
+\DeclareOption{final}{%
+  \let\ifdraft\iffalse%
+  \let\iffinal\iftrue%
+  \PassOptionsToClass{final}{report}%
+}
+\DeclareOption{semifinal}{%
+  \let\ifdraft\iffalse%
+  \let\iffinal\iftrue%
+  \PassOptionsToClass{draft}{report}%
+}
+% 
+% We pass all remaining options to the standard \textsf{report} class.
+%    \begin{macrocode}
+\DeclareOption*{%
+  \PassOptionsToClass{\CurrentOption}{report}%
+}
+%    \end{macrocode}
+%
+% All options must be processed now, so that we can load the
+% \textsf{report} class right away.
+%    \begin{macrocode}
+\ExecuteOptions{final}
+\ProcessOptions
+%    \end{macrocode}
+
+% \subsection{Report class}
+% 
+% We now load the report class, forcing the \textsf{12pt} option as
+% noted above.
+% \changes{v2.6}{2002/06/14}{Only force \textsf{12pt} when \textsf{final} is
+% set}
+%    \begin{macrocode}
+\iffinal\LoadClass[12pt]{report}[1994/06/01]\else\LoadClass{report}[1994/06/01]\fi
+%    \end{macrocode}
+%
+% We now apply our modifications to the standard \textsf{report}
+% class.
+%
+% \subsection{PDF support}
+%   
+% The following code to define |\ifpdf| is borrowed from Heiko
+% Oberdiek's \texttt{ifpdf.sty} package.
+%    \begin{macrocode}
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\else
+  \ifx\pdfoutput\relax
+  \else
+    \ifcase\pdfoutput
+    \else
+      \pdftrue
+    \fi
+  \fi
+\fi
+%    \end{macrocode}
+%
+% If we are in PDF mode, set the page size correctly:
+%
+%    \begin{macrocode}
+\ifpdf
+  \setlength{\pdfpagewidth}{8.5in}
+  \setlength{\pdfpageheight}{11in}
+\fi
+%    \end{macrocode}
+%
+% \subsection{Chapter headings}
+%
+% \begin{macro}{\@makechapterhead}
+% \begin{macro}{\@makeschapterhead}
+% If the chapter heading style shown in the grad school thesis guide
+%  is used, we modify the commands which output the chapter headings 
+%  to place it in all caps at the top of the page.
+%
+%    \begin{macrocode}
+\ifcornellheadings
+  \def\@makechapterhead#1{%
+    \begin{center}%
+      \MakeUppercase{\@chapapp\space \thechapter} \\
+      \MakeUppercase{\bfseries #1}
+    \end{center}%
+    }
+  \def\@makeschapterhead#1{%
+    \begin{center}%
+      \MakeUppercase{\bfseries #1}
+    \end{center}%
+    }
+\fi
+\ifhalfcornellheadings
+  \def\@makeschapterhead#1{%
+    \begin{center}%
+      \MakeUppercase{\bfseries #1}
+    \end{center}%
+    }
+  \def\@makechapterhead#1{%
+    \vspace*{50\p@}%
+    {\parindent \z@ \raggedright \normalfont
+      \ifnum \c@secnumdepth >\m@ne
+          \huge\bfseries \@chapapp\space \thechapter
+          \par\nobreak
+          \vskip 20\p@
+      \fi
+      \interlinepenalty\@M
+      \singlespacing \Huge \bfseries #1\par\nobreak
+      \vskip 40\p@
+    }}
+  \ifsmallerheadings
+    \def\@makechapterhead#1{%
+      {\parindent \z@ \raggedright \normalfont
+        \ifnum \c@secnumdepth >\m@ne
+            \LARGE\bfseries \@chapapp\space \thechapter
+            \par\nobreak
+        \fi
+        \interlinepenalty\@M
+        \singlespacing \LARGE \bfseries #1\par\nobreak
+      }}
+  \fi
+\fi
+
+\ifsmallerheadings
+\renewcommand\section{\@startsection {section}{1}{\z@}%
+                                   {-3.5ex \@plus -1ex \@minus -.2ex}%
+                                   {2.3ex \@plus.2ex}%
+                                   {\normalfont\large\bfseries}}
+\fi
+
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \subsection{Footnotes}
+%
+% Footnotes should be the same size as the main text.
+%    \begin{macrocode}
+\renewcommand{\footnotesize}{\normalsize}
+%    \end{macrocode}
+% They can be single spaced.
+% \begin{macro}{\@makefntext}
+% We redefine the standard macro |\@makefntext| to use
+% |\footnotespacing| (defined below as |\singlespacing|, but
+% modifiable by the user) and to restore |\normalspacing| afterwards.
+%    \begin{macrocode}
+\renewcommand{\@makefntext}[1]{%
+  \parindent 1em%
+  \noindent
+  \footnotespacing
+  \hbox to 1.8em{\hss\@makefnmark}#1
+  \par\normalspacing
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{Subscripts}
+%
+% Subscripts should be made larger than the default, just to be on the
+% safe side.
+%    \begin{macrocode}
+\renewcommand{\defaultscriptratio}{.75}
+\renewcommand{\defaultscriptscriptratio}{.6}
+%    \end{macrocode}
+%
+% \subsection{Page layout}
+%
+% The interior margin must be increased to at least 1.5 inches. An extra
+% 0.1 inch is added to all margins to compensate for copier enlargement.
+% Various other page layout parameters are reset here.
+%
+% This part of the code may not be very robust when \textsf{twocolumn}
+% is used. (No attempt has yet been made to get the margins right in
+% that case.) But then, dissertations really shouldn't use \textsf{twocolumn}.
+% \changes{v2.0}{1998/09/17}{Left margin set to 1.6 inch, others to 1.1 inch}
+% \changes{v2.0}{1998/09/17}{Page numbers 0.6 inch from top/bottom of page}
+%    \begin{macrocode}
+\setlength\headsep{25\p@}
+\if@twocolumn
+\else
+  \setlength\topmargin{-0.4in}
+  \setlength\headheight{0.16667in}
+  \setlength\headsep{0.33333in}
+  \setlength\textheight{8.8in}
+  \setlength\footskip{0.5in}
+  \setlength\oddsidemargin{.6in}
+  \setlength\evensidemargin{.6in}
+  \setlength\textwidth{5.80in}
+  \setlength\marginparsep{0.1in}
+  \setlength\marginparwidth{0.8in}
+\fi
+\if@compatibility
+  \setlength\topmargin{0\p@}
+\else
+\fi
+%    \end{macrocode}
+%
+% \subsection{Page styles}
+%
+% \begin{macro}{\ps@cornell}
+% We define a \textsf{cornell} page style.
+% This has page numbers centered at the bottom of each page.
+%    \begin{macrocode}
+\newcommand{\ps@cornell}{%
+\def\@oddhead{}
+\def\@oddfoot{\hfil\thepage\hfil}%
+\def\@evenhead{}%
+\def\@evenfoot{\@oddfoot}%
+\def\chaptermark##1{}%
+\def\sectionmark##1{}%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\ps@oldcornell}
+% We also define the \textsf{oldcornell} page style, which places
+% page numbers at the outside upper corner of each page.
+% This is the old behavior of the textsf{cornell} page style.
+%    \begin{macrocode}
+\newcommand{\ps@oldcornell}{%
+\def\@oddhead{{\slshape\rightmark}\hfil\thepage}%
+\def\@oddfoot{}%
+\def\@evenhead{\thepage\hfil{\slshape\leftmark}}%
+\def\@evenfoot{}%
+\def\chaptermark##1{}%
+\def\sectionmark##1{}%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\ps@cornellc}
+% For the sake of people in Engineering and of any other interested
+% parties, we also define a \textsf{cornellc} page style in which the
+% page numbers are centered at the top of each page.
+%    \begin{macrocode}
+\newcommand{\ps@cornellc}{%
+\def\@oddhead{\hfil\thepage\hfil}%
+\def\@oddfoot{}%
+\def\@evenhead{\@oddhead}%
+\def\@evenfoot{}%
+\def\chaptermark##1{}%
+\def\sectionmark##1{}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% We prefer predictable interline spacing over fixed page
+% length. Thus:
+%    \begin{macrocode}
+\raggedbottom
+%    \end{macrocode}
+% Individual users are free to override this by using |\flushbottom|
+% in the preamble.
+%
+% \subsection{Section names}
+%
+% The \LaTeX\space default section names are acceptable, except for
+% the table of contents which must be called ``Table of Contents'',
+% not just ``Contents''. {\LaTeXe} conveniently provides a macro
+% to configure this.
+%    \begin{macrocode}
+\renewcommand{\contentsname}{Table of Contents}
+%    \end{macrocode}
+% {\LaTeXe} also provides |\bibname|, |\listtablename|,
+% |\listfigurename|; the default values are adequate for our purposes.
+%
+% The following code modifies the appearance of entries in the List of
+% Figures and in the List of Tables. It is being retained for historic
+% reasons. 
+% \changes{v1.1}{1996/03/18}{Replaced openbib conditional with single command
+% 	as per changes in December 95 \LaTeXe source release}
+%    \begin{macrocode}
+\renewcommand{\l@figure}{\@dottedtocline{1}{1.5em}{2.6em}}
+\let\l@table\l@figure
+
+\renewenvironment{thebibliography}[1]
+     {\chapter*{\bibname
+        \@mkboth{\uppercase{\bibname}}{\uppercase{\bibname}}}%
+      \list{\@biblabel{\arabic{enumiv}}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+	    \itemsep=12pt
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\arabic{enumiv}}}%
+      \sloppy\clubpenalty4000\widowpenalty4000%
+      \sfcode`\.=\@m\relax
+      \addcontentsline{toc}{chapter}{\bibname}
+      \listspacing{bib}}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \normalspacing
+      \endlist}
+%    \end{macrocode}
+
+% Preliminary sections are handled here.
+%
+% \changes{v1.0}{}{Added degreefield command}
+% \changes{v1.0}{}{Added ifphd switches for two types of cover page}
+%    \begin{macrocode}
+% \changes{v2.1}{1998/09/20}{Fixed title bug}
+\newcommand{\@titlesize}{\fontsize{18}{24}\selectfont}
+\newcommand{\@subtitlesize}{\fontsize{12}{24}\selectfont}
+\newcommand{\@authorsize}{\normalsize\doublespacing} % No Pharaoh he.
+\newcommand{\@conferralmonth}{January}
+\newcommand{\@conferralyear}{1995}
+
+\newcommand{\titlesize}[1]{\renewcommand{\@titlesize}{#1}}
+\newcommand{\subtitlesize}[1]{\renewcommand{\@subtitlesize}{#1}}
+\newcommand{\authorsize}[1]{\renewcommand{\@authorsize}{#1}}
+\newcommand{\conferraldate}[2]{%
+  \renewcommand{\@conferralmonth}{#1}
+  \renewcommand{\@conferralyear}{#2}
+}
+\newcommand{\@degreefield}{Master of Science}
+\newcommand{\degreefield}[1]{\renewcommand{\@degreefield}{#1}} 
+
+\renewcommand{\maketitle}{%
+  \begin{titlepage}%
+    \realsinglespacing
+    \begin{center}%
+      \hrule height 0.5in width 0pt % force vertical space at top
+      \@titlesize \expandafter\uppercase\expandafter{\@title}
+    \end{center}
+    \vfill
+    \begin{center}
+      \@subtitlesize
+      A \ifphd Dissertation \else Thesis \fi \\
+      Presented to the Faculty of the Graduate School \\
+      of Cornell University \\
+      in Partial Fulfillment of the Requirements for the Degree of \\
+      \ifphd Doctor of Philosophy \else \@degreefield \fi
+    \end{center}
+    \vfill
+    \begin{center}
+      \@authorsize
+      by \\
+      \@author \\
+      \@conferralmonth\ \@conferralyear
+    \end{center}
+    \vspace{0.25in}
+  \end{titlepage}
+}
+
+\renewenvironment{titlepage}{%
+  \typeout{Title page}
+  \pagestyle{empty}
+  \doublespacing
+}{%
+  \normalspacing\clearpage
+}
+%    \end{macrocode}
+
+% Copyright page (What? Not in public domain? Shame on you...)
+
+%    \begin{macrocode}
+\newenvironment{copyrightpage}{%
+  \typeout{Copyleft page}
+  \pagestyle{empty}
+  \null\vfill
+  \begin{center}
+}{%
+  \end{center}
+  \vfill\null
+  \newpage
+  \clearpage%
+}
+
+\newcommand{\makecopyright}{%
+  \begin{copyrightpage}
+  \copyright\ \@copyrightyear{} \@copyrightholder \\
+  ALL RIGHTS RESERVED
+  \end{copyrightpage}%
+}
+\newcommand{\@copyrightholder}{\@author}
+\newcommand{\@copyrightyear}{\@conferralyear}
+
+\newcommand{\copyrightholder}[1]{\renewcommand{\@copyrightholder}{#1}}
+\newcommand{\copyrightyear}[1]{\renewcommand{\@copyrightyear}{#1}}
+
+\newcommand{\makepublicdomain}{%
+  \begin{copyrightpage}
+  This document is in the public domain.
+  \end{copyrightpage}%
+}
+%    \end{macrocode}
+% \changes{v2.0}{1998/09/17}{Added makepublicdomain command}
+
+% Abstract page
+
+% \changes{v1.0}{}{Added ifphd switches for two types of abstract}
+% \changes{v2.0}{1998/09/17}{Fixed spacing on abstract page}
+%    \begin{macrocode}
+\newlength{\@abhdskip}%
+\renewenvironment{abstract}{
+  \typeout{Abstract}
+  \setlength{\@abhdskip}{.6in}
+  \addtolength{\@abhdskip}{-\topmargin}
+  \addtolength{\@abhdskip}{-\headheight}
+  \addtolength{\@abhdskip}{-\headsep}
+  \addtolength{\@abhdskip}{-\baselineskip}
+  \begin{center}%
+    \vspace*{\@abhdskip}%
+    \ifphd%
+      {\def\\{\noexpand\\} \xdef\@abstracttitle{\@abstracttitle}}
+      \expandafter\uppercase\expandafter{\@abstracttitle} \\
+      \@author,\ Ph.D. \\
+      Cornell University\ \@conferralyear%
+    \else	
+      \normalsize \bfseries\selectfont
+      ABSTRACT
+    \fi%
+    \vspace{0.5\baselineskip}
+  \end{center}%
+  \pagestyle{empty}
+  \thispagestyle{empty}
+}{%
+  \clearpage
+}
+
+\newcommand{\@abstracttitle}{\@title}
+\newcommand{\abstracttitle}[1]{\renewcommand{\@abstracttitle}{#1}}
+%    \end{macrocode}
+
+% Biographical sketch
+
+%    \begin{macrocode}
+\newenvironment{biosketch}{%
+  \typeout{Vita}
+  \pagestyle{plain}
+  \pagenumbering{roman}
+  \setcounter{page}{3}
+  \prelim@contents{Biographical Sketch}
+  \chapter*{Biographical Sketch}
+%  \chapter*{%
+%    \begin{center}
+%      \vspace{-2in}
+%      \normalsize
+%      BIOGRAPHICAL SKETCH
+%    \end{center}
+%  }
+}{%
+  \clearpage
+}
+%    \end{macrocode}
+
+% Dedication
+%    \begin{macrocode}
+\newenvironment{dedication}{%
+  \prelim@contents{Dedication}
+  \null\vfill
+  \begin{center}
+}{
+  \end{center}
+  \vfill\null
+  \clearpage
+}
+%    \end{macrocode}
+
+% Acknowledgements
+%    \begin{macrocode}
+\newenvironment{acknowledgements}{%
+  \prelim@contents{Acknowledgements}
+  \chapter*{Acknowledgements}
+%  \chapter*{%
+%    \begin{center}
+%      \vspace{-2in}
+%      \normalsize
+%      ACKNOWLEDGEMENTS
+%    \end{center}
+%  }
+}{%
+  \cleardoublepage
+}
+
+\newcommand{\contentspage}{%
+  \listspacing{toc}
+  \label{toc}
+  \prelim@contents{\contentsname}
+  \tableofcontents
+  \normalspacing
+  \clearpage
+}
+
+\newcommand{\tablelistpage}{%
+  \listspacing{tab}
+  \label{lot}
+  \prelim@contents{\listtablename}
+  \listoftables
+  \normalspacing
+  \clearpage
+}
+
+\newcommand{\figurelistpage}{%
+  \listspacing{fig}
+  \label{lof}
+  \prelim@contents{\listfigurename}
+  \listoffigures
+  \normalspacing
+  \clearpage
+}
+%    \end{macrocode}
+%
+% The following three sections are optional. We define macros to start
+% new chapters, but that is all.
+%
+%    \begin{macrocode}
+\newcommand{\abbrlist}{%
+  \listspacing{abbr}
+  \prelim@contents{List of Abbreviations}
+  \chapter*{List of Abbreviations}
+}
+
+\newcommand{\symlist}{%
+  \listspacing{sym}
+  \prelim@contents{List of Symbols}
+  \chapter*{List of Symbols}
+}
+
+\newcommand{\preface}{%
+  \listspacing{pref}
+  \prelim@contents{Preface}
+  \chapter*{Preface}
+}
+%    \end{macrocode}
+
+% This sets up the interline spacing for normal text, small text,
+% and footnote text, and defines the various spacing macros. Because
+% the interline spacing for normal text is set to 12 points, the
+% spacing macros can do the straightforward thing, except for
+% |\singlespacing|, which tries to be backward compatible with |article|.
+%    \begin{macrocode}
+\renewcommand\normalsize{%
+   \@setfontsize\normalsize\@xiipt{12}%
+   \abovedisplayskip 12\p@ \@plus3\p@ \@minus7\p@
+   \abovedisplayshortskip \z@ \@plus3\p@
+   \belowdisplayshortskip 6.5\p@ \@plus3.5\p@ \@minus3\p@
+   \def\@listi{\leftmargin\leftmargini
+               \parsep 5\p@  \@plus2.5\p@ \@minus\p@
+               \topsep 10\p@ \@plus4\p@   \@minus6\p@
+               \itemsep \z@  \@plus2.5\p@ \@minus\p@}%
+   \belowdisplayskip \abovedisplayskip
+}
+\renewcommand\small{%
+   \@setfontsize\small\@xipt{11}%
+   \abovedisplayskip 11\p@ \@plus3\p@ \@minus6\p@
+   \abovedisplayshortskip \z@ \@plus3\p@
+   \belowdisplayshortskip 6.5\p@ \@plus3.5\p@ \@minus3\p@
+   \def\@listi{\leftmargin\leftmargini
+               \topsep 9\p@ \@plus3\p@ \@minus5\p@
+               \parsep 4.5\p@ \@plus2\p@ \@minus\p@
+               \itemsep \z@  \@plus2\p@ \@minus\p@}%
+   \belowdisplayskip \abovedisplayskip
+}
+\renewcommand\footnotesize{%
+   \@setfontsize\footnotesize\@xpt\@xpt
+   \abovedisplayskip 10\p@ \@plus2\p@ \@minus5\p@
+   \abovedisplayshortskip \z@ \@plus3\p@
+   \belowdisplayshortskip 6\p@ \@plus3\p@ \@minus3\p@
+   \def\@listi{\leftmargin\leftmargini
+               \topsep 6\p@ \@plus2\p@ \@minus2\p@
+               \parsep 3\p@ \@plus2\p@ \@minus\p@
+               \itemsep \parsep}%
+   \belowdisplayskip \abovedisplayskip
+}
+
+\newcommand{\realsinglespacing}{%
+  \let\CS=\@currsize\renewcommand{\baselinestretch}{1.0}\CS}
+\newcommand{\singlespacing}{%
+  \let\CS=\@currsize\renewcommand{\baselinestretch}{1.208333}\CS}
+\newcommand{\singlespacingplus}{%
+  \let\CS=\@currsize\renewcommand{\baselinestretch}{1.5}\CS}
+\newcommand{\doublespacing}{%
+  \let\CS=\@currsize\renewcommand{\baselinestretch}{2}\CS}
+\newcommand{\realdoublespacing}{%
+  \let\CS=\@currsize\renewcommand{\baselinestretch}{2}\CS}
+\newcommand{\normalspacing}{\doublespacing}
+\newcommand{\footnotespacing}{\singlespacing}
+\newcommand{\listspacing}[1]{\singlespacing} % extra arg is extensibility hook
+\newcommand{\changespacing}[2]{%
+  \renewcommand{#1}{%
+    \let\CS=\@currsize\renewcommand{\baselinestretch}{#2}\CS}%
+}
+\ifdraft\changespacing{\normalspacing}{1}\fi
+\newcommand{\changenormalspacing}[1]{\renewcommand{\normalspacing}{#1}}
+\normalspacing
+
+% redefine to do singlespacing
+\def \@floatboxreset {%
+        \reset@font
+        \normalsize
+        \singlespacing
+        \@setminipage
+}
+%    \end{macrocode}
+
+% End (for now)
+% \Finale

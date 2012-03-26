@@ -1,0 +1,192 @@
+<html><head><title>Cornell Thesis LaTeX Document Class</title></head><body><h1>Cornell Thesis LaTeX Document Class</h1>
+<p>
+
+</p><center><strong>The current version is 2.7,
+dated 2006/10/25</strong></center>
+
+<em>This document class takes into account the changes made in the
+openbib commands in the December 1995 release of LaTeX.
+It will not work with earlier versions.</em>
+
+
+<p></p>
+
+
+<p>
+The <code>cornell</code> document class typesets dissertations and
+theses according to the specifications of the Cornell University
+Graduate School, as described in the April 2001 edition of the
+booklet ``Doctoral Dissertation, Master's Thesis, and Advanced
+Degree Requirements''.
+It was originally released as <code>crnlphd</code> by Sergio
+Gelato, who created it by converting the old thesis style files
+to a LaTeX2e document class.
+Daniel Kartch modified it so that it could handle Master's theses
+as well as doctoral dissertations, and also fixed a few bugs caused
+by changes in the LaTeX source release. Steve Holland later fixed a
+few bugs and added a few features. Aleksey Nogin then added some more
+features. Nate Nystrom and Andrew Myers fixed a few more bugs in line
+spacing and line number placement.
+To learn more, you can check out the
+<a href="cornell.pdf">User's Guide</a>, which can also be generated
+from the source files.
+
+</p><p>
+The distribution contains four files:
+</p><ul>
+<li> <a href="README">README</a> - Installation instructions and change log.
+</li><li> <a href="cornell.dtx">cornell.dtx</a> - Documented source code for
+        the class
+</li><li> <a href="cornell.ins">cornell.ins</a> - Installation script to produce
+        class file from the source
+</li><li> <a href="cornell.pdf">cornell.pdf</a> - Prebuilt documentation (via pdflatex).
+</li></ul>
+It is also available in a single compressed file:
+<p></p>
+<p>
+Several older versions of the Cornell Thesis style are archived here:
+</p><ul>
+<li> Version <a href="http://tam.cornell.edu/Computer/cuthesis/cu_thesis2.6.tar.gz">cu_thesis2.6.tar.gz</a>
+ <li> Version <a href="http://tam.cornell.edu/Computer/cuthesis/v1.1/mirror.html">1.1</a>
+ </li><li> Version <a href="http://tam.cornell.edu/Computer/cuthesis/v2.1a/mirror.html">2.1a</a>
+ </li><li> Version <a href="http://tam.cornell.edu/Computer/cuthesis/v2.5/index.html">2.5</a>
+</li></ul>
+The Cornell Center for Materials Research has a LaTeX thesis page 
+based on version 2.0 of the thesis style at <a href="http://cf.ccmr.cornell.edu/docs/howto/tex/tips_thesis.html">http://cf.ccmr.cornell.edu/docs/howto/tex/tips_thesis.html</a>
+<p></p>
+<p>
+CCMR provides the following useful recommendation:
+
+</p><blockquote>
+
+<h3>Printer Variations</h3>
+
+<p>
+
+Each printer varies a bit on the precision of the margins.  You can
+generally set it to your needs by adjusting these parameters. See page
+182 of the LaTeX 2nd Edition book for the layout of page
+paramters. The left margin starts from 1 inch. The text width is
+adjusted to change the right margin! Defaults are in the cornell.cls
+file as:
+</p><pre>\setlength\evensidemargin{.51in} \setlength\oddsidemargin{.51in} \setlength\textwidth{5.88in}
+
+</pre><p>
+For example to increase the left margin by .1 inches without changing the right margin use:
+</p><pre>\setlength\evensidemargin{.61in} \setlength\oddsidemargin{.61in} \setlength\textwidth{5.78in}
+</pre><p>
+
+To increase the right margin by .1 inches:
+</p><pre>\setlength\textwidth{5.78in}
+</pre>
+</blockquote>
+
+<p>
+<br>
+
+Greg Voth posted some hints on his site at <a href="http://milou.msc.cornell.edu/%7Egreg/thesis/hints.html">http://milou.msc.cornell.edu/~greg/thesis/hints.html</a>:
+
+</p><blockquote>
+
+Some students before me had problems with getting the captions at the
+bottom of landscape figures in their theses. I found that this can be
+easily done by using the package "rotating", and the commmands
+below. More documentation is in The LaTeX Companion.
+
+<pre>\begin{sidewaysfigure}
+\centering\epsfig{file=filename.eps,width=??}
+\singlespacing
+\caption{Landscape figure}
+\normalspacing
+\label{land_figure}
+\end{sidewaysfigure}
+</pre>
+
+You will need to find a bibliography style file that follows some
+standard referencing style in your field. My advisor has his own which
+follows Annual Reviews of Fluid Mechanics style that I used:
+turbulence.bst. Then you need all your references in a .bib file. A
+great tool for creating this is the gawk script inspec2bibtex. From
+INSPEC on the library web site, you can email the bibliography
+information to yourself. Run inspec2bibtex on the text file from
+INSPEC, and it outputs the entries for the .bib file. The script
+currently is somewhat hacked, there may be some more elegant versions
+out there, but this one has worked for me.
+</blockquote>
+
+
+<h3>Paragraph spacing</h3>
+<p>
+I think more paragraph spacing is needed than is provided by 
+the documentclass. I use <tt>\addtolength{\parskip}{0.5\baselineskip}</tt>
+right before the chapters start, in order to increase the paragraph spacing. 
+If you want to increase the paragraph spacing for your abstract, acknowledgements, etc., you can put the same line <tt>\addtolength{\parskip}{0.5\baselineskip}</tt> before the abstract section. If you do this, you will also need to put in a line <tt>\addtolength{\parskip}{-0.5\baselineskip}</tt> before the 
+table-of-contents to reset <tt>\parskip</tt>, because otherwise the line
+spacing in the table of contents and list of figures is screwed up. 
+
+</p>
+<h3>pdflatex</h3>
+<p>
+I should mention that I strongly recommend using <tt>pdflatex</tt> and PDF
+rather than regular <tt>latex</tt> and DVI for production. 
+You will probably want to <tt>\usepackage[pdftex]{graphicx}</tt>. 
+</p>
+<p>
+To insert a figure, you can use the following code to create a figure containing <tt>myfig.pdf</tt>: 
+</p><pre>\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{myfig}
+\caption{My figure.}
+\label{fig:myfig}
+\end{figure}
+</pre>
+<p></p>
+<h3>pdflatex issues</h3>
+<p>
+In order to use pdflatex, your figures must be in PDF format. Usually 
+you would use /usr/bin/epstopdf (on Linux) to convert EPS figures to 
+encapsulated PDF with ghostscript. However, current versions tend to 
+enable JPEG compression on bitmap images which can damage image quality. 
+You can pass ghostscript distiller parameters such as -dEncodeGrayImages=false
+and -dEncodeColorImages=false that will prevent the use of JPEG compression 
+by the ghostscript distiller. (This can also dramatically increase file size).
+</p>
+<p>
+I also ran into a problem in which certain figures did not print out 
+correctly with Acrobat Reader. You can try distilling with ghostcript to 
+fix such problems. <a href="http://tam.cornell.edu/Computer/cuthesis/pdf2pdf">Here is the script I used</a>. You may need
+a new version of ghostscript (&gt;=7.00) for this to work well. 
+</p>
+<h3>Hanging captions</h3>
+<p>
+The use of the <tt>hangcaption</tt> package is documented in the instructions, 
+but the suggested commands aren't quite optimal. Here is my suggestion:
+<br><tt>
+\usepackage{ifthen}
+<br>
+\renewcommand{\caption}[2][]{\singlespacingplus\ifthenelse{\equal{}{#1}}{\hangcaption{#2}}{\hangcaption[#1]{#2}}\normalspacing}
+</tt><br>
+This puts the captions in singlespacingplus mode and supports the optional 
+argument to \caption that allows the list-of-figures entry and the actual 
+caption to be different
+</p>
+<h3>Reusing equation numbers</h3>
+Often you have already written an equation once and you want to write
+it again, using the same equation number a second time. I have written 
+a small package called "<a href="http://tam.cornell.edu/Computer/cuthesis/previousequation.sty">previousequation</a>" that allows you to do this 
+easily. If you have an equation:
+<pre>\begin{equation}
+2+2=4
+\label{eq:2plus2}
+\end{equation}
+</pre>
+You can write the equation a second time with <tt>\usepackage{previousequation}</tt> and
+<pre>\begin{previousequation}{eq:2plus2}
+2+2=4
+\label{eq:2plus2}
+\end{previousequation}
+</pre>
+My previousequation package does not work with <tt>eqnarray</tt>. The
+<tt><a href="http://tam.cornell.edu/Computer/cuthesis/deleq.tar.gz">deleq</a></tt> package can be used in this case. 
+
+</body></html>
