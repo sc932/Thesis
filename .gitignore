@@ -1,3 +1,5 @@
 *.swp
 *.log
 *.aux
+*.dvi
+*.toc
