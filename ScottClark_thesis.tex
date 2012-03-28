@@ -439,11 +439,11 @@ In summary, ALE determines the likelihood of an assembly given the reads and an 
 
 When calculating $\hat{Z}_{depth}$ at a specific position analytically,
 \begin{equation}
-    \hat{Z}_{depth}(r,k) = \sum_{k=0}^{\infty} \left(\mbox{nbPMF}\left(k,r,\frac{1}{2}\right)\right)^{2} = \frac{1}{4^{r}}_{2}\mbox{F}_{1}\left(r,r;1;\frac{1}{4}\right)
+    \hat{Z}_{depth}(r,k) = \sum_{k=0}^{\infty} \left(\mbox{nbPMF}\left(k,r,\frac{1}{2}\right)\right)^{2} = \frac{1}{4^{r}} \ _{2}\mbox{F}_{1}\left(r,r;1;\frac{1}{4}\right)
 \end{equation}
 where $r$ is the depth, $k$ is the expected depth, $_{2}\mbox{F}_{1}$ is a hyper geometric function,
 \begin{equation}
-    \mbox{nbPMF}\left(k,r,\frac{1}{2}\right) = \sum_{n=0}^{\infty} \frac{(r)^{2}_{n}}{4^{n}n!(1)_{n}}
+    _{2}\mbox{F}_{1}\left(r,r;1;\frac{1}{4}\right) = \sum_{n=0}^{\infty} \frac{(r)^{2}_{n}}{4^{n}n!(1)_{n}}
 \end{equation}
 where
 \begin{equation}
@@ -505,23 +505,232 @@ This allows us to numerically calculate $\hat{Z}_{depth}$ with high precision.
 \part{Velvetrope} % (fold)
 \label{prt:Velvetrope}
 
+\noindent
+\Large
+Velvetrope: a parallel, bitwise algorithm for finding homologous regions within sequences \\
+\normalsize
+Joint work with Nick Hengartner$^{1}$ and Joel Berendzen$^{2}$ \\
+\scriptsize
+$^{1}$Information Sciences Group (CCS-3), MS B265, Los Alamos National
+ Laboratory, Los Alamos, NM 87545, USA \\
+$^{2}$Applied Modern Physics Group (P-21), MS D454, Los Alamos National
+ Laboratory, Los Alamos, NM 87545, USA
+\normalsize
+
+\begin{center}
+   Abstract 
+\end{center}
+
+Existing methods for recognizing common patterns in sequence data
+streams do not scale well. This scaling problem becomes critical for
+problems that are driven by large-scale sequencing, such as
+metagenomics and cancer genomics.  Restricting comparisons to exact
+identities of amino acids between a single test sequence and a set of
+test sequences allows many efficiencies to be realized, including
+bitwise parallel operation and low-order scaling.
+
+We introduce an algorithm based on global and local densities of
+matches at the amino-acid level that finds areas of high commonality
+across a set of sequences.  It produces results that are intermediate
+between local and multiple sequence alignment and can address
+questions that other approaches cannot address.  The speed of the
+algorithm is superior to BLASTX and HMMER v3, and the scaling is
+$\mathcal O$($N$) where $N$ is the total length of the sequences
+being compared.
+
 \chapter{Velvetrope Introduction} % (fold)
 \label{cha:Velvetrope Introduction}
+
+Finding shared elements of sequence among possibly--related genes is a
+fundamental operation that underlies most of the analytical methods of
+molecular biology, including local sequence alignment, gene matching,
+multiple sequence alignment, phylogenetic tree calculation, and
+taxonomic assignments. The earliest approaches to finding this homology
+between sequences was derived from pairwise sequence alignment algorithms
+such as Needleman-Wunsch \cite{Needleman70} or Smith--Waterman
+\cite{SmithWaterman} both of which employ dynamic programming and
+are computationally expensive, in the sense that it does not scale linearly with the size of the data. A second approach employs
+hidden--Markov model (HMM) algorithms such as HMMer
+\cite{Eddy98}. The HMM may be local or non-local in nature, is
+built up by training from a curated data set, and is also generally
+computationally expensive. A third approach relies upon exact or
+near--exact matches between short solid patterns ($k$-mers for a length $k$) before also resorting to dynamic programming.  The
+$k$-mer approach underlies many algorithms such as the widely--used
+pairwise aligner and gene matcher BLAST \cite{BLAST} and its
+relatives \cite{BLAT,Megablast,PSIBLAST}. $k$-mers also are the first pass in the widely used multiple--sequence aligners
+MUSCLE \cite{MUSCLE} and DIALIGN-TX \cite{DIALIGN-TX}. Though the $k$-mer approach can be made quite computationally
+efficient, especially as $k$ is made large, detecting distant
+homologies requires use of short values of $k$ and it is easy to
+construct pathlogical cases where commonality will not be detected
+even for the limiting value of $k = 1$.
+
+The importance of computational efficiency and scaling is made paramount by the recent advances
+and demands of data--driven projects in fields such as
+shotgun metagenomic sequencing and cancer genomics. Such projects
+routinely create data sets exceeding 10 Gbp ($10^{10}$bp) and will soon extend
+to the Tbp ($10^{12}$bp) region as new sequencing technologies come online. Speed
+and scaling, especially at the early steps of analysis, is critical to make advances in these fields tractable.
+
+Velvetrope was conceived to enable finding sequence homology with an algorithm that
+was simple, scalable and parallel from the start. Our approach is based on finding areas of high densities of shared identities (Amino Acid or DNA) in local
+(adjustable) regions between sequences, rather than finding $k$-mers. This allows for rapid bitwise operations between sequences, computeable in parallel. These areas are found by performing first a global, then local filter on the shared identities. By omitting the $k$-mer step we allow Velvetrope to access homology information between evolutionarily distant sequences otherwise inaccessible by other methods.
+
+While areas of high sequence identity density are qualitatively similar to local alignments, they are significantly different from the outputs of traditional pairwise-local or global alignment algorithms. These regions do correspond to areas of high probability to be in a standard alignment as they represent areas of high local homology. Rather than explicitly calling these regions alignments we refer to them as ``in the club,'' thus giving rise to the name, 'Velvetrope' the traditional barrier between those in and out of a club.
+
+Velvetrope is a quick and simple and highly parallelizable method (we present both a serial and parallel implementation)
+that finds areas of high similarity between many
+sequences in a pairwise fashion, never performing a $k$-mer based step and independent of order. This allows for it
+to quickly find areas of high local homology, including areas that these other
+methods may ignore like proteins with transposed domains.
 
 % chapter Velvetrope Introduction (end)
 
 \chapter{Velvetrope Methods} % (fold)
 \label{cha:Velvetrope Methods}
 
+To find the areas of high local homology between sequences we imploy a two-part filtering system that first finds offsets (sets of positions) where two sequences share a higher than expected amount of identity (global filter), and then filters these sets of positions to find areas with higher than expected identity within them (local filter).
+
+Velvetrope's filtering system implements only bitwise operations on a sequence of interest $S$ compared against a possibly large set of other test sequences \textbf{T}. The first step is a global filter and works by taking the sequence of interest and comparing it using DNA or Amino Acid translations (up to 6 frames). For the motivating examples we will assume we are in a coding region and use a Amino Acid translation. We can compare the sequence $S$ against each sequence in the set of sequences to be compared against $T \in$ \textbf{T}  using simple AND operations. To track the sequence identities within these offsets we construct a binary concordance matrix $M$ that keeps track of all matches (sequence identities) across all possible offsets of the two sequences.
+
+The aggregate number of matches for every offset found is compared to what would be expected if the test sequence were randomly rearranged at that offset; if the number of matches is above some threshold then this offset is saved as having a possible area of high local homology, this is the global filter. All possible offsets up to the length of the proposed sequence are checked in this fashion. By looking at all possible offsets between the two sequences we can allow the areas being compared to shift across the two sequences, even becoming transposed if need be. This can be done in parallel for all sequences in \textbf{T} and even across different offset sets within a particular test sequence.
+
+The next filter is local and works by looking over a fixed-bit window in each of the possible offsets proposed by the first step. The window keeps a running average of the number of matches within it, correcting for the expected number of random matches and keeping track of only the difference between the number of matches were actually found and what is expected. When there is a large spike in this value then the window has shifted over an area with a large number of possibly non-random matches, an area of high sequence identity density. The region is then saved as an area of high local homology between the two sequences.
+
+\section{Construction of the Concordance Matrix $M$}
+
+We construct the concordance matrix $M$ by comparing a sequence of interest $S$ against each test sequence $T \in$ \textbf{T} aligned so residue 1 in the sequence of interest ($S_{1}$) is being compared to residue 1 of the test sequence ($T_{1}$), residue 2 compared against residue 2 ($S_{2},T_{2}$), etc. The first row of the bit-matrix is then constructed as follows: if the residue in the sequence of interest matches the residue it is lined up against in the test sequence then we give that position a value of 1, otherwise we give it a 0. We note that the row has length $\min(L_{S},L_{T})$, where $L_{S}$ is the length of the sequence of interest $S$ and $L_{T}$ is the length of the test sequence $T$. The test sequence is then shifted so that now residue 2 of the test sequence ($T_{2}$) lines up with residue 1 of the sequence of interest ($S_{1}$), residue 3 compared against residue 2 etc. ($T_{3},S_{2}$). This corresponds to offset 2. The second row is then constructed as before. We define some minimum window size $w$ (user defined, initialized to 20), all $L_{S} + L_{T}-2w$ possible offsets of overlap greater than or equal to $w$ are tested. In general
+\begin{equation}
+    M_{ij} = \left\{\begin{tabular}{cc} 1 & if $S_{j} = T_{i+j}$ \\ 0 & otherwise \end{tabular}\right.,
+\end{equation}
+for all
+\begin{equation}
+    1 \leq i \leq L_{S} + L_{T}-2w
+\end{equation}
+and
+\begin{equation}
+    \max(1,L_{T} - (w+i)) \leq j \leq \max(1,i+w-L_{S}).
+\end{equation}
+This creates a banded $(L_{S} + L_{T}-2w) \times (\min(L_{S},L_{T}))$ matrix $M$ that contains all pairwise comparisons between all possible offsets of size at least $w$ between the sequence of interest $S$ and the test sequence $T$. If every amino acid in $T$ were randomly distributed and there were equal frequencies of every amino acid we would have (inside the band of the matrix that actually contains information)
+\begin{equation}
+    E[M_{ij}] = \frac{1}{20}.
+\end{equation}
+This is not always true, and the algorithm takes local expectation into account, but this can be used as an approximation for motivation purposes. This is to say, long linear stretches of ones in this matrix should be rare and possibly contain useful information about areas of high similarity.
+
+For example purposes we will compare the RNA Polymerase Beta Subunit between E. Coli and Bacillus subtilis (available in the supplementary material or \cite{GenBank}) for the rest of the implementation section. We can see the row sum of the concordance matrix that these two genes imply compared against the expectation in Figure 1.
+
+[FIGURE 1 HERE]
+
+% \begin{center}
+% \begin{figure}[hpt]
+% 	\centerline{\includegraphics[]{offsets.png}}
+% 	\caption{This is a subset of the binary 'bit matrix' constructed when comparing our two genes. The blue letters represent residues 1181-1189 of our sequence of interest. We are looking at a small section of the rows represented by offsets of 971-980. A red letter represents a match. As we can see there is an area of possible alignment in offset 976 as there are many more matches than we would believe to be expected.}
+% 	\label{fig:00}
+% \end{figure}
+% \end{center}
+
+\section{First filter: Global}
+
+Now that we have this $(L_{S} + L_{T}-2w) \times (\min(L_{S},L_{T}))$ binary matrix $M$, we want to find what offsets result in abnormal quantities of matches. We want to find the rows in the matrix that have a higher than expected number of ones in them. To do this we take the sum of each row and compare it to the expectation of the number of matches based on amino acid frequency between that offset of the test sequence and the sequence of interest using a random model. If the sum of the ones is higher than some predetermined multiple of standard deviations away from the mean then it is marked as having a possible alignment. A default value of 3.5 assures that false positives should be extremely rare. We mark a row $i$ if,
+\begin{equation}
+    \sum_{j} M_{ij} > E\left(\sum_{j} A_{ij}\right) + \alpha \sqrt{E\left(\sum_{j} A_{ij}\right)}.
+\end{equation}
+where $E(X)$ is the expectation of $X$, $A_{i:}$ is a random vector constructed from sequences with the same amino acid composition, $\alpha$ is a parameter and is set to 3.5 by default and the square root represents the standard deviation (we assume a Poisson distribution). The value of 3.5 ensures a false positive rate of less than 0.1\% and we only look at one side distribution, offsets with higher than expected matches. The value of the mean and expectation is calculated analytically by combinatorially looking at all possible permutations of the test sequence. See figure 2.
+
+We note that as the lengths of the sequences grow large the signal can become lost in the noise. Even a $k$-mer of length 1Kbp would be lost when comparing a 3Gbp sequence using this method. To account for this and also to make easier use of the Graphics Processing Unit (GPU) implementation of this algorithm, which enforces strict memory constraints, we break up the sequences into chunks of length 1000 before forming the matrix $M$. This not only ensures that the noise will not overwhelm the signal, but also allows for much faster, parallel implementations. Areas of similarity that extend over a separation are rejoined in the recompilation step. By only looking over a linear number of offsets in the length of the test sequences we achieve scaling of
+$\mathcal O$($N$) where $N$ is the total length of the sequences
+being compared. This is far less computationally complex than the alternative dynamic programming and HMM based methods.
+
+[FIGURE 2 HERE]
+
+% \begin{figure}[!tpb]%figure2
+% \centerline{\includegraphics[]{globalFilterDuo.png}}
+% 	\caption{Values of sums of rows of the bit matrix plotted against standard deviations from the mean. The right picture is a zoom in of the area where all 4 qualifying offsets lie.}
+% 	\label{fig:01}
+% \end{figure}
+
+\section{Second filter: Local}
+
+We now have the set of offsets that have a significant number of ones in them. The next goal is to quickly find where the areas of high density are in these vectors, if such areas exist, as these would be areas of high homology between the sequences. This is done by taking a running sum of each vector from its start, at each point we subtract off the expectation based on the amino acid frequency of the two sequences for each position. This has an effect of calculating how many ones have been found at or before that position above the number that would be expected. We know that this value must increase at some point in the vector because at the end there needs to be some extra number of ones equal to some number of standard deviations away from the mean, based on it passing the global step. Where this value peaks is where the club starts (is has a significant jump in the running sum over some window). When the value flattens out again that part of the sequence is no longer in the club. See Figure 3.
+
+Two parameters are used here (combined with the one from the global filter they represent all three parameters of the model), the width of the block used for approximating the derivative and how many matches above the expectation are needed to trigger the start of the region. We can get the quick, bitwise location of the high density region in the vector, which corresponds to our in the club region. A useful side effect of this filter is that if there is no region of high density, if we have just accidentally found an outlier from the global filter that just happens to have a lot of sparse matches, then it will not trigger and we will not get a false positive from the result of the global step.
+
+[FIGURE 3 HERE]
+
+% \begin{figure}[!tpb]%figure3
+% \centerline{\includegraphics[]{localAlignmentsCDF.png}}
+% 	\caption{The four vectors that passed the global filter test and their running sum calculation. When the approximate derivative of the running sum reaches a certain point the region is marked as having a possible alignment and shaded. For the vector blue means no match an not in that region, cyan is a match but not in the region (random match), yellow is the region of possible alignment and red are the positions in that region that have matches. The location of the region is marked along with the total density of matches within that region.}
+% 	\label{fig:02}
+% \end{figure}
+
+\section{Recompilation}
+
+Now we have the regions where we have reason to believe that there are local alignments between the two sequences, our in club areas. We can see where they lie on their respective sequences and how their densities compare with each other and the sequences as a whole. This can be important information because the shifting of conserved regions and possible transposition events can represent evolutionary distance between the sequences. If we consider the conserved regions to be fixed by natural selection then their relative drift away from each other should be related to when they originally diverged. We can see an example of this in Figure 4 where there is a difference in the sequence length between conserved areas of sequence.
+
+[FIGURE 4 HERE]
+
+% \begin{figure}[!tpb]%figure4
+% \centerline{\includegraphics[]{localAlignmentsBreakout.png}}
+% 	\caption{Above we see where each area of possible local alignment lies within the sequence of interest (top) and the test sequence (bottom) along with their respective positions and densities}
+% 	\label{fig:03}
+% \end{figure}
+
 % chapter Velvetrope Methods (end)
 
 \chapter{Velvetrope Results} % (fold)
 \label{cha:Velvetrope Results}
 
+\section{Multiple Sequence Alignment}
+
+Multi-domain proteins have traditionally been cumbersome to Multiple Sequence Alignment (MSA) algorithms like MUSCLE \cite{MUSCLE} and DIALIGN-TX \cite{DIALIGN-TX} like the 31 multi-domain lectin proteins in Reference 8 of BAliBASE v3 \cite{Balibase}. The two domains for lectin are transposed for 4 of the organisms and are ordered ``correctly'' for the other 27 in the reference database (See figure 5). Because Velvetrope works independent of order it allows us to find transposed domains from within a protein such as this with relative ease and compute a probable, non-traditional MSA.
+
+Comparing a sequence of interest against a large set of test sequences allows Velvetrope to find the areas within the sequence of interest that are homologous to multiple test sequences. By combining this information across many sequences (as in figure 6) we make a histogram of which residues were matches and in the club across many test sequences. We are able to discern areas of possible multiple alignment from within the sequence of interest in this fashion. By looking at the areas within the sequence of interest which are consistently identical to test sequences or in the club we can generate regular expressions of sequence that can be readily re-mapped onto the sequence of interest, representing a non-traditional multiple alignment.  This allows us to find a probable MSA and because Velvetrope only compares a single sequence of interest against a larger set we can use this to quickly append a new sequence to a multiple alignment multiple orders of magnitude faster than traditional methods which would have to recalculate the entire MSA for every appended sequence.
+
+Traditional methods, like those in BAliBASE, have to be prompted with domain information to make sense of a multi-domain protein at all. Even with this information they only align the prompted domain and merely append the other domain(s) around the domain of interest. This results in a MSA that does not represent the true alignment between the proteins. Velvetrope is able to produce a shorter MSA with all domains represented without any prior information. In Figure 7 we look at two MSAs in which BAliBASE was prompted with the two lectin domains and it generates an non-intuitive alignment. While using just a single sequence of interest we are able to find both domains and re-map them onto that sequence and generate a much more compact and representative probable MSA very quickly.
+
+[FIGURE 5,6,7 HERE]
+
+% \begin{figure}[!tpb]%figure5
+% \centerline{\includegraphics[]{BAliBASEsnap2v2.png}}
+% 	\caption{The lectin sequences from \textit{Reference 8 - Circular Permutations} of BAliBASE3. The reference contains 31 two-domain lectin proteins from a myriad of organisms. In 4 of the sequences the Lectin2 domain comes before the Lectin1 domain, the opposite for the remaining 27. This presents a problem for most multiple alignment algorithms which will try to align one domain or the other.}
+% 	\label{fig:04}
+% \end{figure}
+% 
+% \begin{figure}[!tpb]%figure6
+% \centerline{\includegraphics[]{COMBO1.png}}
+% 	\caption{Add caption, talk about how you can get the regexp data from this and how we can see two domains...}
+% 	\label{fig:05}
+% \end{figure}
+% 
+% \begin{figure*}[!bpt]%figure6
+% \centerline{\includegraphics[]{Alignments.png}}
+% 	\caption{Two sets of alignments of the two-domain lectin protein reference. Red corresponds to the Lectin1 domain. Green is the Lectin2 domain. Orange is the Velvetrope alignment. Blue is the BAliBASE alignment. BAliBASE resolves the two-domain problem by manually specifying which domain to align (Lectin1 in the first alignment, Lectin2 in the second). This causes the aligner to append whatever domain not specified to the beginning or end of the alignment. Velvetrope is order independent which allows it to pick out areas of homology regardless of position in the sequence without any expert tuning. Lectin1 suffers from low homologous identity in the latter part of its domain and is therefore not picked up by Velvetrope, but is aligned by the non-homology components of BAliBASE.}
+% 	\label{fig:05}
+% \end{figure*}
+
+
+\section*{Local alignment comparison}
+
+While Velvetrope does not perform a local alignment in the traditional sense it is able to find areas of high local homology between sequences, regardless of order or k-mer density, that are highly probable areas of local alignment. Velvetrope compares well at a visual level to standard algorithms like BLAST \cite{BLAST} and HMMer \cite{Eddy98} and the C/CUDA implementation executes at the same order of magnitude or faster than these methods. Velvetrope is very susceptible to high indel rates within a conserved region (shifts the offsets) but has been shown to equal or outperform these other methods in areas of low indel rate especially when there are only short $k$-mers within the homologous region between the two sequences.
+
 % chapter Velvetrope Results (end)
 
 \chapter{Velvetrope Implementation} % (fold)
 \label{cha:Velvetrope Implementation}
+
+Velvetrope is able to find areas of sequence homology quickly and efficiently across multiple sequences. It finds these areas of high shared identity density in a way that allows it to locate areas otherwise missed by $k$-mer based or position dependent methods. It is able to correctly find probable alignments in multi-domain proteins and pairwise local areas of similarity between distant homologies. Its low order of computational complexity, $\mathcal O$($N$) where $N$ is the total length of the sequences
+being compared, allows for it to scale with the data intensive challenges that fields like metagenomics and cancer genomics present.
+
+We also present a freely available, open source implementation (both serial and parallel; in Python, C and CUDA) with easy to navigate HTML output similar to MEME \cite{MEME}. The API and documentation make it easily extendable and able to adapt to the future computationally intensive problems it is designed to address.
+
+\section{Availability and requirements}
+ \begin{itemize}
+  \item \textbf{Project name:} Velvetrope
+  \item \textbf{Project home page:} velvetrope.sourceforge.net
+  \item \textbf{Operating systems:} Linux 32/64-bit, Mac OSX, Windows (Cygwin)
+  \item \textbf{Programming languages:} Python, C, CUDA, HTML/CSS
+  \item \textbf{Other requirements:} Some python packages, see documentation
+  \item \textbf{License:} GPL v2.01
+ \end{itemize}
 
 % chapter Velvetrope Implementation (end)
 
