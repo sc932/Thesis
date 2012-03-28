@@ -169,7 +169,7 @@ If the assembly has an unknown base at the location (denoted by an “N”) then
 \end{equation}
 modeling the fact that there is no information about the correct base at that location with a uniform distribution over all 4 possible bases. If an ambiguity code is reported by the sequencer then the above expression is modified to account for a distribution over the possible bases encoded by the corresponding code.
 
-Each read is only allowed to be “placed” at a single position in the assembly. If the aligner placed a particular read at more than one position we choose a single position at random, weighted by $P_{placement}(r_{j}|S)$ score for each proposed position of the read on the assembly. This allows for repeat regions to be properly represented with the correct number of reads in expectation.
+Each read is only allowed to be “placed” at a single position in the assembly. If the aligner placed a particular read at more than one position we choose a single position at random, weighted by $P_{placement}(r_{j}|S)$ score for each proposed position of the read on the assembly. This allows for repeat regions to be properly represented with the correct number of reads in expectation. A further explaination can be found in the secion Placing Reads
 
 The orientation likelihood, $P_{orientation}\left(r_{i}|S\right)$, is calculated by first counting the number of times that each orientation occurs in each library from the mapping information.  The probability that a particular read from a particular library has a particular orientation is then modeled as that orientation’s empirical frequency in the library (this can be overridden with user-specified values for the probabilities).   The likelihood $P_{orientation}\left(r_{i}|S\right)$ is then the empirical frequency of the observed orientation of the read $r_{i}$ in the library from which $r_{i}$ belongs.
 
@@ -339,6 +339,73 @@ Here we derive an expression described in the Results section for the difference
 
 % section Relationship of the difference of total ALE scores to probability of correctness (end)
 
+\section{Placing reads} % (fold)
+\label{sec:Placing reads}
+
+In this writeup we compare two different policies for sampling "reads" from a distribution. Each read $x \in \{1, \ldots, N\}$ has a "hidden position" $m_{x} \in \{1, \ldots, L\}$ and a function $f_{x}(n)$ such that
+
+\[\arg\max_{x} f_{x}(n) = m_{x} \ \ \forall x\]
+and
+\[0 \leq f_{x}(n) \leq 1 \ \ \mbox{ and } \ \ f_{x}(m_{x}) = 1 \ \ \forall x,n\]
+
+For each position $p \in \{1, \ldots, L\}$ we would like to find all reads that have that position as their hidden position. $f_{x}(n)$ will represent how ``similar' a read is too that position and is proportional to the probability that it is the hidden position.
+
+At each step we will track each read $i$'s $a_{i}$,  ``assumed hidden position,'' which will be defined by
+
+\[a_{x} = \arg\max_{n_{\mbox{sampled}}} f_{x}(n) \ \ \forall x\]
+
+and
+
+\[A_{x} = f_{x}(a_{x})\]
+
+This is our best guess for the hidden position of the read.
+
+\subsection{The Policies}
+
+\subsubsection{Threshold Policy}
+
+The first policy, the Threshold Policy, will order reads by $f_{x}(a_{x}) = A_{x}$, which is to say reads will low probability that their $a_{x} = m_{x}$ will be placed first. This is because $f_{x}(n)$ is proportional to the probability that it is the hidden position and $a_{x}$ is the current candidate for that reads hidden position. The policy will then sample the bottom $M$ such reads for the given position.
+
+\subsubsection{Random Sample Policy}
+
+The second policy, the Random Sample Policy, will randomly sample reads with probability
+\[P(x = x_{n+1}) = \frac{1 - f_{x}(a_{x})}{\sum_{x} f_{x}(a_{x})} = \frac{1 - A_{x}}{\sum_{x} A_{x}}\]
+This will have the effect of sampling reads with low probability that their $a_{x} = m_{x}$ at a higher rate. The main advantage over the threshold policy is that it will not always get stuck by certain pathological cases.
+
+\subsection{The Set Up}
+
+We create $N$ reads with hidden positions randomly distributed among $L$ possible positions. We then draw the function $f_{x}(n)$ randomly from a distribution (currently using a Beta(2,5) and Uniform(0,1)) for each $x$ and each $n$. We then artificially set $f_{x}(m_{x}) = 1$ for each $x$. We then choose starting assumed hidden positions $a_{x}$ randomly distributed among the $L$ possible positions and set $A_{x} = 1/L$ until it is first sampled.
+
+\subsection{The Run Through}
+
+For each position $t$ we sample $M$ reads, updating their $a_{x}$ and $A_{x}$ as we go. Both policies have the property that when $f_{x}(a_{x}) = A_{x}$ is high the likelihood that it will be sampled decreases, and when $f_{x}(a_{x}) = 1$ we know $a_{x} = m_{x}$ and this read $x$ will no longer be sampled at all.
+
+\subsection{The Metrics}
+
+\subsubsection{High Score}
+
+We want to maximize the quantity
+
+\[\sum_{x} f_{x}(n_{\mbox{sampled}})\]
+
+This is a measure of how likely we think all of our hidden position guesses are in aggregate. A score of $x$ would mean we got all of them correct. A score of $0.99x$ would mean that on average we were $99$ percent sure we had the right hidden value for a given read.
+
+\subsubsection{Accuracy}
+
+We also want to maximize this quantity
+
+\[\sum_{x} \delta_{a_{x},m_{x}}\]
+
+Where $\delta_{x,y}$ is the Kronecker delta with the property of $\delta_{x,y} = 1 \Longleftrightarrow x = y$. This is a measure of how many hidden positions we actually correctly identified. A score of $x$ is perfect and means we got them all right. A score of $b$ means only $b$ hidden positions were correctly identified.
+
+\subsubsection{Results}
+
+We test the two policies against the two metrics and average them over 1000 runs of $N = 40, L = 10, M = \{1, \ldots, 40\}$, $N = 80, L = 20, M = \{2, 4, \ldots, 80\}$ for both Beta(2,5) and Uniform(0,1). The clear winner is the Threshold Policy. Although I contend that it will still be beat in a pathological case. In fact, the final graphs are the min values of each metric, rather than the average, but alas the set of pathological cases is too few! Threshold wins again. At the very end is uniform, where there is a slighter difference, albeit a consistent one.
+
+INSERT FIGURES
+
+% section Placing reads (end)
+
 \section{Thresholding the total ALE score} % (fold)
 \label{sec:Thresholding the total ALE score}
 
@@ -366,6 +433,45 @@ In summary, ALE determines the likelihood of an assembly given the reads and an 
 
 \chapter{ALE Implementation} % (fold)
 \label{cha:ALE Implementation}
+
+\section{Depth Z normalization} % (fold)
+\label{sec:Depth Z normalization}
+
+When calculating $\hat{Z}_{depth}$ at a specific position analytically,
+\begin{equation}
+    \hat{Z}_{depth}(r,k) = \sum_{k=0}^{\infty} \left(\mbox{nbPMF}\left(k,r,\frac{1}{2}\right)\right)^{2} = \frac{1}{4^{r}}_{2}\mbox{F}_{1}\left(r,r;1;\frac{1}{4}\right)
+\end{equation}
+where $r$ is the depth, $k$ is the expected depth, $_{2}\mbox{F}_{1}$ is a hyper geometric function,
+\begin{equation}
+    \mbox{nbPMF}\left(k,r,\frac{1}{2}\right) = \sum_{n=0}^{\infty} \frac{(r)^{2}_{n}}{4^{n}n!(1)_{n}}
+\end{equation}
+where
+\begin{equation}
+    (r)_{n} = \frac{\Gamma(r+n)}{\Gamma(r)}    
+\end{equation}
+and nbPMF is the negative biniomial probability mass function
+\begin{equation}
+    \mbox{nbPMF}\left(k,r,p\right) = {k+r-1 \choose k} (1-p)^{r}p^{k}
+\end{equation}
+
+We note that numerically evaluating this function results in precision errors for large $r$ due to the fact that we are multiplying a very small number by a very large number. If we move the fraction into the hyper-geometric function and take the exponetial of the log we get
+\begin{equation}
+    \hat{Z}_{depth}(r) = \sum_{n=0}^{\infty} \exp\left(2S(r+n) - 2S(r) - 2S(n+1) - (r+n)\log(4)\right)
+\end{equation}
+where
+\begin{equation}
+    S(x) = \log\left(\Gamma(x)\right)
+\end{equation}
+and we can use Stirling's approximation,
+% return (input - 0.5)*log(input) - input + lnfactconst2 + 1.0/(12.0*input) - 1.0/(360.0*input3) + 1.0/(1260.0*input5) - 1.0/(1680.0*input7);
+\begin{equation}
+    S(x) = \log\left(x - \frac{1}{2}\right)\log(x) - x + \log(2\pi) + \frac{1}{12x} - \frac{1}{360x^{3}} + \frac{1}{1260x^{5}} - \frac{1}{1680x^{7}} + O\left(\frac{1}{x^{9}}\right)
+\end{equation}
+to estimate this value. The sum is calculated in practice from $n=0$ until the resulting contribution is less than machine precision ($10^{-16}$ for doubles) due to the fact that the interior function is monotonically decreasing. This is pre-computed in python for common values of $r$ (0 to 2048) for constant time lookup. Other values are computed in real time as needed.
+
+This allows us to numerically calculate $\hat{Z}_{depth}$ with high precision.
+
+% section Depth Z normalization (end)
 
 % chapter ALE Implementation (end)
 
