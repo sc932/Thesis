@@ -11,14 +11,20 @@
 %
 %Some possible packages to include
 \usepackage{graphicx}
-\usepackage{graphics}
-\usepackage{moreverb}
-\usepackage{subfigure}
-\usepackage{epsfig}
-\usepackage{subfigure}
-\usepackage{hangcaption}
-\usepackage{txfonts}
-\usepackage{palatino}
+%\usepackage{graphics}
+%\usepackage{moreverb}
+%\usepackage{subfigure}
+%\usepackage{epsfig}
+%\usepackage{subfigure}
+%\usepackage{hangcaption}
+%\usepackage{txfonts}
+%\usepackage{palatino}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
 
 %if you're having problems with overfull boxes, you may need to increase
 %the tolerance to 9999
@@ -343,21 +349,23 @@ Here we derive an expression described in the Results section for the difference
 \label{sec:Placing reads}
 
 In this writeup we compare two different policies for sampling "reads" from a distribution. Each read $x \in \{1, \ldots, N\}$ has a "hidden position" $m_{x} \in \{1, \ldots, L\}$ and a function $f_{x}(n)$ such that
-
-\[\arg\max_{x} f_{x}(n) = m_{x} \ \ \forall x\]
+\begin{equation}
+    \arg\max_{x} f_{x}(n) = m_{x} \ \ \forall x
+\end{equation}
 and
-\[0 \leq f_{x}(n) \leq 1 \ \ \mbox{ and } \ \ f_{x}(m_{x}) = 1 \ \ \forall x,n\]
-
+\begin{equation}
+    0 \leq f_{x}(n) \leq 1 \ \ \mbox{ and } \ \ f_{x}(m_{x}) = 1 \ \ \forall x,n
+\end{equation}
 For each position $p \in \{1, \ldots, L\}$ we would like to find all reads that have that position as their hidden position. $f_{x}(n)$ will represent how ``similar' a read is too that position and is proportional to the probability that it is the hidden position.
 
 At each step we will track each read $i$'s $a_{i}$,  ``assumed hidden position,'' which will be defined by
-
-\[a_{x} = \arg\max_{n_{\mbox{sampled}}} f_{x}(n) \ \ \forall x\]
-
+\begin{equation}
+    a_{x} = \arg\max_{n_{\mbox{sampled}}} f_{x}(n) \ \ \forall x
+\end{equation}
 and
-
-\[A_{x} = f_{x}(a_{x})\]
-
+\begin{equation}
+    A_{x} = f_{x}(a_{x})
+\end{equation}
 This is our best guess for the hidden position of the read.
 
 \subsection{The Policies}
@@ -369,7 +377,9 @@ The first policy, the Threshold Policy, will order reads by $f_{x}(a_{x}) = A_{x
 \subsubsection{Random Sample Policy}
 
 The second policy, the Random Sample Policy, will randomly sample reads with probability
-\[P(x = x_{n+1}) = \frac{1 - f_{x}(a_{x})}{\sum_{x} f_{x}(a_{x})} = \frac{1 - A_{x}}{\sum_{x} A_{x}}\]
+\begin{equation}
+    P(x = x_{n+1}) = \frac{1 - f_{x}(a_{x})}{\sum_{x} f_{x}(a_{x})} = \frac{1 - A_{x}}{\sum_{x} A_{x}}
+\end{equation}
 This will have the effect of sampling reads with low probability that their $a_{x} = m_{x}$ at a higher rate. The main advantage over the threshold policy is that it will not always get stuck by certain pathological cases.
 
 \subsection{The Set Up}
@@ -385,17 +395,17 @@ For each position $t$ we sample $M$ reads, updating their $a_{x}$ and $A_{x}$ as
 \subsubsection{High Score}
 
 We want to maximize the quantity
-
-\[\sum_{x} f_{x}(n_{\mbox{sampled}})\]
-
+\begin{equation}
+    \sum_{x} f_{x}(n_{\mbox{sampled}})
+\end{equation}
 This is a measure of how likely we think all of our hidden position guesses are in aggregate. A score of $x$ would mean we got all of them correct. A score of $0.99x$ would mean that on average we were $99$ percent sure we had the right hidden value for a given read.
 
 \subsubsection{Accuracy}
 
 We also want to maximize this quantity
-
-\[\sum_{x} \delta_{a_{x},m_{x}}\]
-
+\begin{equation}
+    \sum_{x} \delta_{a_{x},m_{x}}
+\end{equation}
 Where $\delta_{x,y}$ is the Kronecker delta with the property of $\delta_{x,y} = 1 \Longleftrightarrow x = y$. This is a measure of how many hidden positions we actually correctly identified. A score of $x$ is perfect and means we got them all right. A score of $b$ means only $b$ hidden positions were correctly identified.
 
 \subsubsection{Results}
@@ -483,10 +493,196 @@ This allows us to numerically calculate $\hat{Z}_{depth}$ with high precision.
 \chapter{EPI Introduction} % (fold)
 \label{cha:EPI Introduction}
 
+We begin with a Gaussian process prior on a continuous function $f$. The function $f$ has domain $A \subseteq \mathbb{R}^{d}$. Our overarching goal is to solve the global optimization problem
+
+\begin{equation}
+\max_{x \in A} f(x).
+\end{equation}
+
+This problem can be constrained or unconstrained depending on the set $A$.
+
+The paper \cite{JoScWe98} developed a method for choosing points to evaluate next based on fitting a global metamodel to the the points evaluated thus far, and then maximizing a merit criterion over the whole surface to choose the single point to evaluate next.
+
+Although \cite{JoScWe98} describes their technique EGO, in terms of a kriging metamodel and uses frequentist language, their technique can also be understood in a Bayesian framework. This framework uses a Gaussian process prior on the function $f$, which is a probabalistic model whose estimates of $f$ have a coressponding...
+
+Any Gaussian process prior on $f$ is described by a mean function $\mu : A \mapsto \mathbb{R}$ and a covariance function $\Sigma : A \times A \mapsto \mathbb{R}_{+}$. The mean function is general, and sometimes reflects some overall trends believed to be in the data, but is more commonly chosen to be 0. The covariance function must satisfy certain conditions: 
+
+\begin{equation}\Sigma(x,x) \geq 0,\end{equation}
+\begin{equation}\Sigma(x,y) = \Sigma(y,x),\end{equation}
+
+and it must be positive semi-definite;
+
+\begin{equation}\vec{v}^{T}\Sigma \vec{v} \geq 0, \ \ \ \forall \vec{v} \in \mathbb{R}^{d}.\end{equation}
+
+Common choices for $\Sigma$ include the Gaussian covariance function, $\Sigma(x,x^{\prime}) = a \exp(-b \| x - x^{\prime}\|^{2})$ for some parameters $a$ and $b$ and the power exponential error function, $\Sigma(x, x^{\prime}) = a \exp(-\sum_{i} b_{i} (x_{i} - x_{i}^{\prime})^{p})$ for some parameters $\vec{b} \in \mathbb{R}^{d}, p, a$.
+
+\section{The Setup}
+
+To simplify notation we assume from now on that $d = 1$. (as in the notes?)
+
+Putting a Gaussian Process (GP) prior on $f$, written
+
+\begin{equation}
+ f \sim \mbox{GP}(\mu(\cdot), \Sigma(\cdot, \cdot))
+\end{equation}
+
+means that if we take any fixed set of points $x_{1}, \ldots, x_{n} \in A$ and consider the vector $(f(x_{1}), \ldots, f(x_{n}))$ as an unknown quantity, our prior on it is the multivariate normal,
+
+\begin{equation}
+(f(x_{1}), \ldots, f(x_{n})) \sim N\left( \left[ \begin{tabular}{c} $\mu(x_{1})$ \\ $\vdots$ \\ $\mu(x_{n})$ \end{tabular} \right] , \left[ \begin{tabular}{ccc} $\Sigma(x_{1}, x_{1})$ & $\cdots$ & $\Sigma(x_{n}, x_{1})$ \\ $\vdots$ & $\ddots$ & $\vdots$ \\ $\Sigma(x_{1}, x_{n})$ & $\cdots$ & $\Sigma(x_{n},x_{n}$ \end{tabular} \right] \right)
+\end{equation}
+
+GPs are analytically convenient. If we observe the function $f$ at $x_{1}, \ldots, x_{n}$, getting values $y_{1} = f(x_{1}), \ldots y_{n} = f(x_{n})$, then the posterior of $f$ is also a GP,
+
+\begin{equation}
+ f|x_{1:n}, y_{1:n} \sim GP(\mu_{n}, \Sigma_{n})
+\end{equation}
+
+where
+
+\begin{equation}
+ \mu_{n} = ,
+\end{equation}
+\begin{equation}
+ \Sigma_{n} = .
+\end{equation}
+
+when considering where to measure next, the EGO algorithm, and more generally the Expectation Improvement (EI) criterion, computes a merit function defined as
+\begin{equation}
+ \mbox{EI}(x) = \mathbb{E}_{n} \left[\left[ f(x) - f_{n}^{\star} \right]^{+} \right] = \mathbb{E} \left[ f_{n+1}^{\star} - f_{n}^{\star} | x_{n} = x\right]
+\end{equation}
+where $f_{n}^{\star} = \max_{m \leq n} f(x_{m})$.
+
+We propose to extend the EI algorithm to be used in parallel systems, where we can evaluate several function values simultaneously on different cores, CPUs or GPGPUs.
+
+The core of this idea is that we can calculate the expected improvement for simultaneous evaluation of points $x_{n+1}, \ldots, x_{n+l} = \vec{x}$ as
+\begin{equation}
+ \mbox{EI}(x_{n+1}, \ldots, x_{n+l}) = \mathbb{E}_{n}\left[\left[\max\left\{f(x_{n+1}), \ldots, f(x_{n+l})\right\} - f_{n}^{\star}\right]^{+}\right].
+\end{equation}
+The optimization then approximates the solution to
+\begin{equation}
+ \argmax_{\vec{x} \in \mathbb{R}^{d \times l}} \mbox{EI}(\vec{x}),
+\end{equation}
+and choose this batch of points to evaluate next. While the purely sequential case allows straigtforward analytic evaluation of $\mbox{EI}(x)$, calculating $\mbox{EI}(\vec{x})$ in the parallel case is more challanging. Although straigtforward estimation via standard Monte Carlo and susequent are inefficient, we deploy several techniques to more accurately estimate and optimize $EI(\vec{x})$.
+
+\section{Estimation and Optimization of $\mbox{EI}(\vec{x})$}
+
+To optimize $\mbox{EI}(\vec{x})$, calculate stochastic gradients
+\begin{equation}
+ g(\vec{x}) = \bigtriangledown \mbox{EI}(\vec{x})
+\end{equation}
+
+Use IPA to interchange derivative and expectation. Then use SAA multistart.
+
+To estimate $\mbox{EI}(\vec{x})$, use that, for any
+\begin{equation}
+ \begin{tabular}{rl} $\mbox{EI}(\vec{x})$ & $= \mathbb{E}_{n} \left[ \left[ \max_{n < m \leq n+l} f(x_{m}) - f_{n}^{\star} \right]^{+} \right]$ \\
+  & $= \mathbb{E}_{n} \left[ \mathbb{E}_{n} \left[ \left[ \max_{n < m \leq n + l} f(x_{m}) - f^{\star}_{n} \right]^{+} | f(x_{m}), n < m < \leq n + l, m \neq m^{\prime} \right] \right]$ \end{tabular}
+\end{equation}
+where
+\begin{equation}
+ \left[ \max_{n < m \leq n + l} f(x_{m}) - f^{\star}_{n} \right]^{+} = \left[ \max \left\{ f(x_{m^{\prime}}), \max_{m \neq m^{\prime}} f(x_{m}) \right\} - f_{n}^{\star} \right]^{+}
+\end{equation}
+meaning $\mbox{EI}(\vec{x})$ has a closed form and is smooth.
+
+Then can average together the RHS over different choices of $m$.
+
+Some will have more variance reduction than others
+\begin{equation}
+ \mbox{Var}\left[\frac{1}{m} \sum z_{i}\right] = \frac{1}{m} \sum \sigma_{i}^{2}
+\end{equation}
+So either find the best variance or the best $m$ on which to condition.
+
 % chapter EPI Introduction (end)
 
 \chapter{EPI Methods} % (fold)
 \label{cha:EPI Methods}
+
+\section{The GPP mean}
+
+First we try to decompose the GPP mean in order to easily find an analytic expression for its gradient.
+
+\begin{equation}
+ \vec{\mu_{\star}} = K(\vec{x}_{\star}, \textbf{X} )K(\textbf{X},\textbf{X})^{-1}\vec{y}.
+\end{equation}
+
+Where we define the matrix $K(\vec{y}, \vec{z})$ component wise as
+
+\begin{equation}
+ K(\vec{y}, \vec{z})_{ij} = \mbox{cov}(y_{i}, z_{j})
+\end{equation}
+
+
+We note that if $\vec{x_{\star}}$ is a single point then the matrix $K(\vec{x}_{\star}, \textbf{X} )$ collapses to a vector. We also rewrite $K(\textbf{X},\textbf{X})^{-1}$ as $K^{-1}$ for simplicity,
+
+\begin{equation}
+ \vec{\mu_{\star}} = K(\vec{x}_{\star}, \textbf{X} ) K^{-1} \vec{y}.
+\end{equation}
+
+We further note that we can decompose the resulting vector dot product into a sum for each component of $\vec{\mu_{\star}}$,
+
+\begin{equation}
+ \mu_{\star {i}} = \sum_{j = 1}^{N} \mbox{cov}(x_{\star i}, X_{j}) \left(K^{-1} \vec{y} \right)_{j}.
+\end{equation}
+
+When we take the gradient we note that it can be brought inside the sum and the vector $(K^{-1}\vec{y})$ is constant with respect to $x_{\star}$,
+
+\begin{equation}
+ \frac{\partial}{\partial x_{\star t}} \mu_{\star i} = \sum_{j = 1}^{N} \left(K^{-1} \vec{y} \right)_{j} \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, X_{j}).
+\end{equation}
+
+We note that
+
+\[ \frac{\partial}{\partial x_{\star t}} \mu_{\star i} = \left\{ \begin{tabular}{cc}
+                                                                  $\sum_{j = 1}^{N} \left(K^{-1} \vec{y} \right)_{j} \frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, X_{j})$ & for $i = t$ \\
+								  0 & otherwise
+                                                                 \end{tabular}\right.
+\]
+
+
+\section{The GPP variance}
+
+Now we do the same thing for the covariance which is defined as
+\begin{equation}
+ \Sigma(\mu_{star}) = K(\textbf{X$_{\star}$}, \textbf{X$_{\star}$}) - K(\textbf{X$_{\star}$}, \textbf{X}) K(\textbf{X}, \textbf{X})^{-1} K(\textbf{X}, \textbf{X$_{\star}$}).
+\end{equation}
+The components $(i,j)$ of $\Sigma$ (see appendix A.1) are
+\begin{equation}
+ \Sigma_{ij} = \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p})
+\end{equation}
+and the derivative becomes
+\begin{equation}
+ \frac{\partial}{\partial x_{\star t}} \Sigma_{ij} = \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \left( \mbox{cov}(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star j}, X_{p}) + \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, X_{q}) \right)
+\end{equation}
+where we note that
+
+\[
+  \frac{\partial}{\partial x_{\star t}} \Sigma_{ij} = \left\{ \begin{tabular}{cc}
+                                                       $\frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, X_{q})$ & $t = i$ \\
+							$\frac{\partial}{\partial x_{\star j}} \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star j}} \mbox{cov}(x_{\star j}, X_{p})$ & $t = j$ \\
+							$0$ & otherwise
+                                                      \end{tabular} \right.
+\]
+
+
+\section{Defining the covariance derivatives}
+
+A common function for the covariance is
+\begin{equation}
+ \mbox{cov}(x_{1}, x_{2}) = \alpha \exp( \beta |x_{1} - x_{2}|^{p})
+\end{equation}
+We will use an instance of this covariance function where we set $p = 2$, $\beta = - \frac{1}{2l}$ and $\alpha = \sigma_{f}^{2}$ where $l$ is a length scale and $\sigma_{f}^{2}$ is the signal variance. These maximum likelihood of these parameters can be determined from the training data, this will be covered in another section. We will treat them as constants for now.
+
+It will be sufficient to show the partial derivative of one of the variables because cov$(x_{1}, x_{2}) = $ cov$(x_{2}, x_{1})$.
+\begin{equation}
+  \frac{\partial}{\partial x_{1}} \mbox{cov}(x_{1}, x_{2}) = \frac{\partial}{\partial x_{1}} \sigma_{f}^{2} \exp\left( - \frac{1}{2l} |x_{1} - x_{2}|^{2}\right)
+\end{equation}
+\begin{equation}
+  =  \frac{-\sigma_{f}^{2}}{2l} \exp\left( - \frac{1}{2l} |x_{1} - x_{2}|^{2}\right) \frac{\partial}{\partial x_{1}} |x_{1} - x_{2}|^{2}
+\end{equation}
+\begin{equation}
+  =  \frac{x_{2} - x_{1}}{l} \mbox{cov}(x_{1}, x_{2})
+\end{equation}
 
 % chapter EPI Methods (end)
 
@@ -497,6 +693,108 @@ This allows us to numerically calculate $\hat{Z}_{depth}$ with high precision.
 
 \chapter{EPI Implementation} % (fold)
 \label{cha:EPI Implementation}
+
+\section{Math Appendix}
+
+\subsection{Variance matrix calculations}
+
+From (cite) we have
+
+\begin{equation}
+ \Sigma = K(\vec{x_{\star}}, \vec{x_{\star}}) - K(\vec{x_{\star}}, \vec{X}) K(\vec{X}, \vec{X})^{-1} K(\vec{X}, \vec{x_{\star}})
+\end{equation}
+
+We will use $K^{-1} = K(\vec{X}, \vec{X})^{-1}$. We have by definition
+
+\begin{equation}
+ K(\vec{x_{\star}}, \vec{x_{\star}})_{ij} = \mbox{cov}(x_{\star i}, x_{\star j})
+\end{equation}
+\begin{equation}
+ K(\vec{x_{\star}}, \vec{X})_{ij} = \mbox{cov}(x_{\star i}, X_{j})
+\end{equation}
+\begin{equation}
+ K(\vec{X}, \vec{x_{\star}})_{ij} = \mbox{cov}(X_{i}, x_{\star j})
+\end{equation}
+
+We will define a temporary matrix $T^{(1)}$ to be
+
+\begin{equation}
+ T^{(1)} = K(\vec{x_{\star}}, \vec{X}) K^{-1}
+\end{equation}
+
+and decompose it into its components to get
+
+\begin{equation}
+ T^{(1)}_{ip} = \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q})
+\end{equation}
+
+We then define
+
+\begin{equation}
+ T^{(2)} = T^{(1)} K(\vec{X}, \vec{x_{\star}})
+\end{equation}
+
+and decompse it to get
+
+\begin{equation}
+ T^{(2)}_{ij} = \sum_{p = 1}^{N} T^{(1)}_{ip} \mbox{cov}(X_{p}, x_{\star j}) = \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p})
+\end{equation}
+
+and note
+
+\begin{equation}
+ \Sigma_{ij} = K(\vec{x_{\star}}, \vec{x_{\star}})_{ij} + T^{(2)}_{ij}
+\end{equation}
+\begin{equation}
+ \Sigma_{ij} = \mbox{cov}(x_{\star i}, x_{\star j}) + \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p})
+\end{equation}
+
+the partial derivative is found by applying the operation component wise and a simple use of the chain rule
+\begin{equation}
+ \begin{tabular}{rl}
+ $\frac{\partial}{\partial x_{\star t}} \Sigma_{ij} =$ & $\frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, x_{\star j})$ \\
+ & $- \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \left( \mbox{cov}(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star j}, X_{p}) + \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, X_{q}) \right)$
+ \end{tabular}
+\end{equation}
+where we note that
+\begin{equation}
+    \frac{\partial}{\partial x_{\star t}} \Sigma_{ij} = \left\{ \begin{tabular}{cc}
+                                                       $\frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, X_{q})$ & $t = i$ \\
+							$\frac{\partial}{\partial x_{\star j}} \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{p}) \frac{\partial}{\partial x_{\star j}} \mbox{cov}(x_{\star j}, X_{q})$ & $t = j$ \\
+							$0$ & otherwise
+                                                      \end{tabular} \right.
+\end{equation}
+
+\subsection{Differation of the Cholesky Decomposition}
+
+We follow the method outlined by Smith in (cite Smith 95)
+
+The algorithm takes $\Sigma$ as input and produces a lower triangular matrix $L$ and $\frac{\partial}{\partial x_{\star t}} L$ such that $\Sigma = LL^{T}$.
+
+We use the following notation
+\begin{equation}
+    \frac{\partial}{\partial x_{\star t}} L_{ij} = L_{ij} (x_{\star t})
+\end{equation}
+
+\begin{enumerate}
+ \item $L_{ij} = \Sigma_{ij}$ \\
+       $L_{ij (x_{\star t})} = \frac{\partial}{\partial x_{\star t}} \Sigma_{ij}$
+ \item for $k = 1\ldots N$ if $|L_{kk}| > \epsilon_{m}$ (machine precision)
+ \begin{enumerate}
+  \item $L_{kk} = \sqrt{L_{kk}}$ \\
+	$L_{kk (x_{\star t})} = \frac{1}{2} \frac{L_{kk (x_{\star t})}}{L_{kk}}$
+  \item for $j = k+1\ldots N$ \\
+	$L_{jk} = L_{jk}/L_{kk}$ \\
+	$L_{jk (x_{\star t})} = \frac{L_{jk (x_{\star t})} + L_{jk}L_{kk (x_{\star t})}}{L_{kk}}$
+  \item for $j = k+1\ldots N$ and $i = j\ldots N$ \\
+	$L_{ij} = L_{ij} - L_{ik}L_{jk}$ \\
+	$L_{ij (x_{\star t})} = L_{ij (x_{\star t})} - L_{ik (x_{\star t})}L_{jk} - L_{ik}L_{jk (x_{\star t})}$
+ \end{enumerate}
+
+This returns a lower triangular matrix $L$ and $\frac{\partial}{\partial x_{\star t}} L$ such that $\Sigma = LL^{T}$.
+
+\end{enumerate}
+
 
 % chapter EPI Implementation (end)
 
