@@ -1,13 +1,27 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Components of the ALE score}}{10}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces ALE performance on with synthetic reads}}{33}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces ALE score vs. number of errors}}{34}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces ALE performance on synthetic metagenome}}{36}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces ALE performance on real reads}}{38}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {8.1}{\ignorespaces CPU vs GPU time to compute EI}}{60}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {10.1}{\ignorespaces Bit matrix}}{72}
+\contentsline {figure}{\numberline {10.2}{\ignorespaces First Velvetrope filter}}{74}
+\contentsline {figure}{\numberline {10.3}{\ignorespaces Second Velvetrope filter}}{76}
+\contentsline {figure}{\numberline {10.4}{\ignorespaces Local alignments}}{76}
 \addvspace {10\p@ }
-\addvspace {10\p@ }
+\contentsline {figure}{\numberline {11.1}{\ignorespaces Multiple alignment reference}}{79}
+\contentsline {figure}{\numberline {11.2}{\ignorespaces Velvetrope per-base output}}{80}
+\contentsline {figure}{\numberline {11.3}{\ignorespaces Multiple sequence alignments}}{81}
+\contentsline {figure}{\numberline {12.1}{\ignorespaces Velvetrope timings}}{82}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
