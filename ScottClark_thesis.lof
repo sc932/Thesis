@@ -1,27 +1,34 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Components of the ALE score}}{10}
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Components of the ALE score}}{12}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Average depth vs. GC content}}{26}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces GC content of Spirochaeta smaragdinae}}{27}
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Depth distribution of different GC contents}}{28}
+\contentsline {figure}{\numberline {2.5}{\ignorespaces Various distributions fit to GC content}}{29}
+\contentsline {figure}{\numberline {2.6}{\ignorespaces Distribution of scores using various distributions}}{29}
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {3.1}{\ignorespaces ALE performance on with synthetic reads}}{33}
-\contentsline {figure}{\numberline {3.2}{\ignorespaces ALE score vs. number of errors}}{34}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces ALE score vs. number of errors}}{35}
 \contentsline {figure}{\numberline {3.3}{\ignorespaces ALE performance on synthetic metagenome}}{36}
 \contentsline {figure}{\numberline {3.4}{\ignorespaces ALE performance on real reads}}{38}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Polyak-Ruppert paths in Branin Function}}{55}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {8.1}{\ignorespaces CPU vs GPU time to compute EI}}{60}
+\contentsline {figure}{\numberline {8.1}{\ignorespaces CPU vs GPU time to compute EI}}{63}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {10.1}{\ignorespaces Bit matrix}}{72}
-\contentsline {figure}{\numberline {10.2}{\ignorespaces First Velvetrope filter}}{74}
-\contentsline {figure}{\numberline {10.3}{\ignorespaces Second Velvetrope filter}}{76}
-\contentsline {figure}{\numberline {10.4}{\ignorespaces Local alignments}}{76}
+\contentsline {figure}{\numberline {10.1}{\ignorespaces First Velvetrope filter}}{77}
+\contentsline {figure}{\numberline {10.2}{\ignorespaces Second Velvetrope filter}}{79}
+\contentsline {figure}{\numberline {10.3}{\ignorespaces Local alignments}}{80}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {11.1}{\ignorespaces Multiple alignment reference}}{79}
-\contentsline {figure}{\numberline {11.2}{\ignorespaces Velvetrope per-base output}}{80}
-\contentsline {figure}{\numberline {11.3}{\ignorespaces Multiple sequence alignments}}{81}
-\contentsline {figure}{\numberline {12.1}{\ignorespaces Velvetrope timings}}{82}
+\contentsline {figure}{\numberline {11.1}{\ignorespaces Multiple alignment reference}}{83}
+\contentsline {figure}{\numberline {11.2}{\ignorespaces Velvetrope per-base output}}{84}
+\contentsline {figure}{\numberline {11.3}{\ignorespaces Multiple sequence alignments}}{85}
+\contentsline {figure}{\numberline {11.4}{\ignorespaces Velvetrope vs. HMMer and BLAST}}{85}
+\contentsline {figure}{\numberline {11.5}{\ignorespaces Comparison Venn diagram}}{85}
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {12.1}{\ignorespaces Velvetrope timings}}{86}
 \addvspace {10\p@ }
