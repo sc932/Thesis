@@ -1016,20 +1016,66 @@ So either find the best variance or the best $m$ on which to condition.
 
 A common function for the covariance is
 \begin{equation}
- \mbox{cov}(x_{1}, x_{2}) = \alpha \exp( \beta |x_{1} - x_{2}|^{p})
+    \mbox{cov}(x_{i}, x_{j}) = \alpha \exp\left( -\frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right)  + \sigma_{n}^{2}\delta_{ij},
 \end{equation}
-We will use an instance of this covariance function where we set $p = 2$, $\beta = - \frac{1}{2l}$ and $\alpha = \sigma_{f}^{2}$ where $l$ is a length scale and $\sigma_{f}^{2}$ is the signal variance. These maximum likelihood of these parameters can be determined from the training data, this will be covered in another section. We will treat them as constants for now.
+where $\delta_{ij}$ is the Kronicker delta,
+\begin{equation}
+    \delta_{ij} = \left\{ \begin{tabular}{ccc}
+        1 & if & $i=j$ \\
+        0 & if & $i\neq j$
+    \end{tabular} \right..
+\end{equation}
+We will use an instance of this covariance function where $l$ is a length scale, $\sigma_{f}^{2}$ is the signal variance, and $\sigma_{n}^{2}$ is the sample variance. These maximum likelihood of these parameters can be determined from the training data, this will be covered in another section. We will treat them as constants for now.
 
-It will be sufficient to show the partial derivative of one of the variables because cov$(x_{1}, x_{2}) = $ cov$(x_{2}, x_{1})$.
+It will be sufficient to show the partial derivative of one of the variables because cov$(x_{i}, x_{j}) = $ cov$(x_{j}, x_{i})$.
 \begin{equation}
-  \frac{\partial}{\partial x_{1}} \mbox{cov}(x_{1}, x_{2}) = \frac{\partial}{\partial x_{1}} \sigma_{f}^{2} \exp\left( - \frac{1}{2l} |x_{1} - x_{2}|^{2}\right)
+    \frac{\partial}{\partial x_{i}} \mbox{cov}(x_{i}, x_{j}) = \delta_{ij} + \frac{\partial}{\partial x_{i}} \sigma_{f}^{2} \exp\left( - \frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right)
 \end{equation}
 \begin{equation}
-  =  \frac{-\sigma_{f}^{2}}{2l} \exp\left( - \frac{1}{2l} |x_{1} - x_{2}|^{2}\right) \frac{\partial}{\partial x_{1}} |x_{1} - x_{2}|^{2}
+    =  \delta_{ij} + \frac{-\sigma_{f}^{2}}{2l^{2}} \exp\left( - \frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right) \frac{\partial}{\partial x_{i}} |x_{i} - x_{j}|^{2}
 \end{equation}
 \begin{equation}
-  =  \frac{x_{2} - x_{1}}{l} \mbox{cov}(x_{1}, x_{2})
+    =  \frac{x_{j} - x_{i}}{l^{2}} \mbox{cov}(x_{i}, x_{j}) + \delta_{ij}
 \end{equation}
+
+\section{Adaptation of hyperparameters} % (fold)
+\label{sec:Adaptation of hyperparameters}
+
+\cite{RW}
+The log-likelihood is
+\begin{equation}
+    \log p(\vec{y}|X, \theta) = -\frac{1}{2}\vec{y}^{T}K^{-1}\vec{y} - \frac{1}{2}\log|K| - \frac{n}{2} \log 2\pi
+\end{equation}
+where $K$ is the covariance function defined as before, $\theta$ are the hyperparameters of the covariance function and $|\cdot|$ is the matrix norm defined for a matrix $A$ as
+\begin{equation}
+    |A| = \max \left( \frac{|A\vec{x}|}{|\vec{x}|} : \vec{x} \in \Re^{n}\backslash\{\vec{0}\} \right)
+\end{equation}
+
+The partial derivatice with respect to each hyperparameter $\theta_{i}$ is
+\begin{equation}
+    \frac{\partial}{\partial \theta_{i}} \log p(\vec{y}|X,\theta) = \frac{1}{2}\vec{y}^{T}K^{-1}\frac{\partial K}{\partial \theta_{i}} K^{-1}\vec{y} - \frac{1}{2} {\rm tr}\left( K^{-1}\frac{\partial K}{\partial \theta_{i}} \right)
+\end{equation}
+where tr$(\cdot)$ is the trace of a matrix. If we set $\vec{\alpha} = K^{-1}\vec{y}$ (as in eq REF) this further reduces to
+\begin{equation}
+    \frac{\partial}{\partial \theta_{i}} \log p(\vec{y}|X,\theta) = \frac{1}{2} {\rm tr}\left((\vec{\alpha}\vec{\alpha}^{T} - K^{-1})\frac{\partial K}{\partial \theta_{i}}\right)
+\end{equation}
+
+The key part is the partial derivatice of $K$ with respect to each hyperparameter. For our squared exponential covariance function the partial derivatives are
+\begin{equation}
+    \frac{\partial}{\partial \sigma_{f}^{2}} \mbox{cov}(x_{i}, x_{j}) = \exp\left( -\frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right) = \frac{\mbox{cov}(x_{i}, x_{j})}{\sigma_{f}^{2}}
+\end{equation}
+\begin{equation}
+    \frac{\partial}{\partial l} \mbox{cov}(x_{i}, x_{j}) = \frac{1}{l^{3}}|x_{i} - x_{j}|^{2}\mbox{cov}(x_{i}, x_{j})
+\end{equation}
+\begin{equation}
+    \frac{\partial}{\partial \sigma_{n}^{2}} \mbox{cov}(x_{i}, x_{j}) = \delta_{ij}
+\end{equation}
+
+experiment: start with one GPP, and assumptions about another, show evolution, show evolution vs points sampled
+
+show contour of log like WITH vectors
+
+% section Adaptation of hyperparameters (end)
 
 % chapter EPI Methods (end)
 
