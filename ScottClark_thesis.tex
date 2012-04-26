@@ -42,7 +42,7 @@
 \renewcommand{\textfraction}{0.1}
 \renewcommand{\floatpagefraction}{0.75}
 
-\title {Your Title Goes Here}
+\title {Parallel Machine Learning Algorithms in Bioinformatics and Global Optimization}
 \author {Scott Clark}
 \conferraldate {August}{2012}
 \degreefield {Ph.D.}
@@ -55,15 +55,13 @@
 \makecopyright
 
 \begin{abstract}
-This thesis explores the development and analysis of several parallel statistical and machine learning algorithms and their implementation.
+This is a dissertation in three parts, in each part we explore the development and analysis a parallel statistical or machine learning algorithm and its implementation.
 
-ALE
+First, we examine the Assembly Likelihood Estimator (ALE). This algorithm defines a rigourous statistical likelihood metric for genome assembly, used to validate and score genome and metagenome assemblies. This algorithim can be used to identify specific errors within assemblies and their locations; enable comparison between assemblies and optimization of the assembly process; and using re-sequencing data, detect structural variations.
 
-EPI
+Second, we develop an algorithm for Expected Parallel Improvement (EPI). This method allows us to optimally sample many points concurrently from an expensive and unknown function. Instead of sampling sequentially, which can be inefficent when the available resources allow for simultaneous evaluation, EPI provides the best set of points to sample next, allowing multiple samplings to be performed in unison.
 
-Velvetrope
-
-This thesis is broken into three parts: in Part I we will explore ALE; Part II will examine EPI; and Part III Velvetrope.
+Finally, we explore Velvetrope: a parallel, bitwise algorithm for finding homologous regions within sequences. This algorithm employs a two-part filter between sequences. It first finds offsets where two sequences share a higher than expected amount of identity. It then filters areas with higher than expected identity within these offsets. The resulting positions along each sequence represent of statisticaly significant similarity.
 \end{abstract}
 
 \begin{biosketch}
@@ -75,13 +73,13 @@ In 2008 Scott was awarded a U.S. Department of Energy Computational Science Grad
 \begin{dedication}
 This document is dedicated to my family.
 
-Your constant, unconditional love and support at every stage of my education made this possible.
+Your constant, unconditional love and support \\
+at every stage of my education \\
+made this possible.
 \end{dedication}
 
 \begin{acknowledgements}
-I have had the privilege of working with many amazing educators and researchers throughout my academic career. They have all helped sculpt me into the student and person I am today. At Central Catholic High School Steve Workman, Paul Wallulis and Phil Collins taught me the value of hard work and opened my eyes to the world of math and science. My REU advisors, Prof. Daniel Cox of University of California Davis and Prof. Steven Tomsovic of Washington State University gave me my first taste of independent research and helped cultivate my desire to persue academia. My advisors at Oregon State, Malgorzata Peszynska and Rubin Landau who guided me through my undergraduate education and nurturing my budding research pursuits. My practicum supervisors: Dr. Nick Hengartner and Dr. Joel Berendzen of Los Alamos National Laboratory; and Dr. Zhong Wang and Rob Egan of the Joint Genome Institute of Lawerence Berkeley National Laboratory whose joint work and experience was vital to this thesis and my degree. My committee at Cornell: Prof. Steve Strogatz and Prof. Bart Selman for their insights and advice. And, of course, my advisor Prof. Peter Frazier whose unwavering patience, support and encouragement brought this thesis to fruition and to whom I owe my success at Cornell.
-
-And my family... And my friends...
+I have had the privilege of working with many amazing educators and researchers throughout my academic career. They have all helped sculpt me into the student and person I am today. At Central Catholic High School Steve Workman, Paul Wallulis and Phil Collins taught me the value of hard work and opened my eyes to the world of math and science. My REU advisors, Prof. Daniel Cox of University of California Davis and Prof. Steven Tomsovic of Washington State University gave me my first taste of independent research and helped cultivate my desire to persue academia. My advisors at Oregon State, Malgorzata Peszynska and Rubin Landau who guided me through my undergraduate education and nurturing my budding research pursuits. My practicum supervisors: Dr. Nick Hengartner and Dr. Joel Berendzen of Los Alamos National Laboratory; and Dr. Zhong Wang and Rob Egan of the Joint Genome Institute of Lawerence Berkeley National Laboratory whose joint work and experience was vital to this thesis and my degree. My committee at Cornell: Prof. Steve Strogatz and Prof. Bart Selman for their insights and advice. And, of course, my advisor Prof. Peter Frazier whose unwavering patience, support and encouragement brought this thesis to fruition and he has been instrumental to my success at Cornell.
 
 My research was supported by a U.S. Department of Energy Computational Science Graduate Fellowship (CSGF), which is supported by the Office of Science of the U.S. Department of Energy under Contract No. DE-FG02-97ER25308. I was also supported by a Startup and Production Allocation Award from the National Energy Research Scientific Computing Center (NERSC), which is supported by the Office of Science of the U.S. Department of Energy under Contract No. DE-AC02-05CH11231.
 \end{acknowledgements}
@@ -776,6 +774,12 @@ This allows us to numerically calculate $\hat{Z}_{\text{depth}}$ with high preci
 
 \chapter{EPI Introduction} % (fold)
 \label{cha:EPI Introduction}
+
+TODO
+FILL IN INTRO
+start by saying something about optimization in general and its usefulness, then say something about optimization of computationally expensive computer codes, then say something about how statistical methods can be useful in these problem areas.
+
+\section{Gaussian Processes}
 
 We begin with a Gaussian process prior on a continuous function $f$. The function $f$ has domain $A \subseteq \mathbb{R}^{d}$. Our overarching goal is to solve the global optimization problem
 
