@@ -775,6 +775,8 @@ This allows us to numerically calculate $\hat{Z}_{\text{depth}}$ with high preci
 \chapter{EPI Introduction} % (fold)
 \label{cha:EPI Introduction}
 
+\section{Introduction}
+
 TODO
 FILL IN INTRO
 start by saying something about optimization in general and its usefulness, then say something about optimization of computationally expensive computer codes, then say something about how statistical methods can be useful in these problem areas.
@@ -806,7 +808,7 @@ Common choices for $\Sigma$ include the Gaussian covariance function, $\Sigma(x,
 
 \section{The Setup}
 
-To simplify notation we assume from now on that $d = 1$. (as in the notes?)
+To simplify notation we assume from now on that $d = 1$.
 
 Putting a Gaussian Process (GP) prior on $f$, written
 
@@ -828,8 +830,13 @@ GPs are analytically convenient. If we observe the function $f$ at $x_{1}, \ldot
 
 where $\mu_{n}$ and $\Sigma_{n}$ are defined in the Methods section.
 
-TODO
-GRAPHS showing the evolution of a GP
+\begin{figure}[hpt]
+ 	\centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/GPP_stepper_EI.png}}
+    \caption[Evolution of a GPP]{We can watch the GPP mean (green dashed) and variance (green shaded) evolve to become closer and closer to the true function (blue line) as more and more samples (red x) are drawn from the function. The mean adapts to fit the points sampled and the variance is lowest near sampled points.}
+ 	\label{fig:GPP_evolve}
+\end{figure}
+
+\section{Expected Improvement}
 
 when considering where to measure next, the EGO algorithm, and more generally the Expectation Improvement (EI) criterion, computes a merit function defined as
 \begin{equation}
@@ -837,9 +844,30 @@ when considering where to measure next, the EGO algorithm, and more generally th
 \end{equation}
 where $f_{n}^{\star} = \max_{m \leq n} f(x_{m})$.
 
-TODO Graphs of EI for GP above
+This is the point where we expect the greatest improvement to the best point sampled so far, $f_{n}^{\star}$. The algoritm attempts to maximize the EI at every iteration, sampling only the points with the greatest potential return. In Figure \ref{fig:GPP_EI_evolve} we show the values of EI for the GPP in Figure \ref{fig:GPP_evolve}.
 
-Talk about how EI works, how EGO works
+\begin{figure}[hpt]
+ 	\centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/GPP_example_EI4.png}}
+    \centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/GPP_example_EI.png}}
+    \caption[Evolution of expected improvement of a GPP]{The expected improvement of panels 4 and 5 of Figure \ref{fig:GPP_evolve}. We can see that regions with low mean and high variance have the highest expected improvement.}
+ 	\label{fig:GPP_EI_evolve}
+\end{figure}
+
+\subsection{Parrallel Heuristics}
+
+The inherent downside to the EGO algorithm is that it is sequential, it results in only a single proposed sample point, which must be sampled before a new point can be proposed. This is a waste of resources if many points can be sampled simultaneously. Under the EGO algorithm these excess resources would sit idle while a single point is sampled one at a time.
+
+There are a few heuristic extensions to the EGO algorithm that attempt to allieviate this bottleneck including the {\it constant liar} and {\it kriging believer} methods proposed by \cite{Ginsbourger2008}.
+
+\subsubsection{Constant liar heuristic}
+
+In this heuristic the points that are currently being sampled are all artificially set to a constant value like $\min(\vec{y}), \max(vec{y})$ or mean$(\vec{y})$ and then normal EI maximization is performed. This method fails to accurately account for the subtlties of the model and information that the GPP provides at each location.
+
+\subsubsection{Kriging believer heuristic}
+
+In this heuristic the points being sampled are assumed to return a value equal to their expectation, effectively lowering the variance to 0 at the given point. This method fails to account for the true variance at the given point and could force the algorithm to be trapped in low yeilding regions that happen to have low expected mean, but a high variance that this heuristic ignores.
+
+\section{Expected Parallel Improvement}
 
 We propose to extend the EI algorithm to be used in parallel systems, where we can evaluate several function values simultaneously on different cores, CPUs or GPGPUs. Instead of having to pick a single point to sample next, we can pick several.
 
@@ -1146,7 +1174,6 @@ show contour of log like WITH vectors
 
 \chapter{EPI Results} % (fold)
 \label{cha:EPI Results}
-
 
 TODO graphs showing gain vs wallclock time
 
@@ -1701,7 +1728,7 @@ We also present a freely available, open source implementation (both serial and 
 % part Velvetrope (end)
 
 \appendix
-\chapter{Chapter 1 of appendix}
+\chapter{Appendix}
 
 \section{Computational Resources}
 
@@ -1725,7 +1752,7 @@ All speed tests using wall clock time were performed on my personal workstation 
     Memory & 32GB DDR400 \\
     GPU & NVIDIA GeForce 480 GTX (480 cores) \\
     HDD & 64GB SSD (150Mb/s read/write), 1TB Raid 10 (storage) \\
-    Software & Python 2.7.1+, gcc 4.5.2
+    Software & Python 2.7.1+, gcc 4.5.2, CUDA 4.1
 \end{tabular}
 \end{center}
 \end{table}
