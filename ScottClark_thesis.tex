@@ -55,9 +55,15 @@
 \makecopyright
 
 \begin{abstract}
-Your abstract goes here. Make sure it sits inside the brackets. If not,
-your biosketch page may not be roman numeral iii, as required by the
-graduate school.
+This thesis explores the development and analysis of several parallel statistical and machine learning algorithms and their implementation.
+
+ALE
+
+EPI
+
+Velvetrope
+
+This thesis is broken into three parts: in Part I we will explore ALE; Part II will examine EPI; and Part III Velvetrope.
 \end{abstract}
 
 \begin{biosketch}
@@ -73,9 +79,9 @@ Your constant, unconditional love and support at every stage of my education mad
 \end{dedication}
 
 \begin{acknowledgements}
-I have had the privilege of working with many amazing educators and researchers throughout my academic career. They have all helped sculpt me into the student and person I am today. At Central Catholic High School Steve Workman, Paul Wallulis and Phil Collins taught me the value of hard work and opened my eyes to the world of math and science. My REU advisors, Prof. Daniel Cox of University of California Davis and Prof. Steven Tomsovic of Washington State University. My undergraduate advisors at Oregon State, Malgo P and Rubin Landau. My practicum supervisors: Dr. Nick Hengartner and Dr. Joel Berendzen of Los Alamos National Laboratory; and Dr. Zhong Wang and Rob Egan of the Joint Genome Institute of Lawerence Berkeley National Laboratory. My committee at Cornell: Prof. Steve Strogatz and Prof. Bart Selman. And, of course, my advisor Prof. Peter Frazier whose unwavering patience, support and encouragement brought this thesis to fruition.
+I have had the privilege of working with many amazing educators and researchers throughout my academic career. They have all helped sculpt me into the student and person I am today. At Central Catholic High School Steve Workman, Paul Wallulis and Phil Collins taught me the value of hard work and opened my eyes to the world of math and science. My REU advisors, Prof. Daniel Cox of University of California Davis and Prof. Steven Tomsovic of Washington State University gave me my first taste of independent research and helped cultivate my desire to persue academia. My advisors at Oregon State, Malgorzata Peszynska and Rubin Landau who guided me through my undergraduate education and nurturing my budding research pursuits. My practicum supervisors: Dr. Nick Hengartner and Dr. Joel Berendzen of Los Alamos National Laboratory; and Dr. Zhong Wang and Rob Egan of the Joint Genome Institute of Lawerence Berkeley National Laboratory whose joint work and experience was vital to this thesis and my degree. My committee at Cornell: Prof. Steve Strogatz and Prof. Bart Selman for their insights and advice. And, of course, my advisor Prof. Peter Frazier whose unwavering patience, support and encouragement brought this thesis to fruition and to whom I owe my success at Cornell.
 
-And my family and friends...
+And my family... And my friends...
 
 My research was supported by a U.S. Department of Energy Computational Science Graduate Fellowship (CSGF), which is supported by the Office of Science of the U.S. Department of Energy under Contract No. DE-FG02-97ER25308. I was also supported by a Startup and Production Allocation Award from the National Energy Research Scientific Computing Center (NERSC), which is supported by the Office of Science of the U.S. Department of Energy under Contract No. DE-AC02-05CH11231.
 \end{acknowledgements}
@@ -666,6 +672,52 @@ In addition, the model could be extended in future work to account for factors l
 \chapter{ALE Implementation} % (fold)
 \label{cha:ALE Implementation}
 
+\section{Mixture model for score thresholding}
+
+In order to distinguish "good" scores from "bad" scores in an assembly we make a series of assumptions about the distribution from which the scores are drawn. When we smooth the data we are effectively averaging many random variables corresponding to the scores at a given position, which due to the Central Limit Theorem means that they can be considered to be normally distributed, if they are independent and identically distributed. The independence assumption is made by assuming the length of the assembly is much larger than the length of a read and the fact that reads are considered independent. The scores are all generated from the same model and are therefore identically distributed.
+
+We assume that the scores $\vec{s}$ are drawn from one of two Gaussian distributions, a "good" distribution $N_{g}$ and a "bad" distribution $N_{b}$.
+\begin{equation}
+    p\left(s_{i}|\lambda\right) = w_{g} \phi\left(s_{i} | \mu_{g}, \sigma^{2}_{g}\right) + w_{b} \phi\left(s_{i} | \mu_{b}, \sigma^{2}_{b}\right)
+\end{equation}
+where $w_{g} + w_{b} = 1$ are weights and $\phi$ is the Normal probability mass function and $\lambda$ is the collection of hyperparameters $\{w_{g}, w_{b}, \mu_{g}, \mu_{b}, \sigma^{2}_{g}, \sigma^{2}_{b}\}$.
+
+The likelihood of the model is
+\begin{equation}
+    p\left(\vec{s}|\lambda\right) = \prod_{i=1}^{L} p\left(s_{i}|\lambda\right)
+\end{equation}
+We cannot maximize this likelihood analytically, but we can find local optima using expectation maximization.
+
+\subsection{Expectation maximization}
+
+We iterate using the {\it a posteriori} probability of a single score $s_{i}$ being drawn from one of the two components,
+\begin{equation}
+    p_{g}(s_{i}, \lambda) = \frac{w_{g} \phi\left(s_{i} | \mu_{g}, \sigma^{2}_{g}\right)}{w_{g} \phi\left(s_{i} | \mu_{g}, \sigma^{2}_{g}\right) + w_{b} \phi\left(s_{i} | \mu_{b}, \sigma^{2}_{b}\right)}
+\end{equation}
+and
+\begin{equation}
+    p_{b}(s_{i}, \lambda) = \frac{w_{b} \phi\left(s_{i} | \mu_{b}, \sigma^{2}_{b}\right)}{w_{g} \phi\left(s_{i} | \mu_{g}, \sigma^{2}_{g}\right) + w_{b} \phi\left(s_{i} | \mu_{b}, \sigma^{2}_{b}\right)}
+\end{equation}
+
+at each iteration we update the hyperparameters $\lambda$ using the following formulas,
+\begin{equation}
+    w_{d}^{(t+1)} = \frac{1}{2}\sum_{i=1}^{L} p_{d}(s_{i}, \lambda^{(t)})
+\end{equation}
+\begin{equation}
+    \mu_{d}^{(t+1)} = \frac{\sum_{i=1}^{L} p_{d}(s_{i}, \lambda^{(t)}) s_{i}}{\sum_{i=1}^{L} p_{d}(s_{i}, \lambda^{(t)})}
+\end{equation}
+\begin{equation}
+    \sigma_{d}^{2^{(t+1)}} = \frac{\sum_{i=1}^{L} p_{d}(s_{i}, \lambda^{(t)}) s_{i}^{2}}{\sum_{i=1}^{L} p_{d}(s_{i}, \lambda^{(t)})} - \mu_{d}^{2}
+\end{equation}
+for each $d \in \{g, b\}$ until the change in the total likelihood is less than some threshold, or after some number of maximum iterations.
+
+To speed up this process only a random 10\% of the data or a random 10,000 points are used to build the model, whichever is smaller. If the model fails to converge a different random set of data is chosen up to a maximum number of iterations. This adds a level of robustness that overcomes certain pathological situations where the 2-gaussian mixture model will fail.
+
+\subsection{Example with ALE depth score for Spirochaeta smaragdinae}
+
+TODO
+FIGURE FOR SPIRO DEPTH
+
 \section{Depth Z normalization} % (fold)
 \label{sec:Depth Z normalization}
 
@@ -772,13 +824,20 @@ GPs are analytically convenient. If we observe the function $f$ at $x_{1}, \ldot
 
 where $\mu_{n}$ and $\Sigma_{n}$ are defined in the Methods section.
 
+TODO
+GRAPHS showing the evolution of a GP
+
 when considering where to measure next, the EGO algorithm, and more generally the Expectation Improvement (EI) criterion, computes a merit function defined as
 \begin{equation}
  \mbox{EI}(x) = \mathbb{E}_{n} \left[\left[ f(x) - f_{n}^{\star} \right]^{+} \right] = \mathbb{E} \left[ f_{n+1}^{\star} - f_{n}^{\star} | x_{n} = x\right]
 \end{equation}
 where $f_{n}^{\star} = \max_{m \leq n} f(x_{m})$.
 
-We propose to extend the EI algorithm to be used in parallel systems, where we can evaluate several function values simultaneously on different cores, CPUs or GPGPUs.
+TODO Graphs of EI for GP above
+
+Talk about how EI works, how EGO works
+
+We propose to extend the EI algorithm to be used in parallel systems, where we can evaluate several function values simultaneously on different cores, CPUs or GPGPUs. Instead of having to pick a single point to sample next, we can pick several.
 
 The core of this idea is that we can calculate the expected improvement for simultaneous evaluation of points $x_{n+1}, \ldots, x_{n+l} = \vec{x}$ as
 \begin{equation}
@@ -795,9 +854,11 @@ and choose this batch of points to evaluate next. While the purely sequential ca
 \chapter{EPI Methods} % (fold)
 \label{cha:EPI Methods}
 
-\section{The GPP mean}
+\section{Components of the Gaussian Prior}
 
-First we try to decompose the GPP mean in order to easily find an analytic expression for its gradient.
+\subsection{The GP mean}
+
+First we try to decompose the GP mean in order to easily find an analytic expression for its gradient.
 
 \begin{equation}
  \vec{\mu_{\star}} = K(\vec{x}_{\star}, \textbf{X} )K(\textbf{X},\textbf{X})^{-1}\vec{y}.
@@ -808,7 +869,6 @@ Where we define the matrix $K(\vec{y}, \vec{z})$ component wise as
 \begin{equation}
  K(\vec{y}, \vec{z})_{ij} = \mbox{cov}(y_{i}, z_{j})
 \end{equation}
-
 
 We note that if $\vec{x_{\star}}$ is a single point then the matrix $K(\vec{x}_{\star}, \textbf{X} )$ collapses to a vector. We also rewrite $K(\textbf{X},\textbf{X})^{-1}$ as $K^{-1}$ for simplicity,
 
@@ -838,7 +898,7 @@ We note that
 \end{equation}
 
 
-\section{The GPP variance}
+\subsection{The GPP variance}
 
 Now we do the same thing for the covariance which is defined as
 \begin{equation}
@@ -860,6 +920,32 @@ where we note that
 							$\frac{\partial}{\partial x_{\star j}} \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star j}} \mbox{cov}(x_{\star j}, X_{p})$ & $t = j$ \\
 							$0$ & otherwise
                                                       \end{tabular} \right.
+\end{equation}
+
+\subsection{Defining the covariance derivatives}
+
+A common function for the covariance is
+\begin{equation}
+    \mbox{cov}(x_{i}, x_{j}) = \alpha \exp\left( -\frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right)  + \sigma_{n}^{2}\delta_{ij},
+\end{equation}
+where $\delta_{ij}$ is the Kronicker delta,
+\begin{equation}
+    \delta_{ij} = \left\{ \begin{tabular}{ccc}
+        1 & if & $i=j$ \\
+        0 & if & $i\neq j$
+    \end{tabular} \right..
+\end{equation}
+We will use an instance of this covariance function where $l$ is a length scale, $\sigma_{f}^{2}$ is the signal variance, and $\sigma_{n}^{2}$ is the sample variance. These maximum likelihood of these parameters can be determined from the training data, this will be covered in another section. We will treat them as constants for now.
+
+It will be sufficient to show the partial derivative of one of the variables because cov$(x_{i}, x_{j}) = $ cov$(x_{j}, x_{i})$.
+\begin{equation}
+    \frac{\partial}{\partial x_{i}} \mbox{cov}(x_{i}, x_{j}) = \delta_{ij} + \frac{\partial}{\partial x_{i}} \sigma_{f}^{2} \exp\left( - \frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right)
+\end{equation}
+\begin{equation}
+    =  \delta_{ij} + \frac{-\sigma_{f}^{2}}{2l^{2}} \exp\left( - \frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right) \frac{\partial}{\partial x_{i}} |x_{i} - x_{j}|^{2}
+\end{equation}
+\begin{equation}
+    =  \frac{x_{j} - x_{i}}{l^{2}} \mbox{cov}(x_{i}, x_{j}) + \delta_{ij}
 \end{equation}
 
 \section{Estimation and Optimization of $\mbox{EI}(\vec{x})$}
@@ -969,7 +1055,7 @@ Now, we fix $i$. Let
     \left|f_{i}(\vec{x}^{\prime}) - f_{i}(\vec{x})\right| \leq M \left| \left| \vec{x}^{\prime} - \vec{x}\right|\right|_{2}
 \end{equation}
 
-\subsection{SAA multistart}
+\section{SAA multistart}
 
 Proposed sample points drawn from a latin hypercube
 
@@ -1012,31 +1098,6 @@ Some will have more variance reduction than others
 \end{equation}
 So either find the best variance or the best $m$ on which to condition.
 
-\section{Defining the covariance derivatives}
-
-A common function for the covariance is
-\begin{equation}
-    \mbox{cov}(x_{i}, x_{j}) = \alpha \exp\left( -\frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right)  + \sigma_{n}^{2}\delta_{ij},
-\end{equation}
-where $\delta_{ij}$ is the Kronicker delta,
-\begin{equation}
-    \delta_{ij} = \left\{ \begin{tabular}{ccc}
-        1 & if & $i=j$ \\
-        0 & if & $i\neq j$
-    \end{tabular} \right..
-\end{equation}
-We will use an instance of this covariance function where $l$ is a length scale, $\sigma_{f}^{2}$ is the signal variance, and $\sigma_{n}^{2}$ is the sample variance. These maximum likelihood of these parameters can be determined from the training data, this will be covered in another section. We will treat them as constants for now.
-
-It will be sufficient to show the partial derivative of one of the variables because cov$(x_{i}, x_{j}) = $ cov$(x_{j}, x_{i})$.
-\begin{equation}
-    \frac{\partial}{\partial x_{i}} \mbox{cov}(x_{i}, x_{j}) = \delta_{ij} + \frac{\partial}{\partial x_{i}} \sigma_{f}^{2} \exp\left( - \frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right)
-\end{equation}
-\begin{equation}
-    =  \delta_{ij} + \frac{-\sigma_{f}^{2}}{2l^{2}} \exp\left( - \frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right) \frac{\partial}{\partial x_{i}} |x_{i} - x_{j}|^{2}
-\end{equation}
-\begin{equation}
-    =  \frac{x_{j} - x_{i}}{l^{2}} \mbox{cov}(x_{i}, x_{j}) + \delta_{ij}
-\end{equation}
 
 \section{Adaptation of hyperparameters} % (fold)
 \label{sec:Adaptation of hyperparameters}
@@ -1081,6 +1142,19 @@ show contour of log like WITH vectors
 
 \chapter{EPI Results} % (fold)
 \label{cha:EPI Results}
+
+
+TODO graphs showing gain vs wallclock time
+
+\section{Parallel speedup using function from prior}
+
+\section{Speedup for large space}
+
+\subsection{Comparison to SPACE}
+
+\section{Speedup for Branin function}
+
+\subsection{Comparison to SPACE}
 
 % chapter EPI Results (end)
 
@@ -1348,7 +1422,14 @@ being compared.
 \chapter{Velvetrope Introduction} % (fold)
 \label{cha:Velvetrope Introduction}
 
-Finding shared elements of sequence among possibly--related genes is a
+TODO
+What is sequence alignment? Why is it useful?
+functional, structural or evolutionary relationships
+evolutionary relationships/phylogenetic trees
+alternate but similar in function genes
+DISEASES or BIOFUELS
+
+Finding shared elements of sequence among possibly-related genes is a
 fundamental operation that underlies most of the analytical methods of
 molecular biology, including local sequence alignment, gene matching,
 multiple sequence alignment, phylogenetic tree calculation, and
@@ -1726,6 +1807,23 @@ Some computations were performed on Hopper, a 153,216 processor (1.28PFlop) U.S.
 \bibitem[Smith, 1995]{Smith1995} Smith,S.P. (1995) Differentiation of the Cholesky Algorithm, {\it Journal of Computational and Graphical Statistics} {\bf 4}(2), 134-147.
 
 \bibitem[Ginsbourger {\it et~al}., 2008]{Ginsbourger2008} Ginsbourger,D., Le Riche,R., Carraro,L. (2008) A Multi-points Criterion for Deterministic Parallel Global Optimization based on Gaussian Processes, {\it Unpublished results}.
+
+\bibitem[Schonlau, 1997]{Schonlau1997} Schonlau,M. (1997) Computer Experiments and Global Optimization, {\it University of Waterloo PhD Thesis in Statistics}.
+
+\bibitem[Rasmussen and Williams, 2006]{RW} Rasmussen,C.E., Williams,C.K.I. (2006) Gaussian Processes for Machine Learning, {\it MIT Press} ISBN 026218253X.
+
+\bibitem[Scott {\it et~al}., 2011]{Scott2011} Scott,W., Frazier,P., Powell,W. (2011) The Correlated Knowledge Gradient for Simulation Optimization of Continuous Parameters using Gaussian Process Regression, {\it SIAM Journal of Optimization}, {\bf 21}, 996-1026.
+
+\bibitem[Jones {\it et~al}., 1998]{Jones1998} Jones,D.R., Schonlau,M., Welch,W.J. (1998) Efﬁcient Global Optimization of Expensive
+Black-Box Functions, {\it Journal of Global Optimization}, {\bf 13}, 455-492.
+
+\bibitem[Fu, 1994]{Fu1994} Fu,M.C. (1994) Optimization via Simulation: A Review, {\it Annals of Operations Research}, {\bf 53}(1), 199-247.
+
+\bibitem[Brochu {\it et~al}., 2010]{Brochu2010} Brochu,E., Cora,V.M., de Freitas,N. (2010) A Tutorial on Bayesian Optimization of Expensive Cost Functions, with Application to Active User Modeling and Hierarchical Reinforcement Learning, {\it Computing Research Repository}, arXiv:1012.2599v1.
+
+
+
+
 
 %%%%%%%%%%%%%%%
     % VELVETROPE
