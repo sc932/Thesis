@@ -872,17 +872,39 @@ This allows us to numerically calculate $\hat{Z}_{\text{depth}}$ with high preci
 
 \part{EPI: Expected Parallel Improvement} % (fold)
 \label{prt:EPI: Expected Parallel Improvement}
+\singlespacing
+
+\noindent
+\Large
+EPI: Expected Parallel Improvement
+
+\noindent
+\normalsize
+Joint work with Peter Frazier$^{1}$ \\
+\scriptsize
+$^{1}$Cornell University School of Operations Research and Information Engineering, Ithaca, New York 14853, USA
+\normalsize
+
+\normalspacing
+
+\begin{center}
+   Abstract 
+\end{center}
+
+This optimization method allows us to optimally sample many points concurrently from an expensive to evaluate and unknown function. Instead of sampling sequentially, which can be inefficient when the available resources allow for simultaneous evaluation, EPI provides the best set of points to sample next, allowing multiple samplings to be performed in unison.
+
+In this work we develop a model for expected parallel improvement based on numerically estimating the expected improvement using multiple samples and use multi-start gradient decent to find the optimal set of points to sample next, while fully taking into account points that are currently being sampled for which the result is not yet known.
 
 \chapter{EPI Introduction} % (fold)
 \label{cha:EPI Introduction}
 
 \section{Optimization of Expensive Functions}
 
-Optimization attempts to find the maximum or minimum of a function or experiment. The goal is to find the input or set of parameters that either maximizes or minimizes a particular value. This can be maximizing gains in a financial model, minimizing costs in operations, finding the best result of drug trials or any number of real world examples. The basic setup is that there is something that is desirable to maximize or minimize and we want to find the parameters that obtain this. The underlying functions may be difficult to sample; whether requiring long amounts of time like drug trials, or excessive money like financial models, or both like exploration of natural resources. This requires the optimization to find the best possible solution quickly and efficiently, requiring as few exploratory samplings as possible before converging to an optimal solution.
+Optimization attempts to find the maximum or minimum value of some function or experiment. The goal is to find the input or set of parameters that either maximizes or minimizes a particular value. This can be maximizing gains in a financial model, minimizing costs in operations, finding the best result of a drug trial or any of a number of real world examples. The basic setup is that there is something that is desirable to maximize or minimize and we want to find the parameters that obtain this. The underlying functions may be difficult to sample; whether requiring long amounts of time like drug trials, or excessive money like financial models, or both like exploration of natural resources. This limitation forces a good optimization algorithm to find the best possible solution quickly and efficiently, requiring as few exploratory samplings as possible before converging to an optimal solution.
 
-The quantitative and data-intensive explosion in fields such as bioinformatics and other sciences is producing petabytes of data and increasingly complex models and computer algorithms to analyze it. As the ammount of data being inputed and the complexity of these algorithms grow they take more and more time to compute. Even with modern supercomputers that can perform many peta-FLOPS ($10^{15}$ Floating Point Operations Per Second) \cite{Hopper} scientific codes simulating fluid dynamics \cite{Compo2011} and complex chemical reactions \cite{Valiev2010} can take many hours or days to compute, using millions of CPU hours or more. The assembly of a single genome using the software package Velvet \cite{Zerbino2008} can take 24 hours or more on a high memory supercomputer. The sheer amount of time and resources required to run these simulations and computations means that the fine-tuning of the parameters of the models is extremely time and resource intensive.
+The quantitative and data-intensive explosion in fields such as bioinformatics and other sciences is producing petabytes of data and increasingly complex models and computer algorithms to analyze it. As the amount of data being inputed and the complexity of these algorithms grow they take more and more time to compute. Even with modern supercomputers that can perform many peta-FLOPS ($10^{15}$ Floating Point Operations Per Second) \cite{Hopper} scientific codes simulating fluid dynamics \cite{Compo2011} and complex chemical reactions \cite{Valiev2010} can take many hours or days to compute, using millions of CPU hours or more. The assembly of a single genome using the software package Velvet \cite{Zerbino2008} can take 24 hours or more on a high memory supercomputer. The sheer amount of time and resources required to run these simulations and computations means that the fine-tuning of the parameters of the models is extremely time and resource intensive.
 
-Statistical methods such as EGO \cite{EGO} attempt to solve this problem by estimating the underlying function and computing the next point to sample that maximizes the expected improvement. When performed sequentially this method quickly converges to a point that is locally optimal within the space of possible inputs. This method is limited by its sequential nature and cannot take advantage of possible parallel computational or sampling resources allowing for samples to be drawn concurrently. There have been some heuristic attempts to address the problem of parallel expected improvement \cite{Ginsbourger2008}, but suffer from certain limitations by making restrictive assumptions about points being currently sampled. In this work we develop a model for expected parallel improvement based on numerically estimating the space of improvement using multiple samples and use multi-start gradient decent to find the optimal set of points to sample next, while fully taking into account points that are currently being sampled for which the result is not yet known.
+Statistical methods such as EGO \cite{Jones1998} attempt to solve this problem by estimating the underlying function that is being optimized and computing the next point to sample that maximizes the expected improvement over the best result observed so far. When performed sequentially this method quickly converges to a point that is locally optimal within the space of possible inputs. This method is limited by its sequential nature however and cannot take advantage of possible parallel computational or sampling resources allowing for samples to be drawn concurrently. There have been some heuristic attempts to address the problem of parallel expected improvement \cite{Ginsbourger2008}, but all suffer from limitations by making restrictive assumptions about points being currently sampled. In this work we develop a model for expected parallel improvement based on numerically estimating expected improvement using multiple samples and use multi-start gradient decent to find the optimal set of points to sample next, while fully taking into account points that are currently being sampled for which the result is not yet known.
 
 \section{Gaussian Processes}
 
@@ -894,9 +916,9 @@ We begin with a Gaussian process prior on a continuous function $f$. The functio
 
 This problem can be constrained or unconstrained depending on the set $A$.
 
-The paper \cite{JoScWe98} developed a method for choosing points to evaluate next based on fitting a global metamodel to the points evaluated thus far, and then maximizing a merit criterion over the whole surface to choose the single point to evaluate next.
+The paper \cite{Jones1998} developed a method for choosing points to evaluate next based on fitting a global metamodel to the points evaluated thus far, and then maximizing a merit criterion over the whole surface to choose the single point to evaluate next.
 
-Although \cite{JoScWe98} describes their technique EGO, in terms of a kriging metamodel and uses frequentist language, their technique can also be understood in a Bayesian framework. This framework uses a Gaussian process prior on the function $f$, which is a probabilistic model whose estimates of $f$ have a corresponding...
+Although \cite{Jones1998} describes their technique EGO, in terms of a kriging metamodel and uses frequentist language, their technique can also be understood in a Bayesian framework. This framework uses a Gaussian process prior on the function $f$, which is a probabilistic model whose estimates of $f$ have the corresponding framework described below.
 
 Any Gaussian process prior on $f$ is described by a mean function $\mu : A \mapsto \mathbb{R}$ and a covariance function $\Sigma : A \times A \mapsto \mathbb{R}_{+}$. The mean function is general, and sometimes reflects some overall trends believed to be in the data, but is more commonly chosen to be 0. The covariance function must satisfy certain conditions: 
 
@@ -907,31 +929,24 @@ and it must be positive semi-definite;
 
 \begin{equation}\vec{v}^{T}\Sigma \vec{v} \geq 0, \ \ \ \forall \vec{v} \in \mathbb{R}^{d}.\end{equation}
 
-Common choices for $\Sigma$ include the Gaussian covariance function, $\Sigma(x,x^{\prime}) = a \exp(-b \| x - x^{\prime}\|^{2})$ for some parameters $a$ and $b$ and the power exponential error function, $\Sigma(x, x^{\prime}) = a \exp(-\sum_{i} b_{i} (x_{i} - x_{i}^{\prime})^{p})$ for some parameters $\vec{b} \in \mathbb{R}^{d}, p, a$.
+Common choices for $\Sigma$ include the Gaussian covariance function, $\Sigma(x,x^{\prime}) = a \exp(-b \| x - x^{\prime}\|^{2})$ for some parameters $a$ and $b$ and the power exponential error function, $\Sigma(x, x^{\prime}) = a \exp(-\sum_{i} b_{i} (x_{i} - x_{i}^{\prime})^{p})$ for some parameters $\vec{b} \in \mathbb{R}^{d}, p$ and $a$.
 
-\section{The Setup}
-
-To simplify notation we assume from now on that $d = 1$.
+\section{Gaussian process priors}
 
 Putting a Gaussian Process (GP) prior on $f$, written
-
 \begin{equation}
  f \sim \mbox{GP}(\mu(\cdot), \Sigma(\cdot, \cdot))
 \end{equation}
-
 means that if we take any fixed set of points $x_{1}, \ldots, x_{n} \in A$ and consider the vector $(f(x_{1}), \ldots, f(x_{n}))$ as an unknown quantity, our prior on it is the multivariate normal,
-
 \begin{equation}
-(f(x_{1}), \ldots, f(x_{n})) \sim N\left( \left[ \begin{tabular}{c} $\mu(x_{1})$ \\ $\vdots$ \\ $\mu(x_{n})$ \end{tabular} \right] , \left[ \begin{tabular}{ccc} $\Sigma(x_{1}, x_{1})$ & $\cdots$ & $\Sigma(x_{n}, x_{1})$ \\ $\vdots$ & $\ddots$ & $\vdots$ \\ $\Sigma(x_{1}, x_{n})$ & $\cdots$ & $\Sigma(x_{n},x_{n}$ \end{tabular} \right] \right)
+(f(x_{1}), \ldots, f(x_{n})) \sim N\left( \left[ \begin{tabular}{c} $\mu(x_{1})$ \\ $\vdots$ \\ $\mu(x_{n})$ \end{tabular} \right] , \left[ \begin{tabular}{ccc} $\Sigma(x_{1}, x_{1})$ & $\cdots$ & $\Sigma(x_{n}, x_{1})$ \\ $\vdots$ & $\ddots$ & $\vdots$ \\ $\Sigma(x_{1}, x_{n})$ & $\cdots$ & $\Sigma(x_{n},x_{n}$ \end{tabular} \right] \right).
 \end{equation}
 
 GPs are analytically convenient. If we observe the function $f$ at $x_{1}, \ldots, x_{n}$, getting values $y_{1} = f(x_{1}), \ldots y_{n} = f(x_{n})$, then the posterior of $f$ is also a GP,
-
 \begin{equation}
  f|x_{1:n}, y_{1:n} \sim GP(\mu_{n}, \Sigma_{n})
 \end{equation}
-
-where $\mu_{n}$ and $\Sigma_{n}$ are defined in the Methods section.
+where $\mu_{n}$ and $\Sigma_{n}$ are defined in the Methods section \ref{}. We can see the evolution of the GP as more points are sampled in Figure \ref{fig:GPP_evolve}.
 
 \begin{figure}[hpt]
  	\centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/GPP_stepper_EI.png}}
@@ -941,7 +956,7 @@ where $\mu_{n}$ and $\Sigma_{n}$ are defined in the Methods section.
 
 \section{Expected Improvement}
 
-when considering where to measure next, the EGO algorithm, and more generally the Expectation Improvement (EI) criterion, computes a merit function defined as
+When considering where to measure next, the EGO algorithm, and more generally the Expectation Improvement (EI) criterion, computes a merit function defined as
 \begin{equation}
  \mbox{EI}(x) = \mathbb{E}_{n} \left[\left[ f(x) - f_{n}^{\star} \right]^{+} \right] = \mathbb{E} \left[ f_{n+1}^{\star} - f_{n}^{\star} | x_{n} = x\right]
 \end{equation}
@@ -958,7 +973,7 @@ This is the point where we expect the greatest improvement to the best point sam
 
 \subsection{Parrallel Heuristics}
 
-The inherent downside to the EGO algorithm is that it is sequential, it results in only a single proposed sample point, which must be sampled before a new point can be proposed. This is a waste of resources if many points can be sampled simultaneously. Under the EGO algorithm these excess resources would sit idle while a single point is sampled one at a time.
+The inherent downside to the EGO algorithm is that it is sequential; it results in only a single proposed sample point, which must be sampled before a new point can be proposed. This is a waste of resources if many points can be sampled simultaneously. Under the EGO algorithm these excess resources would sit idle while a single point is sampled one at a time.
 
 There are a few heuristic extensions to the EGO algorithm that attempt to alleviate this bottleneck including the {\it constant liar} and {\it kriging believer} methods proposed by \cite{Ginsbourger2008}.
 
@@ -982,7 +997,7 @@ The optimization then approximates the solution to
 \begin{equation}
  \argmax_{\vec{x} \in \mathbb{R}^{d \times l}} \mbox{EI}(\vec{x}),
 \end{equation}
-and choose this batch of points to evaluate next. While the purely sequential case allows straightforward analytic evaluation of $\mbox{EI}(x)$, calculating $\mbox{EI}(\vec{x})$ in the parallel case is more challenging. Although straightforward estimation via standard Monte Carlo are inefficient, we deploy several techniques to more accurately estimate and optimize $EI(\vec{x})$.
+and chooses this batch of points to evaluate next. While the purely sequential case allows straightforward analytic evaluation of $\mbox{EI}(x)$, calculating $\mbox{EI}(\vec{x})$ in the parallel case is more challenging and requires numerical estimation. Although straightforward estimation via standard Monte Carlo are inefficient, we deploy several techniques to more accurately estimate and optimize $\mbox{EI}(\vec{x})$.
 
 % chapter EPI Introduction (end)
 
@@ -994,42 +1009,33 @@ and choose this batch of points to evaluate next. While the purely sequential ca
 \subsection{The GP mean}
 
 First we try to decompose the GP mean in order to easily find an analytic expression for its gradient.
-
 \begin{equation}
  \vec{\mu_{\star}} = K(\vec{x}_{\star}, \textbf{X} )K(\textbf{X},\textbf{X})^{-1}\vec{y}.
 \end{equation}
-
 Where we define the matrix $K(\vec{y}, \vec{z})$ component wise as
-
 \begin{equation}
  K(\vec{y}, \vec{z})_{ij} = \mbox{cov}(y_{i}, z_{j})
 \end{equation}
 
 We note that if $\vec{x_{\star}}$ is a single point then the matrix $K(\vec{x}_{\star}, \textbf{X} )$ collapses to a vector. We also rewrite $K(\textbf{X},\textbf{X})^{-1}$ as $K^{-1}$ for simplicity,
-
 \begin{equation}
  \vec{\mu_{\star}} = K(\vec{x}_{\star}, \textbf{X} ) K^{-1} \vec{y}.
 \end{equation}
-
 We further note that we can decompose the resulting vector dot product into a sum for each component of $\vec{\mu_{\star}}$,
-
 \begin{equation}
  \mu_{\star {i}} = \sum_{j = 1}^{N} \mbox{cov}(x_{\star i}, X_{j}) \left(K^{-1} \vec{y} \right)_{j}.
 \end{equation}
 
 When we take the gradient we note that it can be brought inside the sum and the vector $(K^{-1}\vec{y})$ is constant with respect to $x_{\star}$,
-
 \begin{equation}
  \frac{\partial}{\partial x_{\star t}} \mu_{\star i} = \sum_{j = 1}^{N} \left(K^{-1} \vec{y} \right)_{j} \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, X_{j}).
 \end{equation}
-
 We note that
-
 \begin{equation}
 \frac{\partial}{\partial x_{\star t}} \mu_{\star i} = \left\{ \begin{tabular}{cc}
                                                                   $\sum_{j = 1}^{N} \left(K^{-1} \vec{y} \right)_{j} \frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, X_{j})$ & for $i = t$ \\
 								  0 & otherwise
-                                                                 \end{tabular}\right.
+                                                                 \end{tabular}\right..
 \end{equation}
 
 
@@ -1043,34 +1049,34 @@ The components $(i,j)$ of $\Sigma$ (see appendix A.1) are
 \begin{equation}
  \Sigma_{ij} = \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p})
 \end{equation}
-and the derivative becomes
+and the derivative $\frac{\partial}{\partial x_{\star t}} \Sigma_{ij}$ becomes
 \begin{equation}
- \frac{\partial}{\partial x_{\star t}} \Sigma_{ij} = \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \left( \mbox{cov}(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star j}, X_{p}) + \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, X_{q}) \right)
+ \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, x_{\star j}) - \\
+ \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \left( \mbox{cov}(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star j}, X_{p}) + \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, X_{q}) \right)
 \end{equation}
 where we note that
-
 \begin{equation}
   \frac{\partial}{\partial x_{\star t}} \Sigma_{ij} = \left\{ \begin{tabular}{cc}
                                                        $\frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, X_{q})$ & $t = i$ \\
 							$\frac{\partial}{\partial x_{\star j}} \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star j}} \mbox{cov}(x_{\star j}, X_{p})$ & $t = j$ \\
 							$0$ & otherwise
-                                                      \end{tabular} \right.
+                                                      \end{tabular} \right..
 \end{equation}
 
 \subsection{Defining the covariance derivatives}
 
-A common function for the covariance is
+A common function for the covariance is the squared exponential covariance function,
 \begin{equation}
-    \mbox{cov}(x_{i}, x_{j}) = \alpha \exp\left( -\frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right)  + \sigma_{n}^{2}\delta_{ij},
+    \mbox{cov}(x_{i}, x_{j}) = \sigma_{f}^{2}\exp\left( -\frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right)  + \sigma_{n}^{2}\delta_{ij},
 \end{equation}
-where $\delta_{ij}$ is the Kronicker delta,
+where $\delta_{ij}$ is the Kronecker delta,
 \begin{equation}
     \delta_{ij} = \left\{ \begin{tabular}{ccc}
         1 & if & $i=j$ \\
         0 & if & $i\neq j$
     \end{tabular} \right..
 \end{equation}
-We will use an instance of this covariance function where $l$ is a length scale, $\sigma_{f}^{2}$ is the signal variance, and $\sigma_{n}^{2}$ is the sample variance. These maximum likelihood of these parameters can be determined from the training data, this will be covered in another section. We will treat them as constants for now.
+We will use an instance of this covariance function where $l$ is a length scale, $\sigma_{f}^{2}$ is the signal variance, and $\sigma_{n}^{2}$ is the sample variance. These maximum likelihood of these parameters can be determined from the training data as seen in section \ref{sec:Adaptation of hyperparameters}. We will treat them as constants for now.
 
 It will be sufficient to show the partial derivative of one of the variables because cov$(x_{i}, x_{j}) = $ cov$(x_{j}, x_{i})$.
 \begin{equation}
@@ -1083,16 +1089,36 @@ It will be sufficient to show the partial derivative of one of the variables bec
     =  \frac{x_{j} - x_{i}}{l^{2}} \mbox{cov}(x_{i}, x_{j}) + \delta_{ij}
 \end{equation}
 
-\section{Estimation and Optimization of $\mbox{EI}(\vec{x})$}
+\section{Estimation of expected improvement}
+\label{estEI}
 
-To optimize $\mbox{EI}(\vec{x})$, calculate stochastic gradients
+We estimate the expected improvement at a set of points $\vec{x}$ by sampling from the GP over many Monte Carlo iterations.
+
+The mean $\vec{\mu}$ and covariance $\Sigma$ of the points to be sampled $\Sigma$ is defined in section \ref{} (8.2).
+
+We can simulate drawing points from this multivariate gaussian like so,
+\begin{equation}
+    \vec{y}^{\prime} = \vec{\mu} + L \vec{n}
+\end{equation}
+where $L$ is the Cholesky decomposition of $\Sigma$ and $\vec{n}$ is a vector of independent, identically distributed normal variables with mean 0 and variance 1.
+
+The improvement from this simulated sample is
+\begin{equation}
+    I^{\prime} = \left[f_{n}^{\star} - \min(\vec{y}^{\prime})\right]^{+}.
+\end{equation}
+By averaging over many such simulated draws we can accurately estimate the expected improvement for the set of points $\vec{x}$. Further discussion and analysis of the accuracy of this method is discussed in section \ref{}.
+
+
+\section{Estimation and optimization of $\mbox{EI}(\vec{x})$}
+
+To optimize $\mbox{EI}(\vec{x})$, we calculate stochastic gradients
 \begin{equation}
  g(\vec{x}) = \bigtriangledown \mbox{EI}(\vec{x})
 \end{equation}
-
-Use IPA to interchange derivative and expectation. Then use SAA multistart.
+and use infinitesimal perturbation analysis \cite{Fu1994} to interchange derivative and expectation, see section \ref{EPI_proof}. Then use multistart gradient decent to find the set of points that maximize $\mbox{EI}(\vec{x})$, see section \ref{sec:multistart}.
 
 \subsection{Proof of validity of interchange}
+\label{EPI_proof}
 
 Let $\vec{x} = \left(\vec{x}_{1}, \ldots, \vec{x}_{l}\right)$ and
 \begin{equation}
@@ -1190,55 +1216,106 @@ Now, we fix $i$. Let
     \left|f_{i}(\vec{x}^{\prime}) - f_{i}(\vec{x})\right| \leq M \left| \left| \vec{x}^{\prime} - \vec{x}\right|\right|_{2}
 \end{equation}
 
-\section{SAA multistart}
+\section{Multistart gradient decent}
+\label{sec:multistart}
 
-Proposed sample points drawn from a Latin hypercube
+We use multistart gradient decent to find the set of points that maximizes the parallel expected improvement over some number of total restarts $R$.
 
-The update formula for each $\vec{x}_{i}$ in the set of proposed points to sample is
-
+For each multistart iteration we draw the initial points $\vec{x}^{(t=0)}$ from a Latin hypercube. The update formula for each $\vec{x}_{i}$ in the set of proposed points to sample is
 \begin{equation}
     \vec{x}_{i}^{(t+1)} = \vec{x}_{i}^{(t)} + \frac{a}{t^{\gamma}} \nabla_{\vec{x}_{i}} {\rm EI}\left(\vec{P}^{(t)} | \vec{X}\right)
 \end{equation}
+where $a$ and $gamma$ are parameters of the gradient decent model. $\vec{P}^{(t)}$ is the union of set of points being currently sampled and the proposed new points to sample. This update is performed for some set number of iterations, or until
+\begin{equation}
+    |\vec{x}_{i}^{(t+1)} - \vec{x}_{i}^{(t)}| < \epsilon
+\end{equation}
+for some threshold $\epsilon > 0$.
 
-where $a$ and $gamma$ are parameters of the gradient decent model. $\vec{P}^{(t)}$ is the union of set of points being currently sampled and the proposed new points to sample.
-
-After some number of restarts, the set of points with the best EI is chosen
+After $R$ restarts, the set of points with the best expected EI is chosen as the set of points to sample next. Figure \ref{fig:pk_paths} shows the paths of 128 multistart gradient decent paths with $l = 2$ on the EI of the Branin function \cite{branin} (see section \ref{}).
 
 \begin{figure}[hpt]
  	\centerline{\includegraphics[width=\textwidth]{figures/EPI/branin_2d_32pk_paths_and_EI.png}}
-    \caption[Polyak-Ruppert paths in Branin Function]{The Polyak-Ruppert paths of 2 points (simulating 2 free cores) chosen from a Latin hypercube of the domain over 128 restarts. The EI of the function is shown as a contour plot. We see the paths converging on the point of highest EI.}
+    \caption[Gradient decent paths in Branin Function]{The gradient decent paths of 2 points (simulating 2 free cores, $l=2$) with initial points chosen from a Latin hypercube of the domain over 128 restarts. The EI of the function is shown as a contour plot. We see the paths converging on the point of highest EI.}
  	\label{fig:pk_paths}
  \end{figure}
 
-We note that some points do not move. This happens when one of the two points does has a very high expected evaluation value under the prior. This causes that point to not contribute to the EI, and therefor the gradient of the EI with respect to that point is low, or zero, causing it to remain stationary while the other point rushes to the maximum EI.
+ We note that some points appear to not move in Figure \ref{fig:pk_paths}. This happens when one of the points does has a very high expected evaluation value under the GP. This causes that point to not contribute to the EI, and therefor the gradient of the EI with respect to that point is low, or zero, causing it to remain stationary while the other point rushes to the maximum EI (from section \ref{estEI}).
 
-\subsection{from writeup}
 
-To estimate $\mbox{EI}(\vec{x})$, use that, for any
-\begin{equation}
- \begin{tabular}{rl} $\mbox{EI}(\vec{x})$ & $= \mathbb{E}_{n} \left[ \left[ \max_{n < m \leq n+l} f(x_{m}) - f_{n}^{\star} \right]^{+} \right]$ \\
-  & $= \mathbb{E}_{n} \left[ \mathbb{E}_{n} \left[ \left[ \max_{n < m \leq n + l} f(x_{m}) - f^{\star}_{n} \right]^{+} | f(x_{m}), n < m < \leq n + l, m \neq m^{\prime} \right] \right]$ \end{tabular}
-\end{equation}
-where
-\begin{equation}
- \left[ \max_{n < m \leq n + l} f(x_{m}) - f^{\star}_{n} \right]^{+} = \left[ \max \left\{ f(x_{m^{\prime}}), \max_{m \neq m^{\prime}} f(x_{m}) \right\} - f_{n}^{\star} \right]^{+}
-\end{equation}
-meaning $\mbox{EI}(\vec{x})$ has a closed form and is smooth.
+% chapter EPI Methods (end)
 
-Then can average together the RHS over different choices of $m$.
+\chapter{EPI Results} % (fold)
+\label{cha:EPI Results}
 
-Some will have more variance reduction than others
-\begin{equation}
- \mbox{Var}\left[\frac{1}{m} \sum z_{i}\right] = \frac{1}{m} \sum \sigma_{i}^{2}
-\end{equation}
-So either find the best variance or the best $m$ on which to condition.
+TODO graphs showing gain vs wallclock time
 
+\section{Parallel speedup using function drawn from prior}
+
+TODO
+more cores, more samples, more MC runs
+\begin{figure}[hpt]
+ 	\centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/GPP_timing.png}}
+    \caption[Parallel speedup for function drawn from prior]{Parallel speedup using function drawn from prior...}
+ 	\label{fig:EPI_res1}
+\end{figure}
+
+TODO
+Compare EPI to EI, constant liar and kriging believer
+\begin{figure}[hpt]
+ 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
+    \caption[EPI vs heuristics using prior function]{EPI vs heuristics using prior function...}
+ 	\label{fig:EPI_res2}
+\end{figure}
+
+\section{Speedup for large space}
+
+TODO
+if domain of sampling is large (ie $D >> l$) how does EPI compare to regular EI and random sampling
+\begin{figure}[hpt]
+ 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
+    \caption[EPI comparison for large domain]{EPI vs EGO for large domain...}
+ 	\label{fig:EPI_res3}
+\end{figure}
+
+\subsection{Comparison to other methods}
+
+TODO
+Compare EPI to space (in timing and accuracy)
+\begin{figure}[hpt]
+ 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
+    \caption[EPI vs SPACE for large domain]{EPI vs SPACE for large domain...}
+ 	\label{fig:EPI_res4}
+\end{figure}
+
+\section{Speedup for Branin function}
+
+TODO
+show contour of log like WITH vectors
+\begin{figure}[hpt]
+ 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
+    \caption[Parallel speedup using Branin function]{Parallel speedup using Branin function...}
+ 	\label{fig:EPI_res5}
+\end{figure}
+
+TODO
+show contour of log like WITH vectors
+\begin{figure}[hpt]
+ 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
+    \caption[Comparison using Branin function]{Comparison using Branin function...}
+ 	\label{fig:EPI_res6}
+\end{figure}
+
+% chapter EPI Results (end)
+
+\chapter{EPI Implementation} % (fold)
+\label{cha:EPI Implementation}
 
 \section{Adaptation of hyperparameters} % (fold)
 \label{sec:Adaptation of hyperparameters}
 
-\cite{RW}
-The log-likelihood is
+In this section we show how we adapt the hyperparameters of the GP using the sampling information. This follows the methods outlined in \cite{RW}.
+
+The log-likelihood of the data $\vec{y}$ given the points sampled $X$ and the hyperparameters $\theta$ is
 \begin{equation}
     \log p(\vec{y}|X, \theta) = -\frac{1}{2}\vec{y}^{T}K^{-1}\vec{y} - \frac{1}{2}\log|K| - \frac{n}{2} \log 2\pi
 \end{equation}
@@ -1267,46 +1344,33 @@ The key part is the partial derivative of $K$ with respect to each hyperparamete
     \frac{\partial}{\partial \sigma_{n}^{2}} \mbox{cov}(x_{i}, x_{j}) = \delta_{ij}
 \end{equation}
 
-experiment: start with one GPP, and assumptions about another, show evolution, show evolution vs points sampled
-
+TODO
 show contour of log like WITH vectors
+\begin{figure}[hpt]
+ 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
+    \caption[Likelihood of hyperparameters]{Likelihood of hyperparameters...}
+ 	\label{fig:EPI_hyper_1}
+\end{figure}
+
+TODO
+experiment: start with one GPP, and assumptions about another, show evolution, show evolution vs number of points sampled
+\begin{figure}[hpt]
+ 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
+    \caption[Evolution of hyperparameters]{Evolution of hyperparameters...}
+ 	\label{fig:EPI_hyper_2}
+\end{figure}
 
 % section Adaptation of hyperparameters (end)
-
-% chapter EPI Methods (end)
-
-\chapter{EPI Results} % (fold)
-\label{cha:EPI Results}
-
-TODO graphs showing gain vs wallclock time
-
-\section{Parallel speedup using function from prior}
-
-\section{Speedup for large space}
-
-\subsection{Comparison to SPACE}
-
-\section{Speedup for Branin function}
-
-\subsection{Comparison to SPACE}
-
-% chapter EPI Results (end)
-
-\chapter{EPI Implementation} % (fold)
-\label{cha:EPI Implementation}
 
 \section{Math Appendix}
 
 \subsection{Variance matrix calculations}
 
-From (cite) we have
-
+From \cite{RW} we have
 \begin{equation}
  \Sigma = K(\vec{x_{\star}}, \vec{x_{\star}}) - K(\vec{x_{\star}}, \vec{X}) K(\vec{X}, \vec{X})^{-1} K(\vec{X}, \vec{x_{\star}})
 \end{equation}
-
 We will use $K^{-1} = K(\vec{X}, \vec{X})^{-1}$. We have by definition
-
 \begin{equation}
  K(\vec{x_{\star}}, \vec{x_{\star}})_{ij} = \mbox{cov}(x_{\star i}, x_{\star j})
 \end{equation}
@@ -1316,40 +1380,29 @@ We will use $K^{-1} = K(\vec{X}, \vec{X})^{-1}$. We have by definition
 \begin{equation}
  K(\vec{X}, \vec{x_{\star}})_{ij} = \mbox{cov}(X_{i}, x_{\star j})
 \end{equation}
-
 We will define a temporary matrix $T^{(1)}$ to be
-
 \begin{equation}
  T^{(1)} = K(\vec{x_{\star}}, \vec{X}) K^{-1}
 \end{equation}
-
 and decompose it into its components to get
-
 \begin{equation}
  T^{(1)}_{ip} = \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q})
 \end{equation}
-
 We then define
-
 \begin{equation}
  T^{(2)} = T^{(1)} K(\vec{X}, \vec{x_{\star}})
 \end{equation}
-
 and decompose it to get
-
 \begin{equation}
  T^{(2)}_{ij} = \sum_{p = 1}^{N} T^{(1)}_{ip} \mbox{cov}(X_{p}, x_{\star j}) = \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p})
 \end{equation}
-
 and note
-
 \begin{equation}
  \Sigma_{ij} = K(\vec{x_{\star}}, \vec{x_{\star}})_{ij} - T^{(2)}_{ij}
 \end{equation}
 \begin{equation}
  \Sigma_{ij} = \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p})
 \end{equation}
-
 the partial derivative is found by applying the operation component wise and a simple use of the chain rule
 \begin{equation}
  \begin{tabular}{rl}
@@ -1369,7 +1422,7 @@ where we note that $\frac{\partial}{\partial x_{\star t}} T^{(2)}_{ij} = $
 
 \subsection{Differentiation of the Cholesky Decomposition}
 
-We follow the method outlined by Smith in (cite Smith 95)
+We follow the method outlined by \cite{Smith1995}
 
 The algorithm takes $\Sigma$ as input and produces a lower triangular matrix $L$ and $\frac{\partial}{\partial x_{\star t}} L$ such that $\Sigma = LL^{T}$.
 
@@ -1377,7 +1430,6 @@ We use the following notation
 \begin{equation}
     \frac{\partial}{\partial x_{\star t}} L_{ij} = L_{ij} (x_{\star t})
 \end{equation}
-
 \begin{enumerate}
  \item $L_{ij} = \Sigma_{ij}$ \\
        $L_{ij (x_{\star t})} = \frac{\partial}{\partial x_{\star t}} \Sigma_{ij}$
@@ -1400,25 +1452,28 @@ This returns a lower triangular matrix $L$ and $\frac{\partial}{\partial x_{\sta
 \section{GPGPU Computing} % (fold)
 \label{sec:GPGPU Computing}
 
-\subsection{Expected Improvement}
+GPU computing allows for the cheap implementation of parallel algorithms. Modern graphics cards can have many hundreds of cores and can perform many teraFLOPS from within a desktop workstation. The development and maturation of C-like programing languages like CUDA and openCL allow for the implementation of parallel codes on these General Purpose Graphical Processing Units (GPGPUs) if the algorithm can be designed to fit into the tight memory restrictions of the GPGPU cores.
 
-MC step and low memory requirement lends itself to GPUs perfectly
+\subsection{Expected Improvement}
+\label{GPUEI}
+
+The trivially parallelizeable Monte Carlo step in the expected improvement algorithm and relatively low memory requirements ($\mathcal{O}(l^{2})$) lends itself to GPGPU implementation perfectly. We implement this algorithm into a CUDA kernel and compare it to a serial python implementation
 
 \subsubsection{accuracy}
 
+When the dimension of the problem is low we can compute the expected improvement analytically. \cite{Ginsbourger2008} gives solutions for the 1-D and 2-D EI exactly. We compare our method to these and see how many MC iterations are required to achieve different levels of accuracy.
+
 TODO
-graph for 1 point, 2 points exp error, var of error vs its
+graph for 1 point, 2 points exp error vs analytic, var of error vs its
 
 \subsubsection{Speedup}
 
-About 300 times faster to run on the GPU
-
-2D, 4 points to be sampled
+The CUDA implementation of the EI algorithm is about 300 times faster to run on the GPGPU than on a CPU (using python). In figure \ref{GPUspeed1} we see the wall clock time required to compute the expected improvement for 4 points in 2 dimensions ($l=4, d=2$).
 
  \begin{figure}[hpt]
  	\centerline{\includegraphics[width=\textwidth]{figures/EPI/exp_EI_speedup_vs_its.png}}
     \caption[CPU vs GPU time to compute EI]{Wall clock time to compute $\mathbb{E}_{n}\left[{\rm EI}(\vec{x})\right]$ on a CPU (blue, line) and GPU (green, x) for $l = 4$.}
- 	\label{fig:00}
+ 	\label{GPUspeed1}
  \end{figure}
 
 TODO
@@ -1437,7 +1492,7 @@ graph: wall clock time vs number of restarts (paths)
 \subsection{Memory Restrictions} % (fold)
 \label{sub:Memory Restrictions}
 
-GPGPU cores have very low memory per core/block (16KB for tesla, 4KB for x). Our algorithm uses matrices of various sizes (table \ref{EPImemory},
+GPGPU cores have very low memory per core/block (16KB for tesla, 4KB for a GT 2{\it XX} card). Our algorithm uses matrices of various sizes (table \ref{EPImemory}, some of which grow to be quite large as more points are sampled,
 
 \begin{table}
     \caption{GPP matrix memory footprint}
@@ -1519,10 +1574,13 @@ Requiring memory of $O(ldR)$ per run, $O(ld)$ per GPU block.
 
 \part{Velvetrope} % (fold)
 \label{prt:Velvetrope}
+\singlespacing
 
 \noindent
 \Large
-Velvetrope: a parallel, bitwise algorithm for finding homologous regions within sequences \\
+Velvetrope: a parallel, bitwise algorithm for finding homologous regions within sequences
+
+\noindent
 \normalsize
 Joint work with Nick Hengartner$^{1}$ and Joel Berendzen$^{2}$ \\
 \scriptsize
@@ -1531,6 +1589,8 @@ $^{1}$Information Sciences Group (CCS-3), MS B265, Los Alamos National
 $^{2}$Applied Modern Physics Group (P-21), MS D454, Los Alamos National
  Laboratory, Los Alamos, NM 87545, USA
 \normalsize
+
+\normalspacing
 
 \begin{center}
    Abstract 
@@ -1556,12 +1616,7 @@ being compared.
 \chapter{Velvetrope Introduction} % (fold)
 \label{cha:Velvetrope Introduction}
 
-TODO
-What is sequence alignment? Why is it useful?
-functional, structural or evolutionary relationships
-evolutionary relationships/phylogenetic trees
-alternate but similar in function genes
-DISEASES or BIOFUELS
+Next generation biological sequencing technologies have created a virtual torrent of new sequence data. The analysis challenges that this data presents need to be addressed by new algorithms that are designed to be as efficient as possible and can scale with the data. One area of analytic interest is that of alignment, finding where two genetic sequences are similar. Finding these highly conserved regions can lead to new insights on how distantly related organisms perform related tasks. By examining all of the ways that nature has evolved solutions to a specific challenge, like synthesizing glucose, we can come up with new and efficient techniques for applications in everything from biofuels to medicine.
 
 Finding shared elements of sequence among possibly-related genes is a
 fundamental operation that underlies most of the analytical methods of
@@ -1612,7 +1667,7 @@ methods may ignore like proteins with transposed domains.
 
 To find the areas of high local homology between sequences we employ a two-part filtering system that first finds offsets (sets of positions) where two sequences share a higher than expected amount of identity (global filter), and then filters these sets of positions to find areas with higher than expected identity within them (local filter).
 
-Velvetrope's filtering system implements only bitwise operations on a sequence of interest $S$ compared against a possibly large set of other test sequences \textbf{T}. The first step is a global filter and works by taking the sequence of interest and comparing it using DNA or Amino Acid translations (up to 6 frames). For the motivating examples we will assume we are in a coding region and use a Amino Acid translation. We can compare the sequence $S$ against each sequence in the set of sequences to be compared against $T \in$ \textbf{T}  using simple AND operations. To track the sequence identities within these offsets we construct a binary concordance matrix $M$ that keeps track of all matches (sequence identities) across all possible offsets of the two sequences.
+Velvetrope's filtering system implements only bitwise operations on a sequence of interest $S$ compared against a possibly large set of other test sequences \textbf{T}. The first step is a global filter and works by taking the sequence of interest and comparing it using DNA or Amino Acid translations (up to 6 frames of reference). For the motivating examples we will assume we are in a coding region and use a Amino Acid translation. We can compare the sequence $S$ against each sequence in the set of sequences to be compared against $T \in$ \textbf{T}  using simple AND operations. To track the sequence identities within these offsets we construct a binary concordance matrix $M$ that keeps track of all matches (sequence identities) across all possible offsets between the two sequences.
 
 The aggregate number of matches for every offset found is compared to what would be expected if the test sequence were randomly rearranged at that offset; if the number of matches is above some threshold then this offset is saved as having a possible area of high local homology, this is the global filter. All possible offsets up to the length of the proposed sequence are checked in this fashion. By looking at all possible offsets between the two sequences we can allow the areas being compared to shift across the two sequences, even becoming transposed if need be. This can be done in parallel for all sequences in \textbf{T} and even across different offset sets within a particular test sequence.
 
@@ -1632,16 +1687,18 @@ and
 \begin{equation}
     \max(1,L_{T} - (w+i)) \leq j \leq \max(1,i+w-L_{S}).
 \end{equation}
-This creates a banded $(L_{S} + L_{T}-2w) \times (\min(L_{S},L_{T}))$ matrix $M$ that contains all pairwise comparisons between all possible offsets of size at least $w$ between the sequence of interest $S$ and the test sequence $T$. If every amino acid in $T$ were randomly distributed and there were equal frequencies of every amino acid we would have (inside the band of the matrix that actually contains information)
+This creates a banded $(L_{S} + L_{T}-2w) \times (\min(L_{S},L_{T}))$ matrix $M$ that contains all pairwise comparisons between all possible offsets of size at least $w$ between the sequence of interest $S$ and the test sequence $T$. Instead of using the binary matrix we could also use a transition matrix such as the BLOSSUM62 matrix \cite{Henikoff1992} to encode more information about the relative similarity of individual amino acids at the cost of higher memory requirements (which is highly restricted in GPGPUs).
+
+If every amino acid in $T$ were randomly distributed and there were equal frequencies of every amino acid we would have (inside the band of the matrix that actually contains information)
 \begin{equation}
     E[M_{ij}] = \frac{1}{20}.
 \end{equation}
 This is not always true, and the algorithm takes local expectation into account, but this can be used as an approximation for motivation purposes. This is to say, long linear stretches of ones in this matrix should be rare and possibly contain useful information about areas of high similarity.
 
-For example purposes we will compare the RNA Polymerase Beta Subunit between E. Coli and Bacillus subtilis (available in the supplementary material or \cite{GenBank}) for the rest of the implementation section. We can see the row sum of the concordance matrix that these two genes imply compared against the expectation in Table \ref{VRtab1} and \ref{VRtab2}.
+For example purposes we will compare the RNA Polymerase Beta Subunit between E. Coli and Bacillus subtilis \cite{GenBank} for the rest of the implementation section. We can see the row sum of the concordance matrix that these two genes imply compared against the expectation in Table \ref{VRtab1} and \ref{VRtab2}.
 
 \begin{table}[htp]
-    \caption{Velvetrope offset matrix}
+    \caption[Velvetrope offset matrix]{This is a subset of the 'offset matrix' constructed when comparing two genes. The black letters represent residues 1181-1189 of our sequence of interest. We are looking at a small section of the rows represented by offsets of 971-980. A red letter represents a match. As we can see there is an area of possible alignment in offset 976 as there are many more matches than we would believe to be expected.}
     \label{VRtab1}
 \begin{center}
 {\small
@@ -1669,7 +1726,7 @@ SOI & \textcolor{blue}{I} &  \textcolor{blue}{A} &  \textcolor{blue}{T} &  \text
 \end{table}
 
 \begin{table}[htp]
-    \caption{Velvetrope offset bit-matrix}
+    \caption[Velvetrope offset bit-matrix]{The matches of the offset matrix encoded into a binary bit-matrix. A 1 represents a match, a 0 represents no match. Alternatively a BLOSSUM or other amino acid transition matrix could be used in lieu of the more simple (and less memory intensive) bit matrix shown.}
     \label{VRtab2}
 \begin{center}
 {\small
@@ -1694,14 +1751,6 @@ SOI & \textcolor{blue}{I} &  \textcolor{blue}{A} &  \textcolor{blue}{T} &  \text
 }
 \end{center}
 \end{table}
-
-% \begin{center}
-% \begin{figure}[hpt]
-% 	\centerline{\includegraphics[width=\textwidth]{figures/velvetrope/offsets.png}}
-%    \caption[Bit matrix]{This is a subset of the binary 'bit matrix' constructed when comparing our two genes. The blue letters represent residues 1181-1189 of our sequence of interest. We are looking at a small section of the rows represented by offsets of 971-980. A red letter represents a match. As we can see there is an area of possible alignment in offset 976 as there are many more matches than we would believe to be expected.}
-% 	\label{fig:vr00}
-% \end{figure}
-% \end{center}
 
 \section{First filter: Global}
 
@@ -1750,9 +1799,9 @@ Now we have the regions where we have reason to believe that there are local ali
 
 \section{Comparison to Needleman-Wunsch algorithm}
 
-We now compare the algorithm on a pairwise basis to the Needleman-Wunsch (NW) algorithm \cite{Durbin06}. We will compare specific regions of the NW alignment to areas that the Velvetrope algorithm determined were locally aligned.
+We now compare the algorithm on a pairwise basis to the Needleman-Wunsch (NW) algorithm \cite{Durbin06} \cite{Needleman70}. We will compare specific regions of the NW alignment to areas that the Velvetrope algorithm determined were locally aligned.
 
-For these examples we will use pairs of generated sequences. First an Hidden Markov Model (HMM) based generated pair and then a pathologically designed pair where two conserved areas have been transposed. These aren't exactly fair comparisons because algorithms like NW and BLAST are not designed to handle instances like this, they just want to align the entire sequence. The point of this section is to show that although the Velvetrope algorithm does not solve the same problem as these algorithms and thus cannot be directly compared it can solve some other problems that these standard methods fail at.
+For these examples we will use pairs of generated sequences. First an Hidden Markov Model (HMM) based generated pair and then a pathologically designed pair where two conserved areas have been transposed. These aren't exactly fair comparisons because algorithms like NW and BLAST are not designed to handle instances like this, they just want to align the entire sequence from end to end. The point of this section is to show that although the Velvetrope algorithm does not solve the same problem as these algorithms and thus cannot be directly compared it can solve some other problems that these standard methods fail at.
 
 \subsection{Comparison to NW: HMM generated sequence}
 
@@ -1966,8 +2015,12 @@ two protien domains are (areas where the columns are high) and create a probable
 
 While Velvetrope does not perform a local alignment in the traditional sense it is able to find areas of high local homology between sequences, regardless of order or k-mer density, that are highly probable areas of local alignment. Velvetrope compares well at a visual level to standard algorithms like BLAST \cite{BLAST} and HMMer \cite{Eddy98} and the C/CUDA implementation executes at the same order of magnitude or faster than these methods. Velvetrope is very susceptible to high indel rates within a conserved region (shifts the offsets) but has been shown to equal or outperform these other methods in areas of low indel rate especially when there are only short $k$-mers within the homologous region between the two sequences.
 
+\pagebreak
+
 \section{Comparison to other methods} % (fold)
 \label{sec:Comparison to other methods}
+
+TODO Fill in experiment details
 
 \begin{figure}[htp]%figure3
  \centerline{\includegraphics[width=\textwidth]{figures/velvetrope/compare6.png}}
@@ -1988,9 +2041,11 @@ While Velvetrope does not perform a local alignment in the traditional sense it 
 \chapter{Velvetrope Implementation} % (fold)
 \label{cha:Velvetrope Implementation}
 
+Velvetrope is designed to be easily parrallelizeable and far less complex than other methods. In figure \ref{fig:vr06} we compare the implementation of Vevletrope to that of BLAST \ref{BLAST}. We do not show HMMer on the plot because it is so computationally expensive that it does not fit, requiring many minutes for comparing only a few hundred sequences.
+
 \begin{figure}[htp]%figure3
  \centerline{\includegraphics[width=\textwidth]{figures/velvetrope/timersSC.png}}
- \caption[Velvetrope timings]{Caption Here}
+ \caption[Velvetrope timings]{The sequential C implementation of Velvetrope can compare 10,000 sequences to a SOI in almost exactly a minute. BLAST, which has been optimized for many years across many platforms can perform the same number of calculations in 20 seconds. The CUDA implementation of Velvetrope can execute the algorithm in under 3 seconds, but requires another 15 seconds to load the data onto the GPGPU across the PCI-E bus. If the sequence information is cached on the GPGPU then this memory transfer step is alleviated and Velvetrope can compare SOIs against these cached sequences at a rate much faster than BLAST.}
  	\label{fig:vr06}
  \end{figure}
 
@@ -1998,6 +2053,8 @@ Velvetrope is able to find areas of sequence homology quickly and efficiently ac
 being compared, allows for it to scale with the data intensive challenges that fields like metagenomics and cancer genomics present.
 
 We also present a freely available, open source implementation (both serial and parallel; in Python, C and CUDA) with easy to navigate HTML output similar to MEME \cite{MEME}. The API and documentation make it easily extendible and able to adapt to the future computationally intensive problems it is designed to address.
+
+\pagebreak
 
 \section{Availability and requirements}
  \begin{itemize}
