@@ -1,41 +1,43 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {2.1}{\ignorespaces Components of the ALE score}}{14}
-\contentsline {figure}{\numberline {2.2}{\ignorespaces Average depth vs. GC content}}{28}
-\contentsline {figure}{\numberline {2.3}{\ignorespaces GC content of Spirochaeta smaragdinae}}{29}
-\contentsline {figure}{\numberline {2.4}{\ignorespaces Depth distribution of different GC contents}}{30}
-\contentsline {figure}{\numberline {2.5}{\ignorespaces Various distributions fit to GC content}}{30}
-\contentsline {figure}{\numberline {2.6}{\ignorespaces Distribution of scores using various distributions}}{31}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Average depth vs. GC content}}{29}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces GC content of Spirochaeta smaragdinae}}{30}
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Depth distribution of different GC contents}}{31}
+\contentsline {figure}{\numberline {2.5}{\ignorespaces Various distributions fit to GC content}}{32}
+\contentsline {figure}{\numberline {2.6}{\ignorespaces Distribution of scores using various distributions}}{32}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces ALE performance on with synthetic reads}}{35}
+\contentsline {figure}{\numberline {3.1}{\ignorespaces ALE performance on with synthetic reads}}{36}
 \contentsline {figure}{\numberline {3.2}{\ignorespaces ALE score vs. number of errors}}{37}
-\contentsline {figure}{\numberline {3.3}{\ignorespaces ALE performance on synthetic metagenome}}{38}
-\contentsline {figure}{\numberline {3.4}{\ignorespaces ALE performance on real reads}}{40}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces ALE performance on synthetic metagenome}}{39}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces ALE performance on real reads}}{41}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Example of GMM for ALE depth score}}{49}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces ROC curve vs. number of reported errors}}{51}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Evolution of a GPP}}{60}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Evolution of expected improvement of a GPP}}{61}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Polyak-Ruppert paths in Branin Function}}{70}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Evolution of a GPP}}{55}
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Evolution of expected improvement of a GPP}}{56}
-\addvspace {10\p@ }
-\contentsline {figure}{\numberline {6.1}{\ignorespaces Polyak-Ruppert paths in Branin Function}}{65}
+\contentsline {figure}{\numberline {8.1}{\ignorespaces CPU vs GPU time to compute EI}}{78}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {8.1}{\ignorespaces CPU vs GPU time to compute EI}}{73}
+\contentsline {figure}{\numberline {10.1}{\ignorespaces First Velvetrope filter}}{92}
+\contentsline {figure}{\numberline {10.2}{\ignorespaces Second Velvetrope filter}}{94}
+\contentsline {figure}{\numberline {10.3}{\ignorespaces Local alignments}}{95}
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {11.1}{\ignorespaces HMM for synthetic NW comparison}}{97}
+\contentsline {figure}{\numberline {11.2}{\ignorespaces Local Velvetrope filter of NW HMM test}}{98}
+\contentsline {figure}{\numberline {11.3}{\ignorespaces Topological information of NW HMM test}}{99}
+\contentsline {figure}{\numberline {11.4}{\ignorespaces Local Velvetrope filter for NW trasposition test}}{100}
+\contentsline {figure}{\numberline {11.5}{\ignorespaces Topological information of NW transposition test}}{101}
+\contentsline {figure}{\numberline {11.6}{\ignorespaces Multiple alignment reference}}{104}
+\contentsline {figure}{\numberline {11.7}{\ignorespaces Velvetrope per-base output}}{105}
+\contentsline {figure}{\numberline {11.8}{\ignorespaces Multiple sequence alignments}}{106}
+\contentsline {figure}{\numberline {11.9}{\ignorespaces Velvetrope vs. HMMer and BLAST}}{106}
+\contentsline {figure}{\numberline {11.10}{\ignorespaces Comparison Venn diagram}}{106}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {10.1}{\ignorespaces First Velvetrope filter}}{87}
-\contentsline {figure}{\numberline {10.2}{\ignorespaces Second Velvetrope filter}}{89}
-\contentsline {figure}{\numberline {10.3}{\ignorespaces Local alignments}}{90}
-\addvspace {10\p@ }
-\contentsline {figure}{\numberline {11.1}{\ignorespaces HMM for synthetic NW comparison}}{92}
-\contentsline {figure}{\numberline {11.2}{\ignorespaces Local Velvetrope filter of NW HMM test}}{93}
-\contentsline {figure}{\numberline {11.3}{\ignorespaces Topological information of NW HMM test}}{94}
-\contentsline {figure}{\numberline {11.4}{\ignorespaces Local Velvetrope filter for NW trasposition test}}{95}
-\contentsline {figure}{\numberline {11.5}{\ignorespaces Topological information of NW transposition test}}{96}
-\contentsline {figure}{\numberline {11.6}{\ignorespaces Multiple alignment reference}}{99}
-\contentsline {figure}{\numberline {11.7}{\ignorespaces Velvetrope per-base output}}{100}
-\contentsline {figure}{\numberline {11.8}{\ignorespaces Multiple sequence alignments}}{101}
-\contentsline {figure}{\numberline {11.9}{\ignorespaces Velvetrope vs. HMMer and BLAST}}{101}
-\contentsline {figure}{\numberline {11.10}{\ignorespaces Comparison Venn diagram}}{101}
-\addvspace {10\p@ }
-\contentsline {figure}{\numberline {12.1}{\ignorespaces Velvetrope timings}}{102}
+\contentsline {figure}{\numberline {12.1}{\ignorespaces Velvetrope timings}}{107}
 \addvspace {10\p@ }
