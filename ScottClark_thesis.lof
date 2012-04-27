@@ -13,24 +13,29 @@
 \contentsline {figure}{\numberline {3.4}{\ignorespaces ALE performance on real reads}}{38}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Evolution of a GPP}}{52}
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Evolution of expected improvement of a GPP}}{53}
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Evolution of a GPP}}{53}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Evolution of expected improvement of a GPP}}{54}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {6.1}{\ignorespaces Polyak-Ruppert paths in Branin Function}}{62}
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\contentsline {figure}{\numberline {8.1}{\ignorespaces CPU vs GPU time to compute EI}}{70}
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Polyak-Ruppert paths in Branin Function}}{63}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {10.1}{\ignorespaces First Velvetrope filter}}{84}
-\contentsline {figure}{\numberline {10.2}{\ignorespaces Second Velvetrope filter}}{86}
-\contentsline {figure}{\numberline {10.3}{\ignorespaces Local alignments}}{87}
+\contentsline {figure}{\numberline {8.1}{\ignorespaces CPU vs GPU time to compute EI}}{71}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {11.1}{\ignorespaces Multiple alignment reference}}{90}
-\contentsline {figure}{\numberline {11.2}{\ignorespaces Velvetrope per-base output}}{91}
-\contentsline {figure}{\numberline {11.3}{\ignorespaces Multiple sequence alignments}}{92}
-\contentsline {figure}{\numberline {11.4}{\ignorespaces Velvetrope vs. HMMer and BLAST}}{92}
-\contentsline {figure}{\numberline {11.5}{\ignorespaces Comparison Venn diagram}}{92}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {12.1}{\ignorespaces Velvetrope timings}}{93}
+\contentsline {figure}{\numberline {10.1}{\ignorespaces First Velvetrope filter}}{85}
+\contentsline {figure}{\numberline {10.2}{\ignorespaces Second Velvetrope filter}}{87}
+\contentsline {figure}{\numberline {10.3}{\ignorespaces Local alignments}}{88}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {11.1}{\ignorespaces HMM for synthetic NW comparison}}{90}
+\contentsline {figure}{\numberline {11.2}{\ignorespaces Local Velvetrope filter of NW HMM test}}{91}
+\contentsline {figure}{\numberline {11.3}{\ignorespaces Topological information of NW HMM test}}{92}
+\contentsline {figure}{\numberline {11.4}{\ignorespaces Local Velvetrope filter for NW trasposition test}}{93}
+\contentsline {figure}{\numberline {11.5}{\ignorespaces Topological information of NW trasposition test}}{94}
+\contentsline {figure}{\numberline {11.6}{\ignorespaces Multiple alignment reference}}{97}
+\contentsline {figure}{\numberline {11.7}{\ignorespaces Velvetrope per-base output}}{98}
+\contentsline {figure}{\numberline {11.8}{\ignorespaces Multiple sequence alignments}}{99}
+\contentsline {figure}{\numberline {11.9}{\ignorespaces Velvetrope vs. HMMer and BLAST}}{99}
+\contentsline {figure}{\numberline {11.10}{\ignorespaces Comparison Venn diagram}}{99}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {12.1}{\ignorespaces Velvetrope timings}}{100}
 \addvspace {10\p@ }

@@ -57,15 +57,15 @@
 \begin{abstract}
 This is a dissertation in three parts, in each part we explore the development and analysis a parallel statistical or machine learning algorithm and its implementation.
 
-First, we examine the Assembly Likelihood Estimator (ALE). This algorithm defines a rigourous statistical likelihood metric for genome assembly, used to validate and score genome and metagenome assemblies. This algorithim can be used to identify specific errors within assemblies and their locations; enable comparison between assemblies and optimization of the assembly process; and using re-sequencing data, detect structural variations.
+First, we examine the Assembly Likelihood Estimator (ALE). This algorithm defines a rigorous statistical likelihood metric for genome assembly, used to validate and score genome and metagenome assemblies. This algorithm can be used to identify specific errors within assemblies and their locations; enable comparison between assemblies and optimization of the assembly process; and using re-sequencing data, detect structural variations.
 
-Second, we develop an algorithm for Expected Parallel Improvement (EPI). This method allows us to optimally sample many points concurrently from an expensive and unknown function. Instead of sampling sequentially, which can be inefficent when the available resources allow for simultaneous evaluation, EPI provides the best set of points to sample next, allowing multiple samplings to be performed in unison.
+Second, we develop an algorithm for Expected Parallel Improvement (EPI). This method allows us to optimally sample many points concurrently from an expensive and unknown function. Instead of sampling sequentially, which can be inefficient when the available resources allow for simultaneous evaluation, EPI provides the best set of points to sample next, allowing multiple samplings to be performed in unison.
 
-Finally, we explore Velvetrope: a parallel, bitwise algorithm for finding homologous regions within sequences. This algorithm employs a two-part filter between sequences. It first finds offsets where two sequences share a higher than expected amount of identity. It then filters areas with higher than expected identity within these offsets. The resulting positions along each sequence represent of statisticaly significant similarity.
+Finally, we explore Velvetrope: a parallel, bitwise algorithm for finding homologous regions within sequences. This algorithm employs a two-part filter between sequences. It first finds offsets where two sequences share a higher than expected amount of identity. It then filters areas with higher than expected identity within these offsets. The resulting positions along each sequence represent of statistically significant similarity.
 \end{abstract}
 
 \begin{biosketch}
-Scott Clark grew up in Tigard, Oregon and graduated from Central Catholic High School in Portland, Oregon in 2004. He recieved Bachelor of Science degrees (Magna Cum Laude) in Mathematics, Computational Physics and Physics with minors in Actuarial Sciences and Mathematical Sciences from Oregon State University in 2008.
+Scott Clark grew up in Tigard, Oregon and graduated from Central Catholic High School in Portland, Oregon in 2004. He received Bachelor of Science degrees (Magna Cum Laude) in Mathematics, Computational Physics and Physics with minors in Actuarial Sciences and Mathematical Sciences from Oregon State University in 2008.
 
 In 2008 Scott was awarded a U.S. Department of Energy Computational Science Graduate Fellowship (CSGF) supporting his doctoral work at Cornell University Center for Applied Mathematics (CAM). He plans to move to San Francisco after graduation and has accepted a software engineering position at Yelp Inc.
 \end{biosketch}
@@ -79,7 +79,7 @@ made this possible.
 \end{dedication}
 
 \begin{acknowledgements}
-I have had the privilege of working with many amazing educators and researchers throughout my academic career. They have all helped sculpt me into the student and person I am today. At Central Catholic High School Steve Workman, Paul Wallulis and Phil Collins taught me the value of hard work and opened my eyes to the world of math and science. My REU advisors, Prof. Daniel Cox of University of California Davis and Prof. Steven Tomsovic of Washington State University gave me my first taste of independent research and helped cultivate my desire to persue academia. My advisors at Oregon State, Malgorzata Peszynska and Rubin Landau who guided me through my undergraduate education and nurturing my budding research pursuits. My practicum supervisors: Dr. Nick Hengartner and Dr. Joel Berendzen of Los Alamos National Laboratory; and Dr. Zhong Wang and Rob Egan of the Joint Genome Institute of Lawerence Berkeley National Laboratory whose joint work and experience was vital to this thesis and my degree. My committee at Cornell: Prof. Steve Strogatz and Prof. Bart Selman for their insights and advice. And, of course, my advisor Prof. Peter Frazier whose unwavering patience, support and encouragement brought this thesis to fruition and he has been instrumental to my success at Cornell.
+I have had the privilege of working with many amazing educators and researchers throughout my academic career. They have all helped sculpt me into the student and person I am today. At Central Catholic High School Steve Workman, Paul Wallulis and Phil Collins taught me the value of hard work and opened my eyes to the world of math and science. My REU advisors, Prof. Daniel Cox of University of California Davis and Prof. Steven Tomsovic of Washington State University gave me my first taste of independent research and helped cultivate my desire to pursue academia. My advisors at Oregon State, Malgorzata Peszynska and Rubin Landau who guided me through my undergraduate education and nurturing my budding research pursuits. My practicum supervisors: Dr. Nick Hengartner and Dr. Joel Berendzen of Los Alamos National Laboratory; and Dr. Zhong Wang and Rob Egan of the Joint Genome Institute of Lawerence Berkeley National Laboratory whose joint work and experience was vital to this thesis and my degree. My committee at Cornell: Prof. Steve Strogatz and Prof. Bart Selman for their insights and advice. And, of course, my advisor Prof. Peter Frazier whose unwavering patience, support and encouragement brought this thesis to fruition and he has been instrumental to my success at Cornell.
 
 My research was supported by a U.S. Department of Energy Computational Science Graduate Fellowship (CSGF), which is supported by the Office of Science of the U.S. Department of Energy under Contract No. DE-FG02-97ER25308. I was also supported by a Startup and Production Allocation Award from the National Energy Research Scientific Computing Center (NERSC), which is supported by the Office of Science of the U.S. Department of Energy under Contract No. DE-AC02-05CH11231.
 \end{acknowledgements}
@@ -395,7 +395,7 @@ In this expression $R^{\prime}$ is the set of all possible reads of the length g
 \end{equation}
 which is a quantity identical in form to $Z$, but restricted to the placement probability of a particular read.
 
-% subsection Aprroximating $Z_{\text{placement}}$ (end)
+% subsection Approximating $Z_{\text{placement}}$ (end)
 
 \subsection{Approximating $Z_{\text{insert}}$} % (fold)
 \label{sub:Aprroximating Z_insert}
@@ -410,7 +410,7 @@ We define
 \end{equation}
 Where again, in this expression $R^{\prime}$ is the set of all possible reads of the length given by $r$, and we sum over all possible insert lengths.
 
-% subsection Aprroximating $Z_{\text{insert}}$ (end)
+% subsection Approximating $Z_{\text{insert}}$ (end)
 
 \subsection{Approximating $Z_{\text{depth}}$} % (fold)
 \label{sub:Aprroximating Z_depth}
@@ -775,11 +775,13 @@ This allows us to numerically calculate $\hat{Z}_{\text{depth}}$ with high preci
 \chapter{EPI Introduction} % (fold)
 \label{cha:EPI Introduction}
 
-\section{Introduction}
+\section{Optimization of Expensive Functions}
 
-TODO
-FILL IN INTRO
-start by saying something about optimization in general and its usefulness, then say something about optimization of computationally expensive computer codes, then say something about how statistical methods can be useful in these problem areas.
+Optimization attempts to find the maximum or minimum of a function or experiment. The goal is to find the input or set of parameters that either maximizes or minimizes a particular value. This can be maximizing gains in a financial model, minimizing costs in operations, finding the best result of drug trials or any number of real world examples. The basic setup is that there is something that is desirable to maximize or minimize and we want to find the parameters that obtain this. The underlying functions may be difficult to sample; whether requiring long amounts of time like drug trials, or excessive money like financial models, or both like exploration of natural resources. This requires the optimization to find the best possible solution quickly and efficiently, requiring as few exploratory samplings as possible before converging to an optimal solution.
+
+The quantitative and data-intensive explosion in fields such as bioinformatics and other sciences is producing petabytes of data and increasingly complex models and computer algorithms to analyze it. As the ammount of data being inputed and the complexity of these algorithms grow they take more and more time to compute. Even with modern supercomputers that can perform many peta-FLOPS ($10^{15}$ Floating Point Operations Per Second) \cite{Hopper} scientific codes simulating fluid dynamics \cite{Compo2011} and complex chemical reactions \cite{Valiev2010} can take many hours or days to compute, using millions of CPU hours or more. The assembly of a single genome using the software package Velvet \cite{Zerbino2008} can take 24 hours or more on a high memory supercomputer. The sheer amount of time and resources required to run these simulations and computations means that the fine-tuning of the parameters of the models is extremely time and resource intensive.
+
+Statistical methods such as EGO \cite{EGO} attempt to solve this problem by estimating the underlying function and computing the next point to sample that maximizes the expected improvement. When performed sequentially this method quickly converges to a point that is locally optimal within the space of possible inputs. This method is limited by its sequential nature and cannot take advantage of possible parallel computational or sampling resources allowing for samples to be drawn concurrently. There have been some heuristic attempts to address the problem of parallel expected improvement \cite{Ginsbourger2008}, but suffer from certain limitations by making restrictive assumptions about points being currently sampled. In this work we develop a model for expected parallel improvement based on numerically estimating the space of improvement using multiple samples and use multi-start gradient decent to find the optimal set of points to sample next, while fully taking into account points that are currently being sampled for which the result is not yet known.
 
 \section{Gaussian Processes}
 
@@ -857,15 +859,15 @@ This is the point where we expect the greatest improvement to the best point sam
 
 The inherent downside to the EGO algorithm is that it is sequential, it results in only a single proposed sample point, which must be sampled before a new point can be proposed. This is a waste of resources if many points can be sampled simultaneously. Under the EGO algorithm these excess resources would sit idle while a single point is sampled one at a time.
 
-There are a few heuristic extensions to the EGO algorithm that attempt to allieviate this bottleneck including the {\it constant liar} and {\it kriging believer} methods proposed by \cite{Ginsbourger2008}.
+There are a few heuristic extensions to the EGO algorithm that attempt to alleviate this bottleneck including the {\it constant liar} and {\it kriging believer} methods proposed by \cite{Ginsbourger2008}.
 
 \subsubsection{Constant liar heuristic}
 
-In this heuristic the points that are currently being sampled are all artificially set to a constant value like $\min(\vec{y}), \max(vec{y})$ or mean$(\vec{y})$ and then normal EI maximization is performed. This method fails to accurately account for the subtlties of the model and information that the GPP provides at each location.
+In this heuristic the points that are currently being sampled are all artificially set to a constant value like $\min(\vec{y}), \max(vec{y})$ or mean$(\vec{y})$ and then normal EI maximization is performed. This method fails to accurately account for the subtleties of the model and information that the GPP provides at each location.
 
 \subsubsection{Kriging believer heuristic}
 
-In this heuristic the points being sampled are assumed to return a value equal to their expectation, effectively lowering the variance to 0 at the given point. This method fails to account for the true variance at the given point and could force the algorithm to be trapped in low yeilding regions that happen to have low expected mean, but a high variance that this heuristic ignores.
+In this heuristic the points being sampled are assumed to return a value equal to their expectation, effectively lowering the variance to 0 at the given point. This method fails to account for the true variance at the given point and could force the algorithm to be trapped in low yielding regions that happen to have low expected mean, but a high variance that this heuristic ignores.
 
 \section{Expected Parallel Improvement}
 
@@ -1089,7 +1091,7 @@ Now, we fix $i$. Let
 
 \section{SAA multistart}
 
-Proposed sample points drawn from a latin hypercube
+Proposed sample points drawn from a Latin hypercube
 
 The update formula for each $\vec{x}_{i}$ in the set of proposed points to sample is
 
@@ -1103,7 +1105,7 @@ After some number of restarts, the set of points with the best EI is chosen
 
 \begin{figure}[hpt]
  	\centerline{\includegraphics[width=\textwidth]{figures/EPI/branin_2d_32pk_paths_and_EI.png}}
-    \caption[Polyak-Ruppert paths in Branin Function]{The Polyak-Ruppert paths of 2 points (simulating 2 free cores) chosen from a latin hypercube of the domain over 128 restarts. The EI of the function is shown as a contour plot. We see the paths converging on the point of highest EI.}
+    \caption[Polyak-Ruppert paths in Branin Function]{The Polyak-Ruppert paths of 2 points (simulating 2 free cores) chosen from a Latin hypercube of the domain over 128 restarts. The EI of the function is shown as a contour plot. We see the paths converging on the point of highest EI.}
  	\label{fig:pk_paths}
  \end{figure}
 
@@ -1144,7 +1146,7 @@ where $K$ is the covariance function defined as before, $\theta$ are the hyperpa
     |A| = \max \left( \frac{|A\vec{x}|}{|\vec{x}|} : \vec{x} \in \Re^{n}\backslash\{\vec{0}\} \right)
 \end{equation}
 
-The partial derivatice with respect to each hyperparameter $\theta_{i}$ is
+The partial derivative with respect to each hyperparameter $\theta_{i}$ is
 \begin{equation}
     \frac{\partial}{\partial \theta_{i}} \log p(\vec{y}|X,\theta) = \frac{1}{2}\vec{y}^{T}K^{-1}\frac{\partial K}{\partial \theta_{i}} K^{-1}\vec{y} - \frac{1}{2} {\rm tr}\left( K^{-1}\frac{\partial K}{\partial \theta_{i}} \right)
 \end{equation}
@@ -1153,7 +1155,7 @@ where tr$(\cdot)$ is the trace of a matrix. If we set $\vec{\alpha} = K^{-1}\vec
     \frac{\partial}{\partial \theta_{i}} \log p(\vec{y}|X,\theta) = \frac{1}{2} {\rm tr}\left((\vec{\alpha}\vec{\alpha}^{T} - K^{-1})\frac{\partial K}{\partial \theta_{i}}\right)
 \end{equation}
 
-The key part is the partial derivatice of $K$ with respect to each hyperparameter. For our squared exponential covariance function the partial derivatives are
+The key part is the partial derivative of $K$ with respect to each hyperparameter. For our squared exponential covariance function the partial derivatives are
 \begin{equation}
     \frac{\partial}{\partial \sigma_{f}^{2}} \mbox{cov}(x_{i}, x_{j}) = \exp\left( -\frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right) = \frac{\mbox{cov}(x_{i}, x_{j})}{\sigma_{f}^{2}}
 \end{equation}
@@ -1645,6 +1647,189 @@ Now we have the regions where we have reason to believe that there are local ali
 \chapter{Velvetrope Results} % (fold)
 \label{cha:Velvetrope Results}
 
+\section{Comparison to Needleman-Wunsch algorithm}
+
+We now compare the algorithm on a pairwise basis to the Needleman-Wunsch (NW) algorithm \cite{Durbin06}. We will compare specific regions of the NW alignment to areas that the Velvetrope algorithm determined were locally aligned.
+
+For these examples we will use pairs of generated sequences. First an Hidden Markov Model (HMM) based generated pair and then a pathologically designed pair where two conserved areas have been transposed. These aren't exactly fair comparisons because algorithms like NW and BLAST are not designed to handle instances like this, they just want to align the entire sequence. The point of this section is to show that although the Velvetrope algorithm does not solve the same problem as these algorithms and thus cannot be directly compared it can solve some other problems that these standard methods fail at.
+
+\subsection{Comparison to NW: HMM generated sequence}
+
+First we generate the sequence of interest by randomly sampling 800 amino acids. The test sequence is then generated using the following HMM,
+
+\pagebreak
+
+\begin{figure}[hpt]
+	\centering
+		\includegraphics[width=0.5\textwidth]{figures/velvetrope/HMMpic.png}
+        \caption[HMM for synthetic NW comparison]{The HMM for generating the test sequence. There are 6 states, Start(S), High Density(H) where there is a 0.63 chance of sampling from the sequence of interest and 0.37 of random, Low Density(L) where all sampling is random, Deletion(D) where we shorten the sequence, Insertion(I) where we add a random element to the sequence but don't increment the position we are comparing ourselves to in the sequence of interest, and End(E)}
+	\label{fig:99}
+\end{figure}
+
+The parameter values are set as follows:
+
+\begin{equation}
+    \left\{\begin{tabular}{c} $\delta$ = $\frac{1}{800}$ \\ $t_{HL} = t_{LH} = \frac{1}{20}$ \\ $t_{LD} = t_{LI} = \frac{1}{20}$ \\ $\epsilon_{D} = \epsilon_{I} = \frac{3}{5}$ \\ $t_{IL} = t_{ID} = \frac{2}{5}$ \\ $\epsilon_{H} = \frac{19}{20} - \delta$ \\ $\epsilon_{L} = \frac{17}{20} - \delta$ \end{tabular} \right.
+\end{equation}
+
+We use the BLOSUM62 matrix \cite{Henikoff1992}, and a relatively high deletion penalty (equal to the highest transfer) and a emission rate of a quarter of that.
+
+\begin{figure}[hpt]
+	\centering
+		\includegraphics[width=1.0\textwidth]{figures/velvetrope/hmm1_1.png}
+        \caption[Local Velvetrope filter of NW HMM test]{The local filter information on the single line of high density returned from the global filter}
+	\label{fig:05}
+\end{figure}
+
+\pagebreak
+
+\begin{figure}[hpt]
+	\centering
+		\includegraphics[width=1.0\textwidth]{figures/velvetrope/hmm1_2.png}
+        \caption[Topological information of NW HMM test]{Topological information on the relative position and density of the alignment}
+	\label{fig:06}
+\end{figure}
+
+Below is the area of local alignment as determined by Velvetrope
+
+\begin{flushleft}
+    \singlespacing
+\footnotesize 
+\texttt{RES: [388,469] of gene1}           
+
+\texttt{R\textcolor{red}{V}RGYI\textcolor{red}{V}\textcolor{red}{W}I\textcolor{red}{K}TLD\textcolor{red}{P}\textcolor{red}{W}\textcolor{red}{H}\textcolor{red}{I}\textcolor{red}{N}\textcolor{red}{S}\textcolor{red}{K}\textcolor{red}{C}\textcolor{red}{F}G\textcolor{red}{G}S\textcolor{red}{D}\textcolor{red}{I}M\textcolor{red}{C}\textcolor{red}{T}\textcolor{red}{H}\textcolor{red}{D}\textcolor{red}{T}H\textcolor{red}{I}\textcolor{red}{V}\textcolor{red}{Y}H\textcolor{red}{H}\textcolor{red}{V}\textcolor{red}{Y}RK\textcolor{red}{S}E\textcolor{red}{L}\textcolor{red}{H}\textcolor{red}{E}\textcolor{red}{K}M\textcolor{red}{L}ES\textcolor{red}{N}\textcolor{red}{R}\textcolor{red}{F}C\textcolor{red}{A}\textcolor{red}{V}R\textcolor{red}{Q}I\textcolor{red}{H}HSH\textcolor{red}{A}\textcolor{red}{D}H\textcolor{red}{F}\textcolor{red}{W}\textcolor{red}{R}\textcolor{red}{L}V\textcolor{red}{N}\textcolor{red}{V}\textcolor{red}{E}A\textcolor{red}{V}FCW} \\
+\texttt{C\textcolor{red}{V}EKEY\textcolor{red}{V}\textcolor{red}{W}F\textcolor{red}{K}YNA\textcolor{red}{P}\textcolor{red}{W}\textcolor{red}{H}\textcolor{red}{I}\textcolor{red}{N}\textcolor{red}{S}\textcolor{red}{K}\textcolor{red}{C}\textcolor{red}{F}R\textcolor{red}{G}G\textcolor{red}{D}\textcolor{red}{I}H\textcolor{red}{C}\textcolor{red}{T}\textcolor{red}{H}\textcolor{red}{D}\textcolor{red}{T}W\textcolor{red}{I}\textcolor{red}{V}\textcolor{red}{Y}L\textcolor{red}{H}\textcolor{red}{V}\textcolor{red}{Y}LT\textcolor{red}{S}N\textcolor{red}{L}\textcolor{red}{H}\textcolor{red}{E}\textcolor{red}{K}G\textcolor{red}{L}TG\textcolor{red}{N}\textcolor{red}{R}\textcolor{red}{F}T\textcolor{red}{A}\textcolor{red}{V}V\textcolor{red}{Q}H\textcolor{red}{H}IAM\textcolor{red}{A}\textcolor{red}{D}V\textcolor{red}{F}\textcolor{red}{W}\textcolor{red}{R}\textcolor{red}{L}T\textcolor{red}{N}\textcolor{red}{V}\textcolor{red}{E}W\textcolor{red}{V}KVG}
+
+\texttt{RES: [362,443] of gene2}
+
+\texttt{RES: [470,476] of gene1}
+
+\texttt{\textcolor{red}{N}SFY\textcolor{red}{Q}TG} \\
+\texttt{\textcolor{red}{N}YAF\textcolor{red}{Q}YA}
+
+\texttt{RES: [444,450] of gene2}
+
+\normalsize
+\normalspacing
+\end{flushleft}
+
+As compared to the same region aligned by NW. We note that by trying to align the random sections earlier and later in the sequence the algorithm fails to accurately pick up this area of high local alignment.
+
+\begin{flushleft}
+    \singlespacing
+\footnotesize 
+\texttt{RES: [425,506]}
+
+\texttt{\textcolor{red}{R}VRGYI-VWI--KTL\textcolor{red}{D}PWH\textcolor{red}{I}NS--\textcolor{red}{K}C\textcolor{red}{F}G\textcolor{red}{G}SDIM-\textcolor{red}{C}THDTHI\textcolor{red}{V}YHHV\textcolor{red}{Y}RKS-ELHE\textcolor{red}{K}MLESNRF-\textcolor{red}{C}AVRQ--\textcolor{red}{I}HHS\textcolor{red}{H}ADHFWR} \\
+\texttt{\textcolor{red}{R}-NKKNRT-CKNERI\textcolor{red}{D}GTC\textcolor{red}{I}-FWL\textcolor{red}{K}-\textcolor{red}{F}A\textcolor{red}{G}TP-SC\textcolor{red}{C}V-EKEY\textcolor{red}{V}WFK-\textcolor{red}{Y}NAPWHINS\textcolor{red}{K}CFRGGDIH\textcolor{red}{C}-THDTW\textcolor{red}{I}VYL\textcolor{red}{H}V-YLTS}
+
+\texttt{RES: [425,506]}
+
+\texttt{RES: [507,525]}
+
+\texttt{-\textcolor{red}{L}VNVEAVFCWNSF-Y\textcolor{red}{Q}TG} \\
+\texttt{N\textcolor{red}{L}HEKGLTGNRFTAVV\textcolor{red}{Q}-H}
+
+\texttt{RES: [507,525]}
+
+\normalsize
+\normalspacing
+\end{flushleft}
+
+\subsection{Comparison to NW: Pathological Transposition}
+
+Now we look at a pathological example where we generate the sequence of interest randomly as before.
+
+For the test sequence we generate the first 200 residues randomly. Then for the next 100 we draw from SOI[500:600] at a rate of .63 and random otherwise. This is followed by another 200 random residues. Then for the next 100 we draw from SOI[200:300] at a rate of .63 and random otherwise. This is followed by a final 200 random sequences.
+
+This gives the effect of SOI = [random, gene1, random, gene2, random] and TS = [random, gene2, random, gene1, random].
+
+NW and Velvetrope are both run on this example with the following results and local alignments
+
+\begin{figure}[hpt]
+	\centering
+		\includegraphics[width=1.0\textwidth]{figures/velvetrope/path1_1.png}
+        \caption[Local Velvetrope filter for NW trasposition test]{The local filter information on the two lines of high density returned from the global filter}
+	\label{fig:07}
+\end{figure}
+
+\begin{figure}[hpt]
+	\centering
+		\includegraphics[width=1.0\textwidth]{figures/velvetrope/path1_2.png}
+	\caption[Topological information of NW trasposition test]{Topological information on the relative position and density of the alignments. We can see that they are transposed as expected. The densities are 0.57 and 0.55 respectively.}
+	\label{fig:08}
+\end{figure}
+
+Below is the area of local alignment as determined by Velvetrope for the first conserved section.
+
+\begin{flushleft}
+    \singlespacing
+\footnotesize
+\texttt{RES: [186,267] of gene1}           
+
+\texttt{GAN\textcolor{red}{H}KYQV\textcolor{red}{H}Q\textcolor{red}{P}LNAM\textcolor{red}{Y}\textcolor{red}{Y}\textcolor{red}{Q}\textcolor{red}{G}\textcolor{red}{S}\textcolor{red}{T}H\textcolor{red}{H}\textcolor{red}{F}\textcolor{red}{C}\textcolor{red}{E}\textcolor{red}{L}\textcolor{red}{K}\textcolor{red}{R}\textcolor{red}{T}\textcolor{red}{W}V\textcolor{red}{N}\textcolor{red}{Y}\textcolor{red}{T}\textcolor{red}{W}\textcolor{red}{I}\textcolor{red}{E}MC\textcolor{red}{I}\textcolor{red}{I}CNK\textcolor{red}{C}\textcolor{red}{N}\textcolor{red}{E}\textcolor{red}{C}G\textcolor{red}{V}V\textcolor{red}{V}\textcolor{red}{Y}NQ\textcolor{red}{S}R\textcolor{red}{L}\textcolor{red}{K}\textcolor{red}{V}WCS\textcolor{red}{I}\textcolor{red}{C}\textcolor{red}{H}S\textcolor{red}{P}A\textcolor{red}{E}VK\textcolor{red}{Q}\textcolor{red}{D}T\textcolor{red}{I}\textcolor{red}{M}\textcolor{red}{Y}LC\textcolor{red}{H}} \\         
+\texttt{LNP\textcolor{red}{H}QPHA\textcolor{red}{H}Y\textcolor{red}{P}CDNN\textcolor{red}{Y}\textcolor{red}{Y}\textcolor{red}{Q}\textcolor{red}{G}\textcolor{red}{S}\textcolor{red}{T}I\textcolor{red}{H}\textcolor{red}{F}\textcolor{red}{C}\textcolor{red}{E}\textcolor{red}{L}\textcolor{red}{K}\textcolor{red}{R}\textcolor{red}{T}\textcolor{red}{W}Q\textcolor{red}{N}\textcolor{red}{Y}\textcolor{red}{T}\textcolor{red}{W}\textcolor{red}{I}\textcolor{red}{E}LR\textcolor{red}{I}\textcolor{red}{I}LIF\textcolor{red}{C}\textcolor{red}{N}\textcolor{red}{E}\textcolor{red}{C}S\textcolor{red}{V}S\textcolor{red}{V}\textcolor{red}{Y}LT\textcolor{red}{S}A\textcolor{red}{L}\textcolor{red}{K}\textcolor{red}{V}IGI\textcolor{red}{I}\textcolor{red}{C}\textcolor{red}{H}P\textcolor{red}{P}Y\textcolor{red}{E}LE\textcolor{red}{Q}\textcolor{red}{D}K\textcolor{red}{I}\textcolor{red}{M}\textcolor{red}{Y}NT\textcolor{red}{H}}
+
+\texttt{RES: [486,567] of gene2}
+
+\texttt{RES: [268,304] of gene1}
+
+\texttt{\textcolor{red}{K}\textcolor{red}{F}\textcolor{red}{C}E\textcolor{red}{T}V\textcolor{red}{E}\textcolor{red}{M}\textcolor{red}{H}Q\textcolor{red}{E}\textcolor{red}{M}\textcolor{red}{D}QI\textcolor{red}{A}C\textcolor{red}{H}\textcolor{red}{A}YE\textcolor{red}{G}\textcolor{red}{I}W\textcolor{red}{L}S\textcolor{red}{H}\textcolor{red}{V}\textcolor{red}{K}\textcolor{red}{D}\textcolor{red}{V}FKCEVN} \\
+\texttt{\textcolor{red}{K}\textcolor{red}{F}\textcolor{red}{C}T\textcolor{red}{T}W\textcolor{red}{E}\textcolor{red}{M}\textcolor{red}{H}S\textcolor{red}{E}\textcolor{red}{M}\textcolor{red}{D}DS\textcolor{red}{A}E\textcolor{red}{H}\textcolor{red}{A}HW\textcolor{red}{G}\textcolor{red}{I}F\textcolor{red}{L}P\textcolor{red}{H}\textcolor{red}{V}\textcolor{red}{K}\textcolor{red}{D}\textcolor{red}{V}NALFLK}
+
+\texttt{RES: [568,604] of gene2}
+
+\normalsize
+\normalspacing
+\end{flushleft}
+
+Below is the area of local alignment as determined by Velvetrope for the second conserved section.
+
+\begin{flushleft}
+\singlespacing
+\footnotesize 
+\texttt{RES: [496,577] of gene1}           
+
+\texttt{VNEK\textcolor{red}{P}Y\textcolor{red}{C}GE\textcolor{red}{T}\textcolor{red}{M}H\textcolor{red}{K}AF\textcolor{red}{S}\textcolor{red}{M}\textcolor{red}{V}\textcolor{red}{S}\textcolor{red}{C}\textcolor{red}{R}WCI\textcolor{red}{E}\textcolor{red}{V}\textcolor{red}{L}\textcolor{red}{W}\textcolor{red}{G}VC\textcolor{red}{G}\textcolor{red}{R}\textcolor{red}{S}\textcolor{red}{L}\textcolor{red}{H}\textcolor{red}{Q}\textcolor{red}{A}\textcolor{red}{E}\textcolor{red}{K}\textcolor{red}{N}\textcolor{red}{R}\textcolor{red}{E}\textcolor{red}{V}\textcolor{red}{P}AA\textcolor{red}{V}\textcolor{red}{H}\textcolor{red}{N}T\textcolor{red}{V}\textcolor{red}{K}\textcolor{red}{C}FEMMYPRQ\textcolor{red}{M}HD\textcolor{red}{V}\textcolor{red}{A}\textcolor{red}{T}PE\textcolor{red}{H}K\textcolor{red}{M}\textcolor{red}{H}\textcolor{red}{Y}SV\textcolor{red}{V}K\textcolor{red}{C}\textcolor{red}{R}\textcolor{red}{G}} \\
+\texttt{IYWW\textcolor{red}{P}R\textcolor{red}{C}ID\textcolor{red}{T}\textcolor{red}{M}D\textcolor{red}{K}RT\textcolor{red}{S}\textcolor{red}{M}\textcolor{red}{V}\textcolor{red}{S}\textcolor{red}{C}\textcolor{red}{R}IGR\textcolor{red}{E}\textcolor{red}{V}\textcolor{red}{L}\textcolor{red}{W}\textcolor{red}{G}ML\textcolor{red}{G}\textcolor{red}{R}\textcolor{red}{S}\textcolor{red}{L}\textcolor{red}{H}\textcolor{red}{Q}\textcolor{red}{A}\textcolor{red}{E}\textcolor{red}{K}\textcolor{red}{N}\textcolor{red}{R}\textcolor{red}{E}\textcolor{red}{V}\textcolor{red}{P}QV\textcolor{red}{V}\textcolor{red}{H}\textcolor{red}{N}M\textcolor{red}{V}\textcolor{red}{K}\textcolor{red}{C}LKCVGVSK\textcolor{red}{M}DM\textcolor{red}{V}\textcolor{red}{A}\textcolor{red}{T}FH\textcolor{red}{H}A\textcolor{red}{M}\textcolor{red}{H}\textcolor{red}{Y}EP\textcolor{red}{V}M\textcolor{red}{C}\textcolor{red}{R}\textcolor{red}{G}}
+
+\texttt{RES: [196,277] of gene2}
+
+\texttt{RES: [578,605] of gene1}
+
+\texttt{\textcolor{red}{P}\textcolor{red}{C}GL\textcolor{red}{C}\textcolor{red}{N}F\textcolor{red}{I}\textcolor{red}{C}\textcolor{red}{D}\textcolor{red}{T}\textcolor{red}{D}P\textcolor{red}{L}\textcolor{red}{M}\textcolor{red}{K}GFDE\textcolor{red}{P}\textcolor{red}{N}KN\textcolor{red}{W}MTI} \\
+\texttt{\textcolor{red}{P}\textcolor{red}{C}VE\textcolor{red}{C}\textcolor{red}{N}A\textcolor{red}{I}\textcolor{red}{C}\textcolor{red}{D}\textcolor{red}{T}\textcolor{red}{D}Q\textcolor{red}{L}\textcolor{red}{M}\textcolor{red}{K}INIR\textcolor{red}{P}\textcolor{red}{N}SD\textcolor{red}{W}TVV}
+
+\texttt{RES: [278,305] of gene2}
+
+\normalsize
+\normalspacing
+\end{flushleft}
+
+As compared to the same region aligned by NW. This algorithm is clearly not set up to deal with transposed conserved regions and it fails as expected.
+
+\begin{flushleft}
+\singlespacing
+\footnotesize
+ 
+\texttt{RES: [556,637]}
+
+\texttt{VNEK\textcolor{red}{P}Y\textcolor{red}{C}GETMHKAFSMV-SCRW\textcolor{red}{C}I\textcolor{red}{E}V\textcolor{red}{L}WGVCGRSLHQA-\textcolor{red}{E}KN\textcolor{red}{R}EVPAAVHNTVK\textcolor{red}{C}FEMM\textcolor{red}{Y}-P--RQM-HDVAT\textcolor{red}{P}EHKMHYS} \\
+\texttt{AH-Y\textcolor{red}{P}-\textcolor{red}{C}-DN-N-YY-QGSTIHF\textcolor{red}{C}-\textcolor{red}{E}-\textcolor{red}{L}KRT-WQN-YTWI\textcolor{red}{E}L-\textcolor{red}{R}-I-ILIF-CNE\textcolor{red}{C}SVSV\textcolor{red}{Y}LTSALKVIGIICH\textcolor{red}{P}PYELEQD}
+
+\texttt{RES: [556,637]}
+
+\texttt{RES: [638,674]}
+
+\texttt{VVKCRGPCG-L\textcolor{red}{C}NFICDTDPL\textcolor{red}{M}K-GFD\textcolor{red}{E}PNKN\textcolor{red}{W}-MTI} \\
+\texttt{KI-MYN-THKF\textcolor{red}{C}T-TWEMHSE\textcolor{red}{M}DDS-A\textcolor{red}{E}-HAH\textcolor{red}{W}GIFL}
+
+\texttt{RES: [638,674]}
+
+\normalsize
+\normalspacing
+\end{flushleft}
+
 \section{Multiple Sequence Alignment}
 
 Multi-domain proteins have traditionally been cumbersome to Multiple Sequence Alignment (MSA) algorithms like MUSCLE \cite{MUSCLE} and DIALIGN-TX \cite{DIALIGN-TX} like the 31 multi-domain lectin proteins in Reference 8 of BAliBASE v3 \cite{Balibase}. The two domains for lectin are transposed for 4 of the organisms and are ordered ``correctly'' for the other 27 in the reference database (See figure \ref{fig:vr04}). Because Velvetrope works independent of order it allows us to find transposed domains from within a protein such as this with relative ease and compute a probable, non-traditional MSA.
@@ -1852,12 +2037,20 @@ Black-Box Functions, {\it Journal of Global Optimization}, {\bf 13}, 455-492.
 
 \bibitem[Brochu {\it et~al}., 2010]{Brochu2010} Brochu,E., Cora,V.M., de Freitas,N. (2010) A Tutorial on Bayesian Optimization of Expensive Cost Functions, with Application to Active User Modeling and Hierarchical Reinforcement Learning, {\it Computing Research Repository}, arXiv:1012.2599v1.
 
+\bibitem[Valiev {\it et~al}., 2010]{Valiev2010} Valiev,M., Bylaska,E.J., Govind,N., Kowalski,K., Straatsma,T.P., van Dam,H.J.J., {\it et~al}. (2010) NWChem: a comprehensive and scalable open-source solution for large scale molecular simulations, {\it Computational Physics Communications} {\bf 181}(1477).
 
+\bibitem[Compo {\it et~al}., 2011]{Compo2011} Compo,G.P., Whitaker,J.S., Sardeshmukh,P.D., Matsui,N., Allan,R.J., {\it et~al}. (2011) The Twentieth Century Reanalysis Project, {\it Quarterly Journal of the Royal Meteorological Society}, {\bf 137}(654), 1-28.
 
 
 
 %%%%%%%%%%%%%%%
     % VELVETROPE
+
+\bibitem[Durbin {\it et~al}., 2006]{Durbin06} 
+    Durbin,R., Eddy,S., Krogh,A., Mitchison,G. (2006) Biological sequence analysis, $11^{th}$ edition.
+
+\bibitem[Henikoff and Henikoff, 1992]{Henikoff1992}
+    Henikoff,S. and Henikoff,J.G. (1992) Amino acid substitution matrices from protein blocks, {\it Proceedings of the National Academy of Sciences of the United States of America}, {\bf 89}(22), 10915-10919.
 
 % Another old algorithm, one of the originals 
 \bibitem[Needleman and Wunsch, 1970]{Needleman70}
