@@ -67,7 +67,7 @@ Finally, we explore Velvetrope: a parallel, bitwise algorithm for finding homolo
 \begin{biosketch}
 Scott Clark grew up in Tigard, Oregon and graduated from Central Catholic High School in Portland, Oregon in 2004. He graduated Magna Cum Laude from Oregon State University in 2008, receiving Bachelor of Science degrees in Mathematics, Computational Physics and Physics with minors in Actuarial Sciences and Mathematical Sciences.
 
-In 2008 Scott was awarded a U.S. Department of Energy Computational Science Graduate Fellowship (CSGF) supporting his doctoral work at Cornell University Center for Applied Mathematics (CAM) where he was awarded his Masters degree in 2011. He plans to move to San Francisco after graduation and has accepted a software engineering position at Yelp, Inc.
+In 2008 Scott was awarded a U.S. Department of Energy Computational Science Graduate Fellowship (CSGF) supporting his doctoral work at Cornell University Center for Applied Mathematics (CAM) where he was awarded his Masters degree in 2011. After graduation he plans to move to San Francisco after a celebratory trip around the world and has accepted a software engineering position at Yelp, Inc.
 \end{biosketch}
 
 \begin{dedication}
@@ -641,6 +641,8 @@ One common assembly error in metagenome assemblies is the chimeric assembly cons
 ALE relies on k-mer sub-score (the default is k=4) to distinguish contigs coming from different microbial species, because tetra-nucleotide frequencies are a reliable species-specific signature (\cite{Teeling2004}; \cite{Woyke2006}). If a genome, or contig, contains two or more distinct regions characterized by different k-mer vectors, then the k-mer sub-score will be lower for the positions characterized by the less prevalent k-mer vector (see Methods). Because the other sub-scores are unaffected by the mixture, the drop in total ALE score is due to the lower k-mer sub-score. This unique capability of ALE allows easy detection of chimeric contig/scaffolds within a metagenome assembly. As shown in Figure \ref{ALEfig4}, the k-mer sub-score is consistent for each of the two genomes individually as expected (Figure \ref{ALEfig4}, A and B). In contrast, the k-mer sub-score is much lower for the mixed genomes, clearly identifying where two genomes are mixed together in the same assembly.
 
 \section{Discovery of errors in real genome assemblies}
+\label{ALE_res_spiro}
+
 The above experiments used simulated reads, or assemblies with simulated errors. Real reads and real genome/metagenome assemblies are often very noisy, presenting an additional challenge to ALE. To test ALE using real world assemblies with real reads we chose a finished genome, {\it Spirochaeta smargdinae} DSM 11293, originally constructed from 454 and Illumina reads (\cite{Mavromatis2010}), and applied ALE to it using one lane of 2x76 paired end Illumina reads. The results are shown in Figure \ref{ALEfig5} and Table \ref{ALEtab1}. At the genome level, ALE found several errors, including a large 560kbp region (3.91mb – 4.48mp) in the proposed assembly where the depth sub-score dropped below the threshold. We found 3 areas producing errors that are likely due to repeat condensation. For example, further examination of two regions (408kbp-415kbp and 4.241mbp-4.247mbp) by overlaying the Illumina short read data indicates these regions have much higher sequence depth (2X) than neighboring regions, and contain many SNPs (two alleles of roughly equal ratio) (Figure \ref{ALEfig5}, B and C), supporting the hypothesis that there are two copies of these regions in this genome. The boundaries of these regions also have abnormal placement and insert sub-scores, further supporting the hypothesis that there are miss-assemblies at the above locations.
 
 \begin{figure*}[!tpb]%figure1
@@ -763,15 +765,30 @@ for each $d \in \{g, b\}$ until the change in the total likelihood is less than 
 
 To speed up this process only a random 10\% of the data or a random 10,000 points are used to build the model, whichever is smaller. If the model fails to converge, a different random set of data is chosen, up to a maximum number of iterations. This adds a level of robustness that overcomes certain pathological situations where the 2-Gaussian mixture model will fail.
 
-\subsection{Example with ALE depth score for \it{Spirochaeta smaragdinae}}
+\subsection{Example with ALE depth score}
 
-TODO
-FIGURE FOR SPIRO DEPTH
+As an example we will examine the ALE depth score for {\it Spirochaeta smaragdinae} from Section \ref{ALE_res_spiro}. This genome has two distinct regions in the depth score representing ``good" and ``bad" scores. The two Gaussian mixture model fits the data much better than a single Gaussian distribution as seen in Figure \ref{fig:GMM_spiro} and Table \ref{tab:GMM_spiro}.
+
 \begin{figure}[hpt]
- 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
-    \caption[Example of GMM for ALE depth score]{Example of GMM for ALE depth score...}
+ 	\centerline{\includegraphics[width=\textwidth]{figures/ALE/gmm_spiro_depth.png}}
+    \caption[Example of GMM for ALE depth score]{We see the difference between the observed depth scores (blue dots), the two component Gaussian mixture model (green line) and a single component Gaussian mixture model (red dashed line). It is clear that the mixture model is a far superior fit to the data}
  	\label{fig:GMM_spiro}
 \end{figure}
+
+\begin{table}[hpt]
+
+    \begin{center}
+    \begin{tabular}{c|c|c}
+        & 2-Gaussian mixture & single Gaussian \\
+        \hline
+        $\mu$ & -12.56, -1.05 & -2.47 \\
+        $\sigma^{2}$ & 1.72, 0.32& 3.85 \\
+        $\log(p)$ & -42627.63 & -12771185.48
+    \end{tabular}
+\end{center}
+\caption[Example of GMM for ALE depth score]{The components and log likelihoods of the two models. We can see that the two Gaussian mixture model is 2 orders of magnitude more likely (in log space) than the single Gaussian model.}
+\label{tab:GMM_spiro}
+\end{table}
 
 \section{False positive rate vs. number of reported errors}
 \label{ROCALE}
