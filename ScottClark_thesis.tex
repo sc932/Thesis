@@ -409,23 +409,27 @@ The $Z$ normalization factor in Bayes' Theorem is defined as
 \begin{equation}
     Z = \sum_{S^{\prime}}P(R|S^{\prime})P(S^{\prime}).
 \end{equation}
-The problem with computing this value explicitly is that the space $S^{\prime}$ is very large, but the set of assemblies for which $P(R|S^{\prime})$ is above a certain threshold $\epsilon > 0$ (like floating point precision $\epsilon = 10^{-8}$) is very small compared to the entire space. This is because the probability $P(R|S^{\prime})$ falls off very quickly when the reads do not agree with the assembly $S^{\prime}$, but this is still too large of a space to compute $Z$ explicitly.
+The problem with computing this value explicitly is 
+\begin{enumerate}
+    \item The space $S^{\prime}$ is very large ($4^{L}$ where $L$ is the length of an assembly).
+    \item The set of assemblies for which $P(R|S^{\prime})$ is above a certain threshold $\epsilon > 0$ (like floating point precision $\epsilon = 10^{-8}$) is very small compared to the entire space. This is because the probability $P(R|S^{\prime})$ falls off very quickly when the reads do not agree with the assembly $S^{\prime}$, but this is still too large of a space to compute $Z$ explicitly.
+\end{enumerate}
 
 If we make the approximation
 \begin{equation}
-    P(R|S^{\prime}) \approx \mathbb{E}_{}\left[P(R|S^{\prime})\right] = \sum_{R^{\prime}} P(R)^{2},
+    P(R|S^{\prime}) \approx \mathbb{E}_{}\left[P({\bf R}|S^{\prime})\right] = \sum_{r \in R^{\prime}} P(r|S^{\prime})P(r|S^{\prime}) = \sum_{r \in R^{\prime}} P(r|S_{0})^{2},
 \end{equation}
-where $R^{\prime}$ is the set of all possible reads and we drop the dependence on $S^{\prime}$ in the final equality because when summing over all possible reads every combination of read and assembly is evaluated, irregardless of the specific assembly compared against. This is to say that for any fixed $S$, every possible permutation of reads (location and number of errors, quality scores, insert lengths, orientations, depths) is evaluated with respect to that assembly. Let $E$ be the set of all possible errors between a read and an assembly and all combinations thereof, (for example, substitution error at position 9 with quality score .97, etc). Then
+where $R^{\prime}$ is the set of all possible reads and ${\bf R}$ is a random set of reads drawn from this set and $S_{0}$ is an arbitrary assembly. We drop the dependence on $S^{\prime}$ in the final equality because when summing over all possible reads every combination of read and assembly is evaluated, regardless of the specific assembly compared against. This is to say that for any fixed $S$, every possible permutation of reads (location and number of errors, quality scores, insert lengths, orientations, depths) is evaluated with respect to that assembly. Let $E$ be the set of all possible errors between a read and an assembly and all combinations thereof, (for example, substitution error at position 9 with quality score .97, etc). Then
 \begin{equation}
-    \mathbb{E}_{}\left[P(R|S^{\prime})\right] = \sum_{R^{\prime}} P(R|S)^{2} = \sum_{E} \sum_{R_{e}^{\prime}} P(r_{e}|S)^{2},
+    \mathbb{E}_{}\left[P(R|S^{\prime})\right] = \sum_{r \in R^{\prime}} P(r|S^{\prime})^{2} = \sum_{E} \sum_{r_{e} \in R_{e}^{\prime}} P(r_{e}|S^{\prime})^{2} = \sum_{r \in R^{\prime}} P(r|S_{0})^{2},
 \end{equation}
-where $R_{e}$ is the set of reads containing the errors $e \in E$. $E$ contains all possible errors (including no errors) so the space of reads can be partitioned with respect to the errors when compared to any fixed assembly $S$. The value of $P(r_{e}|S)$ is fixed by the model and independent of the assembly. If there is an error at a specific position, the placement score depends on the type of error and the quality score of the read at that position, which is encoded in $e \in E$. So we can set $P(r_{e}|S) = A_{e}$ where $A_{e}$ is a value independent of $S$.
+where $R_{e}^{\prime}$ is the set of reads containing the errors $e \in E$. $E$ contains all possible errors (including no errors) so the space of reads can be partitioned with respect to the errors when compared to any fixed assembly $S^{\prime}$. The value of $P(r_{e}|S^{\prime})$ is fixed by the model and independent of the assembly. If there is an error at a specific position, the placement score depends on the type of error and the quality score of the read at that position, which is encoded in $e \in E$. So we can set $P(r_{e}|S^{\prime}) = A_{e}$ where $A_{e}$ is a value independent of $S^{\prime}$.
 
 In fact, this is true for any such assembly, making the dependence on $S^{\prime}$ moot. Our equation for $Z$ then becomes
 \begin{equation}
-    Z = \sum_{S^{\prime}}P(R|S^{\prime})P(S^{\prime}) \approx \sum_{S^{\prime}} \mathbb{E}_{}\left[P(R|S^{\prime})\right] P(S^{\prime}) = \sum_{R^{\prime}} P(R)^{2} = \hat{Z}
+    Z \approx \sum_{S^{\prime}} \mathbb{E}_{}\left[P(R|S^{\prime})\right] P(S^{\prime}) = \sum_{S^{\prime}} \left[\sum_{r \in R^{\prime}} P(r|S_{0})^{2}\right] P(S^{\prime}) = \sum_{r \in R^{\prime}} P(r|S_{0})^{2} = \hat{Z}
 \end{equation}
-because $\sum_{S^{\prime}}P(S^{\prime}) = 1$ and the dependence of $P(R)$ on $S$ is dropped.
+because $\sum_{S^{\prime}}P(S^{\prime}) = 1$ and the dependence on $S^{\prime}$ is dropped.
 
 
 \subsection{Approximating $Z_{\text{placement}}$} % (fold)
@@ -438,12 +442,12 @@ $\hat{Z}_{\text{placement}}$ is defined as
 In this expression $R$ is the set of reads actually observed, $r$ is one read in this set of reads, and $\hat{Z}_{\text{placement}}(r|S)$ is defined as
 \begin{equation}
     \begin{array}{lcl}
-        \hat{Z}_{\text{placement}}(r|S) & = & \mathbb{E}\left[P_{\text{placement}}\left(r^{\prime}\right)|S\right] \\
+        \hat{Z}_{\text{placement}}(r|S) & = & \mathbb{E}\left[P_{\text{placement}}\left({\bf r^{\prime}}\right)|S\right] \\
         & = & \sum_{r^{\prime} \in R^{\prime}} \left[ P_{\text{placement}}(r^{\prime}|S)\right]^{2} \\
         & = & \sum_{\text{matches}} \sum_{\text{orientation}} \left(P_{\text{matches}}(r^{\prime}|S)P_{\text{orientation}}(r^{\prime}|S)\right)^{2}
     \end{array}.
 \end{equation}
-In this expression $R^{\prime}$ is the set of all possible reads of the length given by $r$, and we sum over all possible matches and orientations, which is analogous to summing over all possible reads. Although $S$ appears in this expression, its value does not depend on $S$ because of permutation symmetry as described in Section \ref{arbZ}. This symmetry allows us to calculate this expression analytically, without enumerating over $R^{\prime}$.  In addition to its lack of dependence of $S$ and its ease of computation, this choice for $P_{\text{placement}}(r)$ is motivated by the belief that this quantity scales roughly like
+In this expression $R^{\prime}$ is the set of all possible reads of the length given by $r$ and ${\bf r^{\prime}}$ is a random set of reads drawn from that set. We sum over all possible matches and orientations, which is analogous to summing over all possible reads. Although $S$ appears in this expression, its value does not depend on $S$ because of permutation symmetry as described in Section \ref{arbZ}. This symmetry allows us to calculate this expression analytically, without enumerating over $R^{\prime}$.  In addition to its lack of dependence of $S$ and its ease of computation, this choice for $P_{\text{placement}}(r)$ is motivated by the belief that this quantity scales roughly like
 \begin{equation}
     P_{\text{placement}}(r) = \sum_{S^{\prime}}P_{\text{placement}}(r|S^{\prime})P(S^{\prime}),
 \end{equation}
@@ -462,7 +466,7 @@ We define $\hat{Z}_{\text{placement}}(r|S)$ as,
         & = & \sum_{\text{insert}} \left(P_{\text{insert}}(r^{\prime}|S)\right)^{2}
     \end{array},
 \end{equation}
-where again, in this expression $R^{\prime}$ is the set of all possible reads of the length given by $r$, and we sum over all possible insert lengths.
+where again, in this expression $R^{\prime}$ is the set of all possible reads of the length given by $r$ and ${\bf r^{\prime}}$ is a random set of reads drawn from that set. Similarly, we sum over all possible insert lengths.
 
 % subsection Approximating $Z_{\text{insert}}$ (end)
 
@@ -475,9 +479,9 @@ We define $\hat{Z}_{\text{depth}}$ as,
 \end{equation}
 where
 \begin{equation}
-    \hat{Z}_{\text{depth}} \left(X_{i}|S\right) = \mathbb{E}\left[P_{\text{depth}} \left(X_{i}|S\right)|S\right] = \sum_{d=0}^{\infty} \left(P_{\text{depth}}\left(d | X_{i}, S\right)\right)^{2},
+    \hat{Z}_{\text{depth}} \left(X_{i}|S\right) = \mathbb{E}\left[P_{\text{depth}} \left({\bf X_{i}}|S\right)|S\right] = \sum_{d=0}^{\infty} \left(P_{\text{depth}}\left(d | X_{i}, S\right)\right)^{2},
 \end{equation}
-where $P_{\text{depth}}$ is defined as before. Although $S$ appears in this expression, its value does not depend on $S$. We can calculate this expression analytically using a hyper-geometric function; see implementation section \ref{sec:DepthZnormalization}.
+where $P_{\text{depth}}$ is defined as before and ${\bf X_{i}}$ is a random set of depths drawn from the set of possible depths at location $i$. Although $S$ appears in this expression, its value does not depend on $S$. We can calculate this expression analytically using a hyper-geometric function; see implementation section \ref{sec:DepthZnormalization}.
 
 % subsection Aprroximating $Z_{\text{depth}}$ (end)
 
@@ -486,9 +490,9 @@ where $P_{\text{depth}}$ is defined as before. Although $S$ appears in this expr
 
 We define $\hat{Z}_{\text{kmer}}$ as the expected kmer score,
 \begin{equation}
-    \hat{Z}_{\text{kmer}} = \mathbb{E}\left[P_{\text{kmer}}(S)\right] = \left(\sum_{i\in K} f_{i}^{2}\right)^{N},
+    \hat{Z}_{\text{kmer}} = \mathbb{E}\left[P_{\text{kmer}}({\bf S})\right] = \left(\sum_{i\in K} f_{i}^{2}\right)^{N},
 \end{equation}
-where $f_{i}$, $K$ and $n_{i}$ are defined as before in section \ref{sub:kmersubscore}. This method finds the expected k-mer score for a uniform random k-mer and applies that score $N$ times. Although $\hat{Z}_{\text{kmer}}$ depends on $S$ through the empirically determined $f_{i}$, which may be undesirable, this dependence follows naturally from our statistical model because the $f_{i}$ are considered parameters, which are estimated from data and then treated as known by the model. 
+where $f_{i}$, $K$ and $n_{i}$ are defined as before in section \ref{sub:kmersubscore} and ${\bf S}$ is a random assembly drawn from the set of all possible assemblies. This method finds the expected k-mer score for a uniform random k-mer and applies that score $N$ times. Although $\hat{Z}_{\text{kmer}}$ depends on $S$ through the empirically determined $f_{i}$, which may be undesirable, this dependence follows naturally from our statistical model because the $f_{i}$ are considered parameters, which are estimated from data and then treated as known by the model. 
 
 % subsection Aprroximating $Z_{\text{kmer}}$ (end)
 
@@ -890,20 +894,20 @@ $^{1}$Cornell University School of Operations Research and Information Engineeri
    Abstract 
 \end{center}
 
-This optimization method allows us to optimally sample many points concurrently from an expensive to evaluate and unknown function. Instead of sampling sequentially, which can be inefficient when the available resources allow for simultaneous evaluation, EPI provides the best set of points to sample next, allowing multiple samplings to be performed in unison.
+This derivative-free global optimization method allows us to optimally sample many points concurrently from an expensive to evaluate, unknown and possibly non-convex function. Instead of sampling sequentially, which can be inefficient when the available resources allow for simultaneous evaluation, EPI provides the best set of points to sample next, allowing multiple samplings to be performed in unison.
 
-In this work we develop a model for expected parallel improvement based on numerically estimating the expected improvement using multiple samples and use multi-start gradient decent to find the optimal set of points to sample next, while fully taking into account points that are currently being sampled for which the result is not yet known.
+In this work we develop a model for expected parallel improvement based on numerically estimating the expected improvement using multiple samples and use multi-start gradient descent to find the optimal set of points to sample next, while fully taking into account points that are currently being sampled for which the result is not yet known.
 
 \chapter{EPI Introduction} % (fold)
 \label{cha:EPI Introduction}
 
 \section{Optimization of Expensive Functions}
 
-Optimization attempts to find the maximum or minimum value of some function or experiment. The goal is to find the input or set of parameters that either maximizes or minimizes a particular value. This can be maximizing gains in a financial model, minimizing costs in operations, finding the best result of a drug trial or any of a number of real world examples. The basic setup is that there is something that is desirable to maximize or minimize and we want to find the parameters that obtain this. The underlying functions may be difficult to sample; whether requiring long amounts of time like drug trials, or excessive money like financial models, or both like exploration of natural resources. This limitation forces a good optimization algorithm to find the best possible solution quickly and efficiently, requiring as few exploratory samplings as possible before converging to an optimal solution.
+Optimization attempts to find the maximum or minimum value of some function or experiment. The goal is to find the input or set of parameters that either maximizes or minimizes a particular value. This can be maximizing gains in a financial model, minimizing costs in operations, finding the best result of a drug trial or any of a number of real world examples. The basic setup is that there is something that is desirable to maximize or minimize and we want to find the parameters that obtain this. The underlying functions may be difficult to sample; whether requiring long amounts of time such as drug trials, or excessive money such as financial models, or both such as exploration of natural resources. This limitation forces a good optimization algorithm to find the best possible solution quickly and efficiently, requiring as few exploratory samplings as possible before converging to an optimal solution.
 
 The quantitative and data-intensive explosion in fields such as bioinformatics and other sciences is producing petabytes of data and increasingly complex models and computer algorithms to analyze it. As the amount of data being inputed and the complexity of these algorithms grow they take more and more time to compute. Even with modern supercomputers that can perform many peta-FLOPS ($10^{15}$ Floating Point Operations Per Second) \cite{Hopper} scientific codes simulating fluid dynamics \cite{Compo2011} and complex chemical reactions \cite{Valiev2010} can take many hours or days to compute, using millions of CPU hours or more. The assembly of a single genome using the software package Velvet \cite{Zerbino2008} can take 24 hours or more on a high memory supercomputer. The sheer amount of time and resources required to run these simulations and computations means that the fine-tuning of the parameters of the models is extremely time and resource intensive.
 
-Statistical methods such as EGO \cite{Jones1998} attempt to solve this problem by estimating the underlying function that is being optimized and computing the next point to sample that maximizes the expected improvement over the best result observed so far. When performed sequentially this method quickly converges to a point that is locally optimal within the space of possible inputs. This method is limited by its sequential nature however and cannot take advantage of possible parallel computational or sampling resources allowing for samples to be drawn concurrently. There have been some heuristic attempts to address the problem of parallel expected improvement \cite{Ginsbourger2008}, but all suffer from limitations by making restrictive assumptions about points being currently sampled. In this work we develop a model for expected parallel improvement based on numerically estimating expected improvement using multiple samples and use multi-start gradient decent to find the optimal set of points to sample next, while fully taking into account points that are currently being sampled for which the result is not yet known.
+Statistical methods such as EGO \cite{Jones1998} attempt to solve this problem by estimating the underlying function that is being optimized and computing the next point to sample so that it maximizes the expected improvement over the best result observed so far. When performed sequentially this method quickly converges to a point that is locally optimal within the space of possible inputs. This method is limited by its sequential nature, however, and cannot take advantage of possible parallel computational or sampling resources allowing for samples to be drawn concurrently. There have been some heuristic attempts to address the problem of parallel expected improvement \cite{Ginsbourger2008}, but all suffer from limitations by making restrictive assumptions about points being currently sampled. In this work we develop a model for expected parallel improvement, based on numerically estimating expected improvement using multiple samples and use multi-start gradient descent to find the optimal set of points to sample next, while fully taking into account points that are currently being sampled for which the result is not yet known.
 
 \section{Gaussian Processes}
 
@@ -912,10 +916,9 @@ We begin with a Gaussian process prior on a continuous function $f$. The functio
 \begin{equation}
 \max_{x \in A} f(x).
 \end{equation}
-
 This problem can be constrained or unconstrained depending on the set $A$.
 
-The paper \cite{Jones1998} developed a method for choosing points to evaluate next based on fitting a global metamodel to the points evaluated thus far, and then maximizing a merit criterion over the whole surface to choose the single point to evaluate next.
+The paper \cite{Jones1998} developed a method for choosing which points to evaluate next based on fitting a global metamodel to the points evaluated thus far, and then maximizing a merit criterion over the whole surface to choose the single point to evaluate next.
 
 Although \cite{Jones1998} describes their technique EGO, in terms of a kriging metamodel and uses frequentist language, their technique can also be understood in a Bayesian framework. This framework uses a Gaussian process prior on the function $f$, which is a probabilistic model whose estimates of $f$ have the corresponding framework described below.
 
@@ -972,7 +975,7 @@ This is the point where we expect the greatest improvement to the best point sam
 
 \subsection{Parrallel Heuristics}
 
-The inherent downside to the EGO algorithm is that it is sequential; it results in only a single proposed sample point, which must be sampled before a new point can be proposed. This is a waste of resources if many points can be sampled simultaneously. Under the EGO algorithm these excess resources would sit idle while a single point is sampled one at a time.
+The inherent downside to the EGO algorithm is that it is sequential; it results in only a single proposed sample point, which must be sampled before a new point can be proposed. This is a waste of resources if many points can be sampled simultaneously. Under the EGO algorithm these excess resources would sit idle while each point is sampled one at a time.
 
 There are a few heuristic extensions to the EGO algorithm that attempt to alleviate this bottleneck including the {\it constant liar} and {\it kriging believer} methods proposed by \cite{Ginsbourger2008}.
 
@@ -1005,17 +1008,19 @@ and chooses this batch of points to evaluate next. While the purely sequential c
 
 \section{Components of the Gaussian Prior}
 
-\subsection{The GP mean}
+In the following sections we will explicitly define the mean (Section \ref{methods_GP_mean}) and variance (Section \ref{methods_GP_var}) of the GP, as well as their component-wise gradients. We will also define the partial derivatives for our default covariance function, the squared exponential covariance in Section \ref{methods_GP_cov}.
 
-First we try to decompose the GP mean in order to easily find an analytic expression for its gradient.
+\subsection{The GP mean}
+\label{methods_GP_mean}
+
+First we try to decompose the GP mean in order to easily find an analytic expression for its gradient:
 \begin{equation}
  \vec{\mu_{\star}} = K(\vec{x}_{\star}, \textbf{X} )K(\textbf{X},\textbf{X})^{-1}\vec{y}.
 \end{equation}
-Where we define the matrix $K(\vec{y}, \vec{z})$ component wise as
+Where we define the matrix $K(\vec{y}, \vec{z})$ component-wise as
 \begin{equation}
- K(\vec{y}, \vec{z})_{ij} = \mbox{cov}(y_{i}, z_{j})
+ K(\vec{y}, \vec{z})_{ij} = \mbox{cov}(y_{i}, z_{j}).
 \end{equation}
-
 We note that if $\vec{x_{\star}}$ is a single point then the matrix $K(\vec{x}_{\star}, \textbf{X} )$ collapses to a vector. We also rewrite $K(\textbf{X},\textbf{X})^{-1}$ as $K^{-1}$ for simplicity,
 \begin{equation}
  \vec{\mu_{\star}} = K(\vec{x}_{\star}, \textbf{X} ) K^{-1} \vec{y}.
@@ -1025,7 +1030,7 @@ We further note that we can decompose the resulting vector dot product into a su
  \mu_{\star {i}} = \sum_{j = 1}^{N} \mbox{cov}(x_{\star i}, X_{j}) \left(K^{-1} \vec{y} \right)_{j}.
 \end{equation}
 
-When we take the gradient we note that it can be brought inside the sum and the vector $(K^{-1}\vec{y})$ is constant with respect to $x_{\star}$,
+When we take the gradient, we note that it can be brought inside the sum and the vector $(K^{-1}\vec{y})$ is constant with respect to $x_{\star}$,
 \begin{equation}
  \frac{\partial}{\partial x_{\star t}} \mu_{\star i} = \sum_{j = 1}^{N} \left(K^{-1} \vec{y} \right)_{j} \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, X_{j}).
 \end{equation}
@@ -1037,14 +1042,14 @@ We note that
                                                                  \end{tabular}\right..
 \end{equation}
 
-
-\subsection{The GPP variance}
+\subsection{The GP variance}
+\label{methods_GP_var}
 
 Now we do the same thing for the covariance which is defined as
 \begin{equation}
  \Sigma(\mu_{star}) = K(\textbf{X$_{\star}$}, \textbf{X$_{\star}$}) - K(\textbf{X$_{\star}$}, \textbf{X}) K(\textbf{X}, \textbf{X})^{-1} K(\textbf{X}, \textbf{X$_{\star}$}).
 \end{equation}
-The components $(i,j)$ of $\Sigma$ (see appendix A.1) are
+The components $(i,j)$ of $\Sigma$ (see Section \ref{EPI_imp_var}) are
 \begin{equation}
  \Sigma_{ij} = \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p})
 \end{equation}
@@ -1053,16 +1058,10 @@ and the derivative $\frac{\partial}{\partial x_{\star t}} \Sigma_{ij}$ becomes
  \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, x_{\star j}) - \\
  \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \left( \mbox{cov}(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star j}, X_{p}) + \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, X_{q}) \right)
 \end{equation}
-where we note that
-\begin{equation}
-  \frac{\partial}{\partial x_{\star t}} \Sigma_{ij} = \left\{ \begin{tabular}{cc}
-                                                       $\frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, X_{q})$ & $t = i$ \\
-							$\frac{\partial}{\partial x_{\star j}} \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star j}} \mbox{cov}(x_{\star j}, X_{p})$ & $t = j$ \\
-							$0$ & otherwise
-                                                      \end{tabular} \right..
-\end{equation}
+For a more detailed discussion see Section \ref{EPI_imp_var}.
 
 \subsection{Defining the covariance derivatives}
+\label{methods_GP_cov}
 
 A common function for the covariance is the squared exponential covariance function,
 \begin{equation}
@@ -1075,7 +1074,7 @@ where $\delta_{ij}$ is the Kronecker delta,
         0 & if & $i\neq j$
     \end{tabular} \right..
 \end{equation}
-We will use an instance of this covariance function where $l$ is a length scale, $\sigma_{f}^{2}$ is the signal variance, and $\sigma_{n}^{2}$ is the sample variance. These maximum likelihood of these parameters can be determined from the training data as seen in section \ref{sec:Adaptation of hyperparameters}. We will treat them as constants for now.
+We will use an instance of this covariance function where $l$ is a length scale, $\sigma_{f}^{2}$ is the signal variance, and $\sigma_{n}^{2}$ is the sample variance. The maximum likelihood of these parameters can be determined from the training data as seen in section \ref{sec:Adaptation of hyperparameters}. We will treat them as constants for now.
 
 It will be sufficient to show the partial derivative of one of the variables because cov$(x_{i}, x_{j}) = $ cov$(x_{j}, x_{i})$.
 \begin{equation}
@@ -1085,7 +1084,7 @@ It will be sufficient to show the partial derivative of one of the variables bec
     =  \delta_{ij} + \frac{-\sigma_{f}^{2}}{2l^{2}} \exp\left( - \frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right) \frac{\partial}{\partial x_{i}} |x_{i} - x_{j}|^{2}
 \end{equation}
 \begin{equation}
-    =  \frac{x_{j} - x_{i}}{l^{2}} \mbox{cov}(x_{i}, x_{j}) + \delta_{ij}
+    =  \frac{x_{j} - x_{i}}{l^{2}} \mbox{cov}(x_{i}, x_{j}) + \delta_{ij}.
 \end{equation}
 
 \section{Estimation of expected improvement}
@@ -1093,7 +1092,7 @@ It will be sufficient to show the partial derivative of one of the variables bec
 
 We estimate the expected improvement at a set of points $\vec{x}$ by sampling from the GP over many Monte Carlo iterations.
 
-The mean $\vec{\mu}$ and covariance $\Sigma$ of the points to be sampled $\Sigma$ is defined in section \ref{} (8.2).
+The mean $\vec{\mu}$ and covariance $\Sigma$ of the points to be sampled $\Sigma$ is defined in section \ref{methods_GP_mean} and \ref{methods_GP_var}.
 
 We can simulate drawing points from this multivariate gaussian like so,
 \begin{equation}
@@ -1105,7 +1104,7 @@ The improvement from this simulated sample is
 \begin{equation}
     I^{\prime} = \left[f_{n}^{\star} - \min(\vec{y}^{\prime})\right]^{+}.
 \end{equation}
-By averaging over many such simulated draws we can accurately estimate the expected improvement for the set of points $\vec{x}$. Further discussion and analysis of the accuracy of this method is discussed in section \ref{}.
+By averaging over many such simulated draws we can accurately estimate the expected improvement for the set of points $\vec{x}$. Further discussion and analysis of the accuracy of this method is discussed in section \ref{GPUEI}.
 
 
 \section{Estimation and optimization of $\mbox{EI}(\vec{x})$}
@@ -1114,7 +1113,7 @@ To optimize $\mbox{EI}(\vec{x})$, we calculate stochastic gradients
 \begin{equation}
  g(\vec{x}) = \bigtriangledown \mbox{EI}(\vec{x})
 \end{equation}
-and use infinitesimal perturbation analysis \cite{Fu1994} to interchange derivative and expectation, see section \ref{EPI_proof}. Then use multistart gradient decent to find the set of points that maximize $\mbox{EI}(\vec{x})$, see section \ref{sec:multistart}.
+and use infinitesimal perturbation analysis \cite{Fu1994} to interchange derivative and expectation, see section \ref{EPI_proof}. Then use multistart gradient descent to find the set of points that maximize $\mbox{EI}(\vec{x})$, see section \ref{sec:multistart}.
 
 \subsection{Proof of validity of interchange}
 \label{EPI_proof}
@@ -1156,7 +1155,7 @@ To show this, we will show
 \begin{enumerate}
     \item $Z(\cdot)$ is differentiable at $\vec{x}$
     \item On the event that $Z(\cdot)$ is differentiable at $\vec{x}$ and $i^{\star}(\vec{x}) = i$, $\nabla_{\vec{x}} Z(\vec{x})$
-    \item for some $\epsilon > 0$ and each $\vec{x}^{\prime}$ with $|\vec{x}^{\prime} - \vec{x}| < \epsilon$,
+    \item For some $\epsilon > 0$ and each $\vec{x}^{\prime}$ with $|\vec{x}^{\prime} - \vec{x}| < \epsilon$,
 \end{enumerate}
 \begin{equation}
     \left|Z(\vec{x}) - Z(\vec{x}^{\prime})\right| \leq \left|\vec{x}^{\prime} - \vec{x}\right|
@@ -1167,7 +1166,7 @@ We require that for some $\epsilon > 0$ and each $i = 1, \ldots, l$ that $f(\cdo
 
 (1) and (2) follow from
 \begin{equation}
-    \left\{Z(\cdot) \text{ is differentiable at } \vec{x}\right\} \subseteq \left\{f(\vec{x}_{i}) \neq f(\vec{x}_{j}) \forall i \neq j \ \text{ and } \ f(\vec{x}_{i}) \neq f_{n}^{\star} \right\}
+    \left\{Z(\cdot) \text{ is differentiable at } \vec{x}\right\} \subseteq \left\{f(\vec{x}_{i}) \neq f(\vec{x}_{j}) \forall i \neq j \ \text{ and } \ f(\vec{x}_{i}) \neq f_{n}^{\star} \right\}.
 \end{equation}
 This requires that $f(\cdot)$ is differentiable almost surely under $P_{n}$.
 
@@ -1208,33 +1207,33 @@ So equation \ref{ZZ} becomes
 
 Now, we fix $i$. Let
 \begin{equation}
-    M = \sup_{\vec{x}^{\prime\prime}:|\vec{x} - \vec{x}^{\prime\prime}| < \epsilon} \max_{\vec{u} \in \Re^{d}} \left|\vec{u} \cdot \nabla_{\vec{x}} f_{i}(\vec{x}^{\prime\prime}) \right|
+    M = \sup_{\vec{x}^{\prime\prime}:|\vec{x} - \vec{x}^{\prime\prime}| < \epsilon} \max_{\vec{u} \in \mathbb{R}^{d}} \left|\vec{u} \cdot \nabla_{\vec{x}} f_{i}(\vec{x}^{\prime\prime}) \right|
 \end{equation}
 
 \begin{equation}
     \left|f_{i}(\vec{x}^{\prime}) - f_{i}(\vec{x})\right| \leq M \left| \left| \vec{x}^{\prime} - \vec{x}\right|\right|_{2}
 \end{equation}
 
-\section{Multistart gradient decent}
+\section{Multistart gradient descent}
 \label{sec:multistart}
 
-We use multistart gradient decent to find the set of points that maximizes the parallel expected improvement over some number of total restarts $R$.
+We use multistart gradient descent to find the set of points that maximizes the parallel expected improvement over some number of total restarts $R$.
 
 For each multistart iteration we draw the initial points $\vec{x}^{(t=0)}$ from a Latin hypercube. The update formula for each $\vec{x}_{i}$ in the set of proposed points to sample is
 \begin{equation}
     \vec{x}_{i}^{(t+1)} = \vec{x}_{i}^{(t)} + \frac{a}{t^{\gamma}} \nabla_{\vec{x}_{i}} {\rm EI}\left(\vec{P}^{(t)} | \vec{X}\right)
 \end{equation}
-where $a$ and $gamma$ are parameters of the gradient decent model. $\vec{P}^{(t)}$ is the union of set of points being currently sampled and the proposed new points to sample. This update is performed for some set number of iterations, or until
+where $a$ and $\gamma$ are parameters of the gradient descent model. $\vec{P}^{(t)}$ is the union of the set of points being currently sampled and the proposed new points to sample. This update is performed for some set number of iterations, or until
 \begin{equation}
     |\vec{x}_{i}^{(t+1)} - \vec{x}_{i}^{(t)}| < \epsilon
 \end{equation}
 for some threshold $\epsilon > 0$.
 
-After $R$ restarts, the set of points with the best expected EI is chosen as the set of points to sample next. Figure \ref{fig:pk_paths} shows the paths of 128 multistart gradient decent paths with $l = 2$ on the EI of the Branin function \cite{branin} (see section \ref{}).
+After $R$ restarts, the set of points with the best expected EI is chosen as the set of points to sample next. Figure \ref{fig:pk_paths} shows the paths of 128 multistart gradient descent paths with $l = 2$ on the EI of the Branin function \cite{branin} (see section \ref{}).
 
 \begin{figure}[hpt]
  	\centerline{\includegraphics[width=\textwidth]{figures/EPI/branin_2d_32pk_paths_and_EI.png}}
-    \caption[Gradient decent paths in Branin Function]{The gradient decent paths of 2 points (simulating 2 free cores, $l=2$) with initial points chosen from a Latin hypercube of the domain over 128 restarts. The EI of the function is shown as a contour plot. We see the paths converging on the point of highest EI.}
+    \caption[Gradient descent paths in Branin Function]{The gradient descent paths of 2 points (simulating 2 free cores, $l=2$) with initial points chosen from a Latin hypercube of the domain over 128 restarts (each color represents a different restart). The EI of the function is shown as a contour plot. We see the paths converging on the point of highest EI.}
  	\label{fig:pk_paths}
  \end{figure}
 
@@ -1320,27 +1319,28 @@ The log-likelihood of the data $\vec{y}$ given the points sampled $X$ and the hy
 \end{equation}
 where $K$ is the covariance function defined as before, $\theta$ are the hyperparameters of the covariance function and $|\cdot|$ is the matrix norm defined for a matrix $A$ as
 \begin{equation}
-    |A| = \max \left( \frac{|A\vec{x}|}{|\vec{x}|} : \vec{x} \in \Re^{n}\backslash\{\vec{0}\} \right)
+    |A| = \max \left( \frac{|A\vec{x}|}{|\vec{x}|} : \vec{x} \in \mathbb{R}^{n}\backslash\{\vec{0}\} \right).
 \end{equation}
 
 The partial derivative with respect to each hyperparameter $\theta_{i}$ is
 \begin{equation}
     \frac{\partial}{\partial \theta_{i}} \log p(\vec{y}|X,\theta) = \frac{1}{2}\vec{y}^{T}K^{-1}\frac{\partial K}{\partial \theta_{i}} K^{-1}\vec{y} - \frac{1}{2} {\rm tr}\left( K^{-1}\frac{\partial K}{\partial \theta_{i}} \right)
 \end{equation}
-where tr$(\cdot)$ is the trace of a matrix. If we set $\vec{\alpha} = K^{-1}\vec{y}$ (as in eq REF) this further reduces to
+where tr$(\cdot)$ is the trace of a matrix. If we set $\vec{\alpha} = K^{-1}\vec{y}$ this further reduces to
 \begin{equation}
-    \frac{\partial}{\partial \theta_{i}} \log p(\vec{y}|X,\theta) = \frac{1}{2} {\rm tr}\left((\vec{\alpha}\vec{\alpha}^{T} - K^{-1})\frac{\partial K}{\partial \theta_{i}}\right)
+    \frac{\partial}{\partial \theta_{i}} \log p(\vec{y}|X,\theta) = \frac{1}{2} {\rm tr}\left((\vec{\alpha}\vec{\alpha}^{T} - K^{-1})\frac{\partial K}{\partial \theta_{i}}\right).
 \end{equation}
 
-The key part is the partial derivative of $K$ with respect to each hyperparameter. For our squared exponential covariance function the partial derivatives are
+The key part of this equation is the partial derivative of $K$ with respect to each hyperparameter. For our squared exponential covariance function the partial derivatives are
 \begin{equation}
-    \frac{\partial}{\partial \sigma_{f}^{2}} \mbox{cov}(x_{i}, x_{j}) = \exp\left( -\frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right) = \frac{\mbox{cov}(x_{i}, x_{j})}{\sigma_{f}^{2}}
+    \frac{\partial}{\partial \sigma_{f}^{2}} \mbox{cov}(x_{i}, x_{j}) = \exp\left( -\frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right) = \frac{\mbox{cov}(x_{i}, x_{j})}{\sigma_{f}^{2}},
 \end{equation}
 \begin{equation}
     \frac{\partial}{\partial l} \mbox{cov}(x_{i}, x_{j}) = \frac{1}{l^{3}}|x_{i} - x_{j}|^{2}\mbox{cov}(x_{i}, x_{j})
 \end{equation}
+and
 \begin{equation}
-    \frac{\partial}{\partial \sigma_{n}^{2}} \mbox{cov}(x_{i}, x_{j}) = \delta_{ij}
+    \frac{\partial}{\partial \sigma_{n}^{2}} \mbox{cov}(x_{i}, x_{j}) = \delta_{ij}.
 \end{equation}
 
 TODO
@@ -1363,11 +1363,14 @@ experiment: start with one GPP, and assumptions about another, show evolution, s
 
 \section{Math Appendix}
 
+In this section we will show the component-wise calculation of the gradient of the covariance matrix as well as a method for differentiating the Cholesky decomposition of this matrix.
+
 \subsection{Variance matrix calculations}
+\label{EPI_imp_var}
 
 From \cite{RW} we have
 \begin{equation}
- \Sigma = K(\vec{x_{\star}}, \vec{x_{\star}}) - K(\vec{x_{\star}}, \vec{X}) K(\vec{X}, \vec{X})^{-1} K(\vec{X}, \vec{x_{\star}})
+ \Sigma = K(\vec{x_{\star}}, \vec{x_{\star}}) - K(\vec{x_{\star}}, \vec{X}) K(\vec{X}, \vec{X})^{-1} K(\vec{X}, \vec{x_{\star}}).
 \end{equation}
 We will use $K^{-1} = K(\vec{X}, \vec{X})^{-1}$. We have by definition
 \begin{equation}
@@ -1377,7 +1380,7 @@ We will use $K^{-1} = K(\vec{X}, \vec{X})^{-1}$. We have by definition
  K(\vec{x_{\star}}, \vec{X})_{ij} = \mbox{cov}(x_{\star i}, X_{j})
 \end{equation}
 \begin{equation}
- K(\vec{X}, \vec{x_{\star}})_{ij} = \mbox{cov}(X_{i}, x_{\star j})
+ K(\vec{X}, \vec{x_{\star}})_{ij} = \mbox{cov}(X_{i}, x_{\star j}).
 \end{equation}
 We will define a temporary matrix $T^{(1)}$ to be
 \begin{equation}
@@ -1385,7 +1388,7 @@ We will define a temporary matrix $T^{(1)}$ to be
 \end{equation}
 and decompose it into its components to get
 \begin{equation}
- T^{(1)}_{ip} = \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q})
+ T^{(1)}_{ip} = \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}).
 \end{equation}
 We then define
 \begin{equation}
@@ -1393,16 +1396,16 @@ We then define
 \end{equation}
 and decompose it to get
 \begin{equation}
- T^{(2)}_{ij} = \sum_{p = 1}^{N} T^{(1)}_{ip} \mbox{cov}(X_{p}, x_{\star j}) = \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p})
+ T^{(2)}_{ij} = \sum_{p = 1}^{N} T^{(1)}_{ip} \mbox{cov}(X_{p}, x_{\star j}) = \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p}).
 \end{equation}
 and note
 \begin{equation}
  \Sigma_{ij} = K(\vec{x_{\star}}, \vec{x_{\star}})_{ij} - T^{(2)}_{ij}
 \end{equation}
 \begin{equation}
- \Sigma_{ij} = \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p})
+ \Sigma_{ij} = \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p}).
 \end{equation}
-the partial derivative is found by applying the operation component wise and a simple use of the chain rule
+The partial derivative is found by applying the operation component wise and a simple use of the chain rule
 \begin{equation}
  \begin{tabular}{rl}
  $\frac{\partial}{\partial x_{\star t}} \Sigma_{ij} =$ & $\frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, x_{\star j})$ \\
@@ -1416,12 +1419,12 @@ where we note that $\frac{\partial}{\partial x_{\star t}} T^{(2)}_{ij} = $
         $\sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, X_{q})$ & $t = i \neq j$ \\
 							$\sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{p}) \frac{\partial}{\partial x_{\star j}} \mbox{cov}(x_{\star j}, X_{q})$ & $t = j \neq i$ \\
 							$0$ & otherwise
-                                                      \end{tabular} \right.
+                                                      \end{tabular} \right..
 \end{equation}
 
-\subsection{Differentiation of the Cholesky Decomposition}
+\subsection{Differentiation of the Cholesky decomposition}
 
-We follow the method outlined by \cite{Smith1995}
+To incorporate the gradient into the Cholesky decomposition we follow the method outlined by \cite{Smith1995}.
 
 The algorithm takes $\Sigma$ as input and produces a lower triangular matrix $L$ and $\frac{\partial}{\partial x_{\star t}} L$ such that $\Sigma = LL^{T}$.
 
@@ -1435,13 +1438,13 @@ We use the following notation
  \item for $k = 1\ldots N$ if $|L_{kk}| > \epsilon_{m}$ (machine precision)
  \begin{enumerate}
   \item $L_{kk} = \sqrt{L_{kk}}$ \\
-	$L_{kk (x_{\star t})} = \frac{1}{2} \frac{L_{kk (x_{\star t})}}{L_{kk}}$
+	$L_{kk (x_{\star t})} = \frac{1}{2} \frac{L_{kk (x_{\star t})}}{L_{kk}}$.
   \item for $j = k+1\ldots N$ \\
 	$L_{jk} = L_{jk}/L_{kk}$ \\
-	$L_{jk (x_{\star t})} = \frac{L_{jk (x_{\star t})} + L_{jk}L_{kk (x_{\star t})}}{L_{kk}}$
+	$L_{jk (x_{\star t})} = \frac{L_{jk (x_{\star t})} + L_{jk}L_{kk (x_{\star t})}}{L_{kk}}$.
   \item for $j = k+1\ldots N$ and $i = j\ldots N$ \\
 	$L_{ij} = L_{ij} - L_{ik}L_{jk}$ \\
-	$L_{ij (x_{\star t})} = L_{ij (x_{\star t})} - L_{ik (x_{\star t})}L_{jk} - L_{ik}L_{jk (x_{\star t})}$
+	$L_{ij (x_{\star t})} = L_{ij (x_{\star t})} - L_{ik (x_{\star t})}L_{jk} - L_{ik}L_{jk (x_{\star t})}$.
  \end{enumerate}
 
 This returns a lower triangular matrix $L$ and $\frac{\partial}{\partial x_{\star t}} L$ such that $\Sigma = LL^{T}$.
@@ -1451,14 +1454,14 @@ This returns a lower triangular matrix $L$ and $\frac{\partial}{\partial x_{\sta
 \section{GPGPU Computing} % (fold)
 \label{sec:GPGPU Computing}
 
-GPU computing allows for the cheap implementation of parallel algorithms. Modern graphics cards can have many hundreds of cores and can perform many teraFLOPS from within a desktop workstation. The development and maturation of C-like programing languages like CUDA and openCL allow for the implementation of parallel codes on these General Purpose Graphical Processing Units (GPGPUs) if the algorithm can be designed to fit into the tight memory restrictions of the GPGPU cores.
+GPU computing allows for the cheap implementation of parallel algorithms. Modern graphics cards can have many hundreds of cores and can perform many teraFLOPS from within a desktop workstation. The development and maturation of C-like programing languages like CUDA and openCL allow for the implementation of parallel codes on these General Purpose Graphical Processing Units (GPGPUs) if the algorithm can be designed to fit into the tight memory restrictions of the GPGPU cores, as shown below.
 
 \subsection{Expected Improvement}
 \label{GPUEI}
 
-The trivially parallelizeable Monte Carlo step in the expected improvement algorithm and relatively low memory requirements ($\mathcal{O}(l^{2})$) lends itself to GPGPU implementation perfectly. We implement this algorithm into a CUDA kernel and compare it to a serial python implementation
+The trivially parallelizeable Monte Carlo step in the expected improvement algorithm and relatively low memory requirements ($\mathcal{O}(l^{2})$) lends itself to GPGPU implementation perfectly. We implement this algorithm into a CUDA kernel and compare it to a serial python implementation.
 
-\subsubsection{accuracy}
+\subsubsection{Accuracy}
 
 When the dimension of the problem is low we can compute the expected improvement analytically. \cite{Ginsbourger2008} gives solutions for the 1-D and 2-D EI exactly. We compare our method to these and see how many MC iterations are required to achieve different levels of accuracy.
 
@@ -1491,7 +1494,7 @@ graph: wall clock time vs number of restarts (paths)
 \subsection{Memory Restrictions} % (fold)
 \label{sub:Memory Restrictions}
 
-GPGPU cores have very low memory per core/block (16KB for tesla, 4KB for a GT 2{\it XX} card). Our algorithm uses matrices of various sizes (table \ref{EPImemory}, some of which grow to be quite large as more points are sampled,
+GPGPU cores have very low memory per core/block (16KB for tesla, 4KB for a GT 2{\it XX} card). Our algorithm uses matrices of various sizes (table \ref{EPImemory}), some of which grow to be quite large as more points are sampled.
 
 \begin{table}
     \caption{GPP matrix memory footprint}
@@ -1514,7 +1517,7 @@ GPGPU cores have very low memory per core/block (16KB for tesla, 4KB for a GT 2{
 \end{center}
 \end{table}
 
-The trivially MC portions of the algorithm only ``need" the matrices of size $l \times l$ to compute their estimates, so that it all we send to the GPU, the calculations involving $n \times n$ are computed on the CPU where system memory is abundant.
+The trivially MC portions of the algorithm only ``need" the matrices of size $l \times l$ to compute their estimates, so that is all that is sent to the GPU, the calculations involving $n \times n$ are computed on the CPU where system memory is abundant.
 
 \subsubsection{Memory Transfer} % (fold)
 \label{ssub:Memory Transfer}
@@ -1607,14 +1610,14 @@ We introduce an algorithm based on global and local densities of
 matches at the amino-acid level that finds areas of high commonality
 across a set of sequences.  It produces results that are intermediate
 between local and multiple sequence alignment and can address
-questions that other approaches cannot address.  The speed of the
+questions that other approaches cannot.  The speed of the
 algorithm is superior to BLASTX and HMMER v3, and the scaling is
 $\mathcal{O}$($N$) where $N$ is the total length of the sequences
 being compared.
 
 \chapter{Velvetrope Introduction} % (fold)
 \label{cha:Velvetrope Introduction}
-
+\noindent
 Next generation biological sequencing technologies have created a virtual torrent of new sequence data. The analysis challenges that this data presents need to be addressed by new algorithms that are designed to be as efficient as possible and can scale with the data. One area of analytic interest is that of alignment, finding where two genetic sequences are similar. Finding these highly conserved regions can lead to new insights on how distantly related organisms perform related tasks. By examining all of the ways that nature has evolved solutions to a specific challenge, like synthesizing glucose, we can come up with new and efficient techniques for applications in everything from biofuels to medicine.
 
 Finding shared elements of sequence among possibly-related genes is a
@@ -1641,19 +1644,19 @@ construct pathological cases where commonality will not be detected
 even for the limiting value of $k = 1$.
 
 The importance of computational efficiency and scaling is made paramount by the recent advances
-and demands of data--driven projects in fields such as
+and demands of data-driven projects in fields such as
 shotgun metagenomic sequencing and cancer genomics. Such projects
 routinely create data sets exceeding 10 Gbp ($10^{10}$bp) and will soon extend
 to the Tbp ($10^{12}$bp) region as new sequencing technologies come online. Speed
 and scaling, especially at the early steps of analysis, is critical to make advances in these fields tractable.
 
-Velvetrope was conceived to enable finding sequence homology with an algorithm that
-was simple, scalable and parallel from the start. Our approach is based on finding areas of high densities of shared identities (Amino Acid or DNA) in local
-(adjustable) regions between sequences, rather than finding $k$-mers. This allows for rapid bitwise operations between sequences, computeable in parallel. These areas are found by performing first a global, then local filter on the shared identities. By omitting the $k$-mer step we allow Velvetrope to access homology information between evolutionarily distant sequences otherwise inaccessible by other methods.
+Velvetrope was conceived to enable the identification of sequence homology with an algorithm that
+is simple, scalable and parallel from the start. Our approach is based on finding areas of high densities of shared identities (Amino Acid or DNA) in local
+(adjustable) regions between sequences, rather than finding $k$-mers. This allows for rapid bitwise operations between sequences, computeable in parallel. These areas are found by performing first a global, then local filter on the shared identities. By omitting the $k$-mer step we allow Velvetrope to access homology information between evolutionarily distant sequences otherwise inaccessible by other existing methods.
 
-While areas of high sequence identity density are qualitatively similar to local alignments, they are significantly different from the outputs of traditional pairwise-local or global alignment algorithms. These regions do correspond to areas of high probability to be in a standard alignment as they represent areas of high local homology. Rather than explicitly calling these regions alignments we refer to them as ``in the club,'' thus giving rise to the name, 'Velvetrope' the traditional barrier between those in and out of a club.
+While areas of high sequence identity density are qualitatively similar to local alignments, they are significantly different from the outputs of traditional pairwise-local or global alignment algorithms. These regions do correspond to areas with a high probability of being in a standard alignment as they represent areas of high local homology. Rather than explicitly calling these regions alignments we refer to them as ``in the club,'' thus giving rise to the name, 'Velvetrope' the traditional barrier between those in and out of a club.
 
-Velvetrope is a quick and simple and highly parallelizable method (we present both a serial and parallel implementation)
+Velvetrope is a quick, simple and highly parallelizable method (we present both a serial and parallel implementation)
 that finds areas of high similarity between many
 sequences in a pairwise fashion, never performing a $k$-mer based step and independent of order. This allows for it
 to quickly find areas of high local homology, including areas that these other
@@ -1666,9 +1669,9 @@ methods may ignore like proteins with transposed domains.
 
 To find the areas of high local homology between sequences we employ a two-part filtering system that first finds offsets (sets of positions) where two sequences share a higher than expected amount of identity (global filter), and then filters these sets of positions to find areas with higher than expected identity within them (local filter).
 
-Velvetrope's filtering system implements only bitwise operations on a sequence of interest $S$ compared against a possibly large set of other test sequences \textbf{T}. The first step is a global filter and works by taking the sequence of interest and comparing it using DNA or Amino Acid translations (up to 6 frames of reference). For the motivating examples we will assume we are in a coding region and use a Amino Acid translation. We can compare the sequence $S$ against each sequence in the set of sequences to be compared against $T \in$ \textbf{T}  using simple AND operations. To track the sequence identities within these offsets we construct a binary concordance matrix $M$ that keeps track of all matches (sequence identities) across all possible offsets between the two sequences.
+Velvetrope's filtering system implements only bitwise operations on a sequence of interest $S$ compared against a possibly large set of other test sequences \textbf{T}. The first step is a global filter and works by taking the sequence of interest and comparing it using DNA or Amino Acid translations (up to 6 frames of reference). For the motivating examples we will assume we are in a coding region and use an Amino Acid translation. We can compare the sequence $S$ against each sequence in the set of sequences to be compared against $T \in$ \textbf{T}  using simple AND operations. To track the sequence identities within these offsets we construct a binary concordance matrix $M$ that keeps track of all matches (sequence identities) across all possible offsets between the two sequences.
 
-The aggregate number of matches for every offset found is compared to what would be expected if the test sequence were randomly rearranged at that offset; if the number of matches is above some threshold then this offset is saved as having a possible area of high local homology, this is the global filter. All possible offsets up to the length of the proposed sequence are checked in this fashion. By looking at all possible offsets between the two sequences we can allow the areas being compared to shift across the two sequences, even becoming transposed if need be. This can be done in parallel for all sequences in \textbf{T} and even across different offset sets within a particular test sequence.
+The aggregate number of matches for every offset found is compared to what would be expected if the test sequence were randomly rearranged at that offset; if the number of matches is above some threshold then this offset is saved as having a possible area of high local homology; this is the global filter. All possible offsets up to the length of the proposed sequence are checked in this fashion. By looking at all possible offsets between the two sequences we can allow the areas being compared to shift across the two sequences, even becoming transposed if need be. This can be done in parallel for all sequences in \textbf{T} and even across different offset sets within a particular test sequence.
 
 The next filter is local and works by looking over a fixed-bit window in each of the possible offsets proposed by the first step. The window keeps a running average of the number of matches within it, correcting for the expected number of random matches and keeping track of only the difference between the number of matches were actually found and what is expected. When there is a large spike in this value then the window has shifted over an area with a large number of possibly non-random matches, an area of high sequence identity density. The region is then saved as an area of high local homology between the two sequences.
 
@@ -1694,10 +1697,10 @@ If every amino acid in $T$ were randomly distributed and there were equal freque
 \end{equation}
 This is not always true, and the algorithm takes local expectation into account, but this can be used as an approximation for motivation purposes. This is to say, long linear stretches of ones in this matrix should be rare and possibly contain useful information about areas of high similarity.
 
-For example purposes we will compare the RNA Polymerase Beta Subunit between E. Coli and Bacillus subtilis \cite{GenBank} for the rest of the implementation section. We can see the row sum of the concordance matrix that these two genes imply compared against the expectation in Table \ref{VRtab1} and \ref{VRtab2}.
+For example purposes we will compare the RNA Polymerase Beta Subunit between {\it E. Coli} and {\it Bacillus subtilis} \cite{GenBank} for the rest of the implementation section. We can see the row sum of the concordance matrix that these two genes imply compared against the expectation in Table \ref{VRtab1} and \ref{VRtab2}.
 
 \begin{table}[htp]
-    \caption[Velvetrope offset matrix]{This is a subset of the 'offset matrix' constructed when comparing two genes. The black letters represent residues 1181-1189 of our sequence of interest. We are looking at a small section of the rows represented by offsets of 971-980. A red letter represents a match. As we can see there is an area of possible alignment in offset 976 as there are many more matches than we would believe to be expected.}
+    
     \label{VRtab1}
 \begin{center}
 {\small
@@ -1722,10 +1725,11 @@ SOI & \textcolor{blue}{I} &  \textcolor{blue}{A} &  \textcolor{blue}{T} &  \text
 \end{tabular}
 }
 \end{center}
+\caption[Velvetrope offset matrix]{This is a subset of the 'offset matrix' constructed when comparing two genes. The black letters represent residues 1181-1189 of our sequence of interest. We are looking at a small section of the rows represented by offsets of 971-980. A red letter represents a match. As we can see there is an area of possible alignment in offset 976 as there are many more matches than we would believe to be expected.}
 \end{table}
 
 \begin{table}[htp]
-    \caption[Velvetrope offset bit-matrix]{The matches of the offset matrix encoded into a binary bit-matrix. A 1 represents a match, a 0 represents no match. Alternatively a BLOSSUM or other amino acid transition matrix could be used in lieu of the more simple (and less memory intensive) bit matrix shown.}
+    
     \label{VRtab2}
 \begin{center}
 {\small
@@ -1749,6 +1753,7 @@ SOI & \textcolor{blue}{I} &  \textcolor{blue}{A} &  \textcolor{blue}{T} &  \text
 \end{tabular}
 }
 \end{center}
+\caption[Velvetrope offset bit-matrix]{The matches of the offset matrix encoded into a binary bit-matrix. A 1 represents a match, a 0 represents no match. Alternatively a BLOSSUM or other amino acid transition matrix could be used in lieu of the more simple (and less memory intensive) bit matrix shown.}
 \end{table}
 
 \section{First filter: Global}
@@ -1771,19 +1776,19 @@ being compared. This is far less computationally complex than the alternative dy
 
 \section{Second filter: Local}
 
-We now have the set of offsets that have a significant number of ones in them. The next goal is to quickly find where the areas of high density are in these vectors, if such areas exist, as these would be areas of high homology between the sequences. This is done by taking a running sum of each vector from its start, at each point we subtract off the expectation based on the amino acid frequency of the two sequences for each position. This has an effect of calculating how many ones have been found at or before that position above the number that would be expected. We know that this value must increase at some point in the vector because at the end there needs to be some extra number of ones equal to some number of standard deviations away from the mean, based on it passing the global step. Where this value peaks is where the club starts (is has a significant jump in the running sum over some window). When the value flattens out again that part of the sequence is no longer in the club. See Figure \ref{fig:vr02}.
+We now have the set of offsets that have a significant number of ones in them. The next goal is to quickly find where the areas of high density are in these vectors, if such areas exist, as these would be areas of high homology between the sequences. This is done by taking a running sum of each vector from its start; at each point we subtract off the expectation based on the amino acid frequency of the two sequences for each position. This has an effect of calculating how many ones have been found at or before that position above the number that would be expected. We know that this value must increase at some point in the vector because at the end there needs to be some extra number of ones equal to some number of standard deviations away from the mean, based on it passing the global step. Where this value peaks is where the club starts (it has a significant jump in the running sum over some window). When the value flattens out again that part of the sequence is no longer in the club (see Figure \ref{fig:vr02}).
 
-Two parameters are used here (combined with the one from the global filter they represent all three parameters of the model), the width of the block used for approximating the derivative and how many matches above the expectation are needed to trigger the start of the region. We can get the quick, bitwise location of the high density region in the vector, which corresponds to our in the club region. A useful side effect of this filter is that if there is no region of high density, if we have just accidentally found an outlier from the global filter that just happens to have a lot of sparse matches, then it will not trigger and we will not get a false positive from the result of the global step.
+Two parameters are used here (combined with the one from the global filter, they represent all three parameters of the model), the width of the block used for approximating the derivative and the number of matches above the expectation that are needed to trigger the start of the region. We can get the quick, bitwise location of the high density region in the vector, which corresponds to our ``in the club" region. A useful side effect of this filter is that if there is no region of high density, if we have just accidentally found an outlier from the global filter that just happens to have a lot of sparse matches, then it will not trigger and we will not get a false positive from the result of the global step.
 
  \begin{figure}[htp]%figure3
  \centerline{\includegraphics[width=\textwidth]{figures/velvetrope/localAlignmentsCDF.png}}
- \caption[Second Velvetrope filter]{The four vectors that passed the global filter test and their running sum calculation. When the approximate derivative of the running sum reaches a certain point the region is marked as having a possible alignment and shaded. For the vector blue means no match an not in that region, cyan is a match but not in the region (random match), yellow is the region of possible alignment and red are the positions in that region that have matches. The location of the region is marked along with the total density of matches within that region.}
+ \caption[Second Velvetrope filter]{The four vectors that passed the global filter test and their running sum calculation. When the approximate derivative of the running sum reaches a certain point the region is marked as having a possible alignment and shaded. For the vector blue means no match and not in that region, cyan is a match but not in the region (random match), yellow is the region of possible alignment and red are the positions in that region that have matches. The location of the region is marked along with the total density of matches within that region.}
  	\label{fig:vr02}
  \end{figure}
 
 \section{Recompilation}
 
-Now we have the regions where we have reason to believe that there are local alignments between the two sequences, our in club areas. We can see where they lie on their respective sequences and how their densities compare with each other and the sequences as a whole. This can be important information because the shifting of conserved regions and possible transposition events can represent evolutionary distance between the sequences. If we consider the conserved regions to be fixed by natural selection then their relative drift away from each other should be related to when they originally diverged. We can see an example of this in Figure \ref{fig:vr03} where there is a difference in the sequence length between conserved areas of sequence.
+Now we have identified the regions where we have reason to believe there are local alignments between the two sequences, our ``in club" areas. We can see where they lie on their respective sequences and how their densities compare with each other and the sequences as a whole. This can be important information because the shifting of conserved regions and possible transposition events can represent evolutionary distance between the sequences. If we consider the conserved regions to be fixed by natural selection, then their relative drift away from each other should be related to the point when they originally diverged. We can see an example of this in Figure \ref{fig:vr03} where there is a difference in the sequence length between conserved areas of sequence.
 
  \begin{figure}[htp]%figure4
  \centerline{\includegraphics[width=\textwidth]{figures/velvetrope/localAlignmentsBreakout.png}}
@@ -1800,7 +1805,7 @@ Now we have the regions where we have reason to believe that there are local ali
 
 We now compare the algorithm on a pairwise basis to the Needleman-Wunsch (NW) algorithm \cite{Durbin06} \cite{Needleman70}. We will compare specific regions of the NW alignment to areas that the Velvetrope algorithm determined were locally aligned.
 
-For these examples we will use pairs of generated sequences. First an Hidden Markov Model (HMM) based generated pair and then a pathologically designed pair where two conserved areas have been transposed. These aren't exactly fair comparisons because algorithms like NW and BLAST are not designed to handle instances like this, they just want to align the entire sequence from end to end. The point of this section is to show that although the Velvetrope algorithm does not solve the same problem as these algorithms and thus cannot be directly compared it can solve some other problems that these standard methods fail at.
+For these examples we will use pairs of generated sequences. First an Hidden Markov Model (HMM) based generated pair and then a pathologically designed pair where two conserved areas have been transposed. These aren't exactly fair comparisons because algorithms like NW and BLAST are not designed to handle instances like this, they just want to align the entire sequence from end to end. The point of this section is to show that although the Velvetrope algorithm does not solve the same problem as these algorithms and thus cannot be directly compared, it can solve some other problems that these standard methods cannot.
 
 \subsection{Comparison to NW: HMM generated sequence}
 
@@ -1811,7 +1816,7 @@ First we generate the sequence of interest by randomly sampling 800 amino acids.
 \begin{figure}[hpt]
 	\centering
 		\includegraphics[width=0.5\textwidth]{figures/velvetrope/HMMpic.png}
-        \caption[HMM for synthetic NW comparison]{The HMM for generating the test sequence. There are 6 states, Start(S), High Density(H) where there is a 0.63 chance of sampling from the sequence of interest and 0.37 of random, Low Density(L) where all sampling is random, Deletion(D) where we shorten the sequence, Insertion(I) where we add a random element to the sequence but don't increment the position we are comparing ourselves to in the sequence of interest, and End(E)}
+        \caption[HMM for synthetic NW comparison]{The HMM for generating the test sequence. There are 6 states, Start(S), High Density(H) where there is a 0.63 chance of sampling from the sequence of interest and 0.37 chance of random, Low Density(L) where all sampling is random, Deletion(D) where we shorten the sequence, Insertion(I) where we add a random element to the sequence but don't increment the position we are comparing ourselves to in the sequence of interest, and End(E)}
 	\label{fig:99}
 \end{figure}
 
@@ -1821,7 +1826,7 @@ The parameter values are set as follows:
     \left\{\begin{tabular}{c} $\delta$ = $\frac{1}{800}$ \\ $t_{HL} = t_{LH} = \frac{1}{20}$ \\ $t_{LD} = t_{LI} = \frac{1}{20}$ \\ $\epsilon_{D} = \epsilon_{I} = \frac{3}{5}$ \\ $t_{IL} = t_{ID} = \frac{2}{5}$ \\ $\epsilon_{H} = \frac{19}{20} - \delta$ \\ $\epsilon_{L} = \frac{17}{20} - \delta$ \end{tabular} \right.
 \end{equation}
 
-We use the BLOSUM62 matrix \cite{Henikoff1992}, and a relatively high deletion penalty (equal to the highest transfer) and a emission rate of a quarter of that.
+We use the BLOSUM62 matrix \cite{Henikoff1992}, and a relatively high deletion penalty (equal to the highest transfer) and an emission rate of a quarter of that.
 
 \begin{figure}[hpt]
 	\centering
@@ -1839,7 +1844,7 @@ We use the BLOSUM62 matrix \cite{Henikoff1992}, and a relatively high deletion p
 	\label{fig:06}
 \end{figure}
 
-Below is the area of local alignment as determined by Velvetrope
+Below is the area of local alignment as determined by Velvetrope as compared to the same region aligned by NW.
 
 \begin{flushleft}
     \singlespacing
@@ -1862,7 +1867,7 @@ Below is the area of local alignment as determined by Velvetrope
 \normalspacing
 \end{flushleft}
 
-As compared to the same region aligned by NW. We note that by trying to align the random sections earlier and later in the sequence the algorithm fails to accurately pick up this area of high local alignment.
+We note that by trying to align the random sections earlier and later in the sequence the algorithm fails to accurately pick up this area of high local alignment.
 
 \begin{flushleft}
     \singlespacing
@@ -1932,7 +1937,7 @@ Below is the area of local alignment as determined by Velvetrope for the first c
 \normalspacing
 \end{flushleft}
 
-Below is the area of local alignment as determined by Velvetrope for the second conserved section.
+Below is the area of local alignment as determined by Velvetrope for the second conserved section as compared to the same region aligned by NW.
 
 \begin{flushleft}
 \singlespacing
@@ -1955,7 +1960,7 @@ Below is the area of local alignment as determined by Velvetrope for the second 
 \normalspacing
 \end{flushleft}
 
-As compared to the same region aligned by NW. This algorithm is clearly not set up to deal with transposed conserved regions and it fails as expected.
+This algorithm is clearly not set up to deal with transposed conserved regions and it fails as expected.
 
 \begin{flushleft}
 \singlespacing
@@ -1997,7 +2002,7 @@ Traditional methods, like those in BAliBASE, have to be prompted with domain inf
  \centerline{\includegraphics[width=\textwidth]{figures/velvetrope/COMBO1.png}}
  \caption[Velvetrope per-base output]{We see that by combining the information about shared identity (solid, blue columns) and club membership
 (light, always larger, green columns) from a single sequence of interest across many test sequences we can
-ﬁnd the areas of the sequence of interest that are shared among a large percentage of the whole set. This
+find the areas of the sequence of interest that are shared among a large percentage of the whole set. This
 information, shown for the lectin protien from BAliBASE reference 8, can be used to determine where the
 two protien domains are (areas where the columns are high) and create a probable MSA.}
  	\label{fig:vr05}

@@ -1,22 +1,22 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \contentsline {table}{\numberline {2.1}{\ignorespaces DNA nucleotide and ambiguity codes}}{10}
-\contentsline {table}{\numberline {2.2}{\ignorespaces GC content of reads}}{30}
+\contentsline {table}{\numberline {2.2}{\ignorespaces GC content of reads}}{31}
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {3.1}{\ignorespaces miss-assemblies identified in {\it Spirochaeta smaragdinae}.}}{40}
-\contentsline {table}{\numberline {3.2}{\ignorespaces Real Data ALE vs. PacBio}}{44}
-\addvspace {10\p@ }
-\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces miss-assemblies identified in {\it Spirochaeta smaragdinae}.}}{41}
+\contentsline {table}{\numberline {3.2}{\ignorespaces Real Data ALE vs. PacBio}}{45}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {8.1}{\ignorespaces GPP matrix memory footprint}}{84}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {10.1}{\ignorespaces Velvetrope offset matrix}}{95}
-\contentsline {table}{\numberline {10.2}{\ignorespaces Velvetrope offset bit-matrix}}{96}
+\contentsline {table}{\numberline {8.1}{\ignorespaces GPP matrix memory footprint}}{85}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {10.1}{\ignorespaces Velvetrope offset matrix}}{96}
+\contentsline {table}{\numberline {10.2}{\ignorespaces Velvetrope offset bit-matrix}}{97}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {A.1}{\ignorespaces Workstation configuration}}{115}
-\contentsline {table}{\numberline {A.2}{\ignorespaces Hopper node configuration}}{116}
+\contentsline {table}{\numberline {A.1}{\ignorespaces Workstation configuration}}{116}
+\contentsline {table}{\numberline {A.2}{\ignorespaces Hopper node configuration}}{117}
