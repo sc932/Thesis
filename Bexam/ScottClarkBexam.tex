@@ -450,8 +450,20 @@ The function $f$ has domain $A \subseteq \mathbb{R}^{d}$, possibly constrained.
 
 This function can be anything, like an assembly likelihood given either the reference or some parameters for an assembler.
 \end{center}
-
 }
+
+\frame{
+\begin{center}
+ \includegraphics[height = 7.5cm]{figures/EPI/opt_methods_woEPI.pdf}
+\end{center}
+}
+
+\frame{
+\begin{center}
+ \includegraphics[height = 7.5cm]{figures/EPI/opt_methods_wEPI.pdf}
+\end{center}
+}
+
 
 \frame{\frametitle{The math (figures next!)}
 We begin with a Gaussian process prior on a continuous function $f$.
@@ -611,7 +623,15 @@ The Algorithm
 
 \frame{\frametitle{EPI Conclusion}
 
-WHAT WE DID
+Developed an algorithm and software package that
+
+\begin{itemize}
+    \item Finds next best {\bf set} of points to sample
+ \item Allows for efficient use of parallel resources
+ \item Is faster than serial methods
+ \item Is general: global, black-box, derivative-free, non-convex
+ \item Is open source and easy use python (+CUDA) and/or C
+\end{itemize}
 }
 
 {
