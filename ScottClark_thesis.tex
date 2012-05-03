@@ -1269,7 +1269,7 @@ TODO graphs showing gain vs wallclock time
 TODO
 more cores, more samples, more MC runs
 \begin{figure}[hpt]
- 	\centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/GPP_timing.png}}
+ 	\centerline{\includegraphics[width=\textwidth]{figures/EPI/speedup_vs_wallclock_8_core_9_its.png}}
     \caption[Parallel speedup for function drawn from prior]{Parallel speedup using function drawn from prior...}
  	\label{fig:EPI_res1}
 \end{figure}
@@ -1360,18 +1360,23 @@ and
     \frac{\partial}{\partial \sigma_{n}^{2}} \mbox{cov}(x_{i}, x_{j}) = \delta_{ij}.
 \end{equation}
 
-TODO
-show contour of log like WITH vectors
+\subsection{Example of hyperparameter evolution}
+
+domain = -7,7
+hyper = 1,1,0.01
+falsehyper = 2,1,0.1
+20, (x3) samples of a latin hypercube
+
 \begin{figure}[hpt]
- 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
+ 	\centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/hyper_update_loglike_20s.png}}
+    \centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/hyper_update_loglike_60s.png}}
     \caption[Likelihood of hyperparameters]{Likelihood of hyperparameters...}
  	\label{fig:EPI_hyper_1}
 \end{figure}
 
-TODO
-experiment: start with one GPP, and assumptions about another, show evolution, show evolution vs number of points sampled
 \begin{figure}[hpt]
- 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
+ 	\centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/hyper_update_GPP_pre.png}}
+    \centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/hyper_update_GPP_post.png}}
     \caption[Evolution of hyperparameters]{Evolution of hyperparameters...}
  	\label{fig:EPI_hyper_2}
 \end{figure}
@@ -2262,7 +2267,7 @@ Kent, W.J. (2002) BLAT - the BLAST-like alignment tool. \textit{Genome Res.} \te
 
 %Psi-blast, uses double k-mer and limited width dynamic programming
 \bibitem[Altschul \textit{et~al}., 1997]{PSIBLAST}
-Altshul, S.F., \textit{et~al}. (1997) Gapped BLAST and PSI-BLAST: a new generation pf [rptein database search programs. \textit{Nucleic Acids Research} \textbf{25}(17), 3389-3402.
+Altshul, S.F., \textit{et~al}. (1997) Gapped BLAST and PSI-BLAST: a new generation pf protein database search programs. \textit{Nucleic Acids Research} \textbf{25}(17), 3389-3402.
 
 %MEME, similar program style
 \bibitem[Bailey \textit{et~al}., 2006]{MEME}

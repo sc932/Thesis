@@ -29,23 +29,23 @@
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {8.1}{\ignorespaces Likelihood of hyperparameters}}{79}
 \contentsline {figure}{\numberline {8.2}{\ignorespaces Evolution of hyperparameters}}{80}
-\contentsline {figure}{\numberline {8.3}{\ignorespaces CPU vs GPU time to compute EI}}{84}
+\contentsline {figure}{\numberline {8.3}{\ignorespaces CPU vs GPU time to compute EI}}{85}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {10.1}{\ignorespaces First Velvetrope filter}}{98}
-\contentsline {figure}{\numberline {10.2}{\ignorespaces Second Velvetrope filter}}{100}
-\contentsline {figure}{\numberline {10.3}{\ignorespaces Local alignments}}{101}
+\contentsline {figure}{\numberline {10.1}{\ignorespaces First Velvetrope filter}}{99}
+\contentsline {figure}{\numberline {10.2}{\ignorespaces Second Velvetrope filter}}{101}
+\contentsline {figure}{\numberline {10.3}{\ignorespaces Local alignments}}{102}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {11.1}{\ignorespaces HMM for synthetic NW comparison}}{103}
-\contentsline {figure}{\numberline {11.2}{\ignorespaces Local Velvetrope filter of NW HMM test}}{104}
-\contentsline {figure}{\numberline {11.3}{\ignorespaces Topological information of NW HMM test}}{105}
-\contentsline {figure}{\numberline {11.4}{\ignorespaces Local Velvetrope filter for NW trasposition test}}{106}
-\contentsline {figure}{\numberline {11.5}{\ignorespaces Topological information of NW transposition test}}{107}
-\contentsline {figure}{\numberline {11.6}{\ignorespaces Multiple alignment reference}}{110}
-\contentsline {figure}{\numberline {11.7}{\ignorespaces Velvetrope per-base output}}{111}
-\contentsline {figure}{\numberline {11.8}{\ignorespaces Multiple sequence alignments}}{112}
-\contentsline {figure}{\numberline {11.9}{\ignorespaces Velvetrope vs. HMMer and BLAST}}{112}
-\contentsline {figure}{\numberline {11.10}{\ignorespaces Comparison Venn diagram}}{112}
+\contentsline {figure}{\numberline {11.1}{\ignorespaces HMM for synthetic NW comparison}}{104}
+\contentsline {figure}{\numberline {11.2}{\ignorespaces Local Velvetrope filter of NW HMM test}}{105}
+\contentsline {figure}{\numberline {11.3}{\ignorespaces Topological information of NW HMM test}}{106}
+\contentsline {figure}{\numberline {11.4}{\ignorespaces Local Velvetrope filter for NW trasposition test}}{107}
+\contentsline {figure}{\numberline {11.5}{\ignorespaces Topological information of NW transposition test}}{108}
+\contentsline {figure}{\numberline {11.6}{\ignorespaces Multiple alignment reference}}{111}
+\contentsline {figure}{\numberline {11.7}{\ignorespaces Velvetrope per-base output}}{112}
+\contentsline {figure}{\numberline {11.8}{\ignorespaces Multiple sequence alignments}}{113}
+\contentsline {figure}{\numberline {11.9}{\ignorespaces Velvetrope vs. HMMer and BLAST}}{113}
+\contentsline {figure}{\numberline {11.10}{\ignorespaces Comparison Venn diagram}}{113}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {12.1}{\ignorespaces Velvetrope timings}}{114}
+\contentsline {figure}{\numberline {12.1}{\ignorespaces Velvetrope timings}}{115}
 \addvspace {10\p@ }
