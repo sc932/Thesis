@@ -1,23 +1,23 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \contentsline {table}{\numberline {2.1}{\ignorespaces DNA nucleotide and ambiguity codes}}{10}
-\contentsline {table}{\numberline {2.2}{\ignorespaces GC content of reads}}{31}
+\contentsline {table}{\numberline {2.2}{\ignorespaces GC content of reads}}{30}
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {3.1}{\ignorespaces miss-assemblies identified in {\it Spirochaeta smaragdinae}.}}{41}
-\contentsline {table}{\numberline {3.2}{\ignorespaces Real Data ALE vs. PacBio}}{45}
+\contentsline {table}{\numberline {3.1}{\ignorespaces miss-assemblies identified in {\it Spirochaeta smaragdinae}.}}{42}
+\contentsline {table}{\numberline {3.2}{\ignorespaces Real Data ALE vs. PacBio}}{46}
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Example of GMM for ALE depth score}}{50}
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {8.1}{\ignorespaces GPP matrix memory footprint}}{86}
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {10.1}{\ignorespaces Velvetrope offset matrix}}{97}
-\contentsline {table}{\numberline {10.2}{\ignorespaces Velvetrope offset bit-matrix}}{98}
+\contentsline {table}{\numberline {4.1}{\ignorespaces Example of GMM for ALE depth score}}{51}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {A.1}{\ignorespaces Workstation configuration}}{117}
-\contentsline {table}{\numberline {A.2}{\ignorespaces Hopper node configuration}}{118}
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {8.1}{\ignorespaces GPP matrix memory footprint}}{88}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {10.1}{\ignorespaces Velvetrope offset matrix}}{100}
+\contentsline {table}{\numberline {10.2}{\ignorespaces Velvetrope offset bit-matrix}}{101}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {A.1}{\ignorespaces Workstation configuration}}{118}
+\contentsline {table}{\numberline {A.2}{\ignorespaces Hopper node configuration}}{119}

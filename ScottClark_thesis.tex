@@ -351,7 +351,7 @@ Then, at any given position the depth sub-score is
 \begin{equation}
     \begin{array}{l}
         P_{\text{depth}}\left(d_{j}|S,X_{i}\right) \\
-        = {\rm Poisson}\left(d_{j};Y_{i}]\right), Y_{i} \sim {\rm Gamma}(\max(10,\mu_{\text{depth}(X_{i})}), 1) \\
+        = {\rm Poisson}\left(d_{j};Y_{i}\right), Y_{i} \sim {\rm Gamma}(\max(10,\mu_{\text{depth}(X_{i})}), 1) \\
         = {\rm NegBinom}(d_{j}; \max(10, \mu_{\text{depth}(X_{i})}), 1/2)
     \end{array}
 \end{equation}
@@ -538,8 +538,6 @@ Assume we look at the following subsequence, focusing on the G at position 4 and
 
 One sees the following possible reads of length $l=4$ that can overlap with position 4 with their corresponding GC content (Table \ref{GCcontTable})
 
-\pagebreak
-
 \begin{table}[h]
     \label{GCcontTable}
     \caption{GC content of reads}
@@ -616,12 +614,32 @@ A black bar is drawn on the plot if the likelihood falls below the threshold at 
 \section{Performance on major types of miss-assemblies in a genome assembly with synthetic data}
 Common assembly errors include single-base substitutions, insertion/deletions, chimeric assemblies derived from translocations or misjoins, and copy number errors derived from repeat condensation/expansions. To test ALE's ability to detect these types of errors in an assembly, we generated synthetic reads from a reference genome and then seeded the reference with each type of error. First, 400,000 pair-end synthetic reads were generated from the first 350kbp at random positions of Escherichia Coli K12 Substrain DH10B (\cite{Durfee2008}). Their insert length follows a normal distribution with mean 200bp and standard deviation 7bp. Next, synthetic miss-assemblies were introduced at 6 different locations within this reference.  The miss-assemblies introduced were a substitution, insertion, deletion, inversion, translocation and a copy number error, respectively (Figure \ref{ALEfig2}). We treated this mutated genome as the proposed assembly.
 
-\begin{figure*}[!tpb]%figure1
-    \centerline{\includegraphics[width=0.8\textwidth]{figures/ALE/Clark_Fig2b.png}}
-    \caption[ALE performance on with synthetic reads]{The performance of ALE on synthetic errors in {\it E.Coli}. At the genome level, at least one of the four sub-scores drops dramatically in each region containing a synthetic error ({\bf A}). A higher resolution view for each type is illustrated in ({\bf B-E}). ({\bf B}) Substitution, deletion and insertion errors; ({\bf C}) an inversion error; ({\bf D}) an transposition error; and ({\bf E}) an copy number error. Diagrams above each plot illustrate how each error was generated. See text for details.}\label{ALEfig2}
+\begin{figure*}[!htpb]%figure1
+    \centerline{\includegraphics[width=\textwidth]{figures/ALE/fig_2_top.pdf}}
+    \caption[ALE performance on with synthetic reads]{The performance of ALE on synthetic errors in {\it E.Coli}. At the genome level, at least one of the four sub-scores drops dramatically in each region containing a synthetic error. A higher resolution view for each type is illustrated in Figure \ref{ALEfig2p1}, \ref{ALEfig2p2}, \ref{ALEfig2p3} and \ref{ALEfig2p4}. ({\bf A}) Substitution, deletion and insertion errors; ({\bf B}) an inversion error; ({\bf C}) an transposition error; and ({\bf D}) an copy number error.}\label{ALEfig2}
 \end{figure*}
 
-We tested the ALE algorithm by aligning the above synthetic reads to the proposed assembly using bowtie (\cite{Langmead2009}) and ran the results through the ALE software package. ALE automatically thresholds each error (see Methods) and produces plots of the sub-scores near each error using the included plotter (Figure \ref{ALEfig2}). We found that ALE is able to locate each type of error in the proposed assembly. At the genome level, at least one of the four sub-scores drops dramatically in each region containing a synthetic error (Figure \ref{ALEfig2} A). The placement sub-score drops significantly at positions 69kbp, 70kbp and 71kbp respectively, which are the locations where the single-base substitution, deletion and insertion errors were added (Figure \ref{ALEfig2} B). An inversion error of length 200bp at position 140kbp causes a drop in the placement, insert and depth sub-score as read mates fail to align to the region (Figure \ref{ALEfig2} C). Similarly, a transposition error of length 200bp at position 210kbp and a copy number error of length 77bp at position 280kbp both cause the placement, insert and depth sub-scores to drop (Figure \ref{ALEfig2}, D-E). With this set of synthetic data, ALE reports no false discoveries. These results suggest that ALE systematically reports all major types of errors with simulated data.
+\begin{figure*}[hptb]%figure1
+    \centerline{\includegraphics[width=0.6\textwidth]{figures/ALE/fig2_bot_p1.pdf}}
+    \caption[ALE performance: synthetic single base errors]{Part {\bf A} of Figure \ref{ALEfig2}: A substitution, deletion and insertion error. The placement sub-score drops significantly at positions 69kbp, 70kbp and 71kbp respectively, which are the locations where the single-base substitution, deletion and insertion errors were added.}\label{ALEfig2p1}
+\end{figure*}
+
+\begin{figure*}[hptb]%figure1
+    \centerline{\includegraphics[width=0.6\textwidth]{figures/ALE/fig2_bot_p2.pdf}}
+    \caption[ALE performance: synthetic inversion]{Part {\bf B} of Figure \ref{ALEfig2}: An inversion error of length 200bp at position 140kbp causes a drop in the placement, insert and depth sub-score as read mates fail to align to the region.}\label{ALEfig2p2}
+\end{figure*}
+
+\begin{figure*}[hptb]%figure1
+    \centerline{\includegraphics[width=0.6\textwidth]{figures/ALE/fig2_bot_p3.pdf}}
+    \caption[ALE performance: synthetic transposition]{Part {\bf C} of Figure \ref{ALEfig2}: A transposition error of length 200bp at position 210kbp and a copy number error of length 77bp at position 280kbp both cause the placement, insert and depth sub-scores to drop.}\label{ALEfig2p3}
+\end{figure*}
+
+\begin{figure*}[hptb]%figure1
+    \centerline{\includegraphics[width=0.6\textwidth]{figures/ALE/fig2_bot_p4.pdf}}
+    \caption[ALE performance: synthetic copy number error]{Part {\bf D} of Figure \ref{ALEfig2}: A copy number error of length 77bp (read length) was added at position 280kbp causing the depth and insert scores to drop, as well as the placement at the very center where the two copies meet.}\label{ALEfig2p4}
+\end{figure*}
+
+We tested the ALE algorithm by aligning the above synthetic reads to the proposed assembly using bowtie (\cite{Langmead2009}) and ran the results through the ALE software package. ALE automatically thresholds each error (see Methods) and produces plots of the sub-scores near each error using the included plotter (Figure \ref{ALEfig2}). We found that ALE is able to locate each type of error in the proposed assembly. At the genome level, at least one of the four sub-scores drops dramatically in each region containing a synthetic error. With this set of synthetic data, ALE reports no false discoveries. These results suggest that ALE systematically reports all major types of errors with simulated data.
 
 \begin{figure}[!tpb]%figure1
     \centerline{\includegraphics[width=\textwidth]{figures/ALE/Clark_Fig3b.pdf}}
@@ -646,8 +664,14 @@ ALE relies on k-mer sub-score (the default is k=4) to distinguish contigs coming
 The above experiments used simulated reads, or assemblies with simulated errors. Real reads and real genome/metagenome assemblies are often very noisy, presenting an additional challenge to ALE. To test ALE using real world assemblies with real reads we chose a finished genome, {\it Spirochaeta smargdinae} DSM 11293, originally constructed from 454 and Illumina reads (\cite{Mavromatis2010}), and applied ALE to it using one lane of 2x76 paired end Illumina reads. The results are shown in Figure \ref{ALEfig5} and Table \ref{ALEtab1}. At the genome level, ALE found several errors, including a large 560kbp region (3.91mb – 4.48mp) in the proposed assembly where the depth sub-score dropped below the threshold. We found 3 areas producing errors that are likely due to repeat condensation. For example, further examination of two regions (408kbp-415kbp and 4.241mbp-4.247mbp) by overlaying the Illumina short read data indicates these regions have much higher sequence depth (2X) than neighboring regions, and contain many SNPs (two alleles of roughly equal ratio) (Figure \ref{ALEfig5}, B and C), supporting the hypothesis that there are two copies of these regions in this genome. The boundaries of these regions also have abnormal placement and insert sub-scores, further supporting the hypothesis that there are miss-assemblies at the above locations.
 
 \begin{figure*}[!tpb]%figure1
-    \centerline{\includegraphics[width=\textwidth]{figures/ALE/Clark_Fig5c.png}}
-    \caption[ALE performance on real reads]{({\bf A}) the ALE plot for {\it Spirochaeta smaragdinae} using 44M paired reads. Four ALE sub-scores were plotted across the entire genome assembly: placement (blue), k-mer (green), insert (purple) and depth (red). miss-assemblies identified by ALE default thresholds were highlighted. Two of these miss-assemblies are displayed in the integrated genome viewer (IGV, {\bf B} and {\bf C}), with the original Illumina data used by ALE and the validation data from PacBio sequencing. SNPs automatically identified by IGV are shown as colored bars in the sequencing coverage plots (the coverage is indicated by the numbers on the left).}\label{ALEfig5}
+    \centerline{\includegraphics[width=\textwidth]{figures/ALE/fig5_top.pdf}}
+    \caption[ALE performance on real reads]{({\bf A}) the ALE plot for {\it Spirochaeta smaragdinae} using 44M paired reads. Four ALE sub-scores were plotted across the entire genome assembly: placement (blue), k-mer (green), insert (purple) and depth (red). miss-assemblies identified by ALE default thresholds were highlighted. Two of these miss-assemblies are displayed in the integrated genome viewer (IGV, in Figure \ref{ALEfig5p2}), with the original Illumina data used by ALE and the validation data from PacBio sequencing. SNPs automatically identified by IGV are shown as colored bars in the sequencing coverage plots (the coverage is indicated by the numbers on the left).}\label{ALEfig5}
+\end{figure*}
+
+\begin{figure*}[!tpb]%figure1
+    \centerline{\includegraphics[width=\textwidth]{figures/ALE/fig5_mid.pdf}}
+    \centerline{\includegraphics[width=\textwidth]{figures/ALE/fig5_bot.pdf}}
+    \caption[ALE real reads: IGV of miss-assemblies]{Two of these miss-assemblies from Figure \ref{ALEfig5} displayed in the integrated genome viewer (IGV), with the original Illumina data used by ALE and the validation data from PacBio sequencing. SNPs automatically identified by IGV are shown as colored bars in the sequencing coverage plots (the coverage is indicated by the numbers on the left).}\label{ALEfig5p2}
 \end{figure*}
 
 \begin{table}[!htp]
@@ -812,20 +836,26 @@ decreases will vary. A binary search for an acceptable false positive rate can b
 meet the needs of accuracy in individual projects.
 
 \begin{figure}[hpt]
- 	\centerline{\includegraphics[width=0.5\textwidth]{figures/ALE/Clark_Fig6.pdf}}
+ 	\centerline{\includegraphics[width=\textwidth]{figures/ALE/fig6_top.png}}
     \caption[ROC curve vs. number of reported errors]{We use ALE to score a re-sequencing genome of {\it E.Coli} in which a set of errors has
 been manually and independently curated. The top X lowest ALE placement scores at positions
 where there is at least a single read correspond well to the variants discovered in genome
 finishing. As we increase the number of ALE scores examined the total percent of variants found
 exactly and within a read (36bp) or insert (200bp) length increases. The top area corresponding to
 these low scores tend to contain, or is within a short distance of a variant or a “hard stop” (region
-of 0 depth). This is to say that the true positive rate is very high (false positive rate very low). ({\bf A})
-Shows how the various rates change with the number of ALE scores reported for Chromosome 1
+of 0 depth). This is to say that the true positive rate is very high (false positive rate very low). This figure
+shows how the various rates change with the number of ALE scores reported for Chromosome 1
 of the {\it E.Coli} re-sequencing project. We see that after 150 positions that most variants are found,
-but we still have a very low false positive rate. ({\bf B}) similarly for Chromosome 2, which is smaller,
+but we still have a very low false positive rate.}
+ 	\label{fig:ROC_ALE}
+\end{figure}
+
+\begin{figure}[hpt]
+    \centerline{\includegraphics[width=\textwidth]{figures/ALE/fig6_bot.png}}
+    \caption[ROC curve for chromosome 2]{Similar to Figure \ref{fig:ROC_ALE}, for Chromosome 2, which is smaller,
 after only 75 scores most variants are discovered and the false positive rate is around 10\%. As we
 look at more scores we discover more variants, but the false positive rate increases.}
- 	\label{fig:ROC_ALE}
+ 	\label{fig:ROC_ALE2}
 \end{figure}
 
 \section{Influence of alignment input} % (fold)
@@ -1242,7 +1272,7 @@ For each multistart iteration we draw the initial points $\vec{x}^{(t=0)}$ from 
 \end{equation}
 where $a$ and $\gamma$ are parameters of the gradient descent model. $\vec{P}^{(t)}$ is the union of the set of points being currently sampled and the proposed new points to sample. This update is performed for some set number of iterations, or until
 \begin{equation}
-    |\vec{x}_{i}^{(t+1)} - \vec{x}_{i}^{(t)}| < \epsilon
+    \left|\vec{x}_{i}^{(t+1)} - \vec{x}_{i}^{(t)}\right| < \epsilon
 \end{equation}
 for some threshold $\epsilon > 0$.
 
@@ -1362,14 +1392,15 @@ and
 
 \subsection{Example of hyperparameter evolution}
 
+TODO FILL IN
 domain = -7,7
 hyper = 1,1,0.01
 falsehyper = 2,1,0.1
 20, (x3) samples of a latin hypercube
 
 \begin{figure}[hpt]
- 	\centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/hyper_update_loglike_20s.png}}
-    \centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/hyper_update_loglike_60s.png}}
+ 	\centerline{\includegraphics[width=.85\textwidth]{figures/EPI/hyper_update_loglike_20s.pdf}}
+    \centerline{\includegraphics[width=.85\textwidth]{figures/EPI/hyper_update_loglike_60s.pdf}}
     \caption[Likelihood of hyperparameters]{Likelihood of hyperparameters...}
  	\label{fig:EPI_hyper_1}
 \end{figure}
@@ -1499,10 +1530,6 @@ The CUDA implementation of the EI algorithm is about 300 times faster to run on 
     \caption[CPU vs GPU time to compute EI]{Wall clock time to compute $\mathbb{E}_{n}\left[{\rm EI}(\vec{x})\right]$ on a CPU (blue, line) and GPU (green, x) for $l = 4$.}
  	\label{GPUspeed1}
  \end{figure}
-
-TODO
-graph: wall clock time vs number of iterations
-graph: wall clock time vs number of samples
 
 \subsection{Gradient of Expected Improvement}
 
@@ -1833,8 +1860,6 @@ For these examples we will use pairs of generated sequences. First an Hidden Mar
 
 First we generate the sequence of interest by randomly sampling 800 amino acids. The test sequence is then generated using the following HMM,
 
-\pagebreak
-
 \begin{figure}[hpt]
 	\centering
 		\includegraphics[width=0.5\textwidth]{figures/velvetrope/HMMpic.png}
@@ -1856,8 +1881,6 @@ We use the BLOSUM62 matrix \cite{Henikoff1992}, and a relatively high deletion p
         \caption[Local Velvetrope filter of NW HMM test]{The local filter information on the single line of high density returned from the global filter}
 	\label{fig:05}
 \end{figure}
-
-\pagebreak
 
 \begin{figure}[hpt]
 	\centering
@@ -2041,8 +2064,6 @@ two protien domains are (areas where the columns are high) and create a probable
 
 While Velvetrope does not perform a local alignment in the traditional sense it is able to find areas of high local homology between sequences, regardless of order or k-mer density, that are highly probable areas of local alignment. Velvetrope compares well at a visual level to standard algorithms like BLAST \cite{BLAST} and HMMer \cite{Eddy98} and the C/CUDA implementation executes at the same order of magnitude or faster than these methods. Velvetrope is very susceptible to high indel rates within a conserved region (shifts the offsets) but has been shown to equal or outperform these other methods in areas of low indel rate especially when there are only short $k$-mers within the homologous region between the two sequences.
 
-\pagebreak
-
 \section{Comparison to other methods} % (fold)
 \label{sec:Comparison to other methods}
 
@@ -2079,8 +2100,6 @@ Velvetrope is able to find areas of sequence homology quickly and efficiently ac
 being compared, allows for it to scale with the data intensive challenges that fields like metagenomics and cancer genomics present.
 
 We also present a freely available, open source implementation (both serial and parallel; in Python, C and CUDA) with easy to navigate HTML output similar to MEME \cite{MEME}. The API and documentation make it easily extendible and able to adapt to the future computationally intensive problems it is designed to address.
-
-\pagebreak
 
 \section{Availability and requirements}
  \begin{itemize}

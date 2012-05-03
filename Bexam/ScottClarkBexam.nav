@@ -1,0 +1,138 @@
+\beamer@endinputifotherversion {3.07pt}
+\headcommand {\slideentry {0}{0}{1}{1/1}{}{0}}
+\headcommand {\beamer@framepages {1}{1}}
+\headcommand {\slideentry {0}{0}{2}{2/4}{}{0}}
+\headcommand {\beamer@framepages {2}{4}}
+\headcommand {\sectionentry {1}{Motivation}{5}{Motivation}{0}}
+\headcommand {\beamer@sectionpages {1}{4}}
+\headcommand {\beamer@subsectionpages {1}{4}}
+\headcommand {\beamer@subsectionentry {0}{1}{1}{5}{What is it?}}\headcommand {\beamer@subsectionpages {5}{4}}
+\headcommand {\slideentry {1}{1}{1}{5/5}{What is it?}{0}}
+\headcommand {\beamer@framepages {5}{5}}
+\headcommand {\slideentry {1}{1}{2}{6/6}{What is it?}{0}}
+\headcommand {\beamer@framepages {6}{6}}
+\headcommand {\beamer@subsectionentry {0}{1}{2}{7}{Why is it a problem?}}\headcommand {\beamer@subsectionpages {5}{6}}
+\headcommand {\slideentry {1}{2}{1}{7/7}{Why is it a problem?}{0}}
+\headcommand {\beamer@framepages {7}{7}}
+\headcommand {\slideentry {1}{2}{2}{8/8}{What is it?}{0}}
+\headcommand {\beamer@framepages {8}{8}}
+\headcommand {\beamer@subsectionentry {0}{1}{3}{9}{Why is it important?}}\headcommand {\beamer@subsectionpages {5}{8}}
+\headcommand {\slideentry {1}{3}{1}{9/9}{Why is it important?}{0}}
+\headcommand {\beamer@framepages {9}{9}}
+\headcommand {\slideentry {1}{3}{2}{10/10}{Why is it important?}{0}}
+\headcommand {\beamer@framepages {10}{10}}
+\headcommand {\sectionentry {2}{Validating Assemblies}{11}{Validating Assemblies}{0}}
+\headcommand {\beamer@sectionpages {5}{10}}
+\headcommand {\beamer@subsectionpages {9}{10}}
+\headcommand {\slideentry {2}{0}{3}{11/11}{}{0}}
+\headcommand {\beamer@framepages {11}{11}}
+\headcommand {\beamer@subsectionentry {0}{2}{1}{12}{Background}}\headcommand {\beamer@subsectionpages {11}{11}}
+\headcommand {\slideentry {2}{1}{1}{12/12}{Background}{0}}
+\headcommand {\beamer@framepages {12}{12}}
+\headcommand {\slideentry {2}{1}{2}{13/14}{Background}{0}}
+\headcommand {\beamer@framepages {13}{14}}
+\headcommand {\slideentry {2}{1}{3}{15/15}{Background}{0}}
+\headcommand {\beamer@framepages {15}{15}}
+\headcommand {\beamer@subsectionentry {0}{2}{2}{16}{Our likelihood function}}\headcommand {\beamer@subsectionpages {12}{15}}
+\headcommand {\slideentry {2}{2}{1}{16/16}{Our likelihood function}{0}}
+\headcommand {\beamer@framepages {16}{16}}
+\headcommand {\slideentry {2}{2}{2}{17/17}{Our likelihood function}{0}}
+\headcommand {\beamer@framepages {17}{17}}
+\headcommand {\slideentry {2}{2}{3}{18/18}{Our likelihood function}{0}}
+\headcommand {\beamer@framepages {18}{18}}
+\headcommand {\slideentry {2}{2}{4}{19/19}{Our likelihood function}{0}}
+\headcommand {\beamer@framepages {19}{19}}
+\headcommand {\slideentry {2}{2}{5}{20/20}{Our likelihood function}{0}}
+\headcommand {\beamer@framepages {20}{20}}
+\headcommand {\slideentry {2}{2}{6}{21/21}{Our likelihood function}{0}}
+\headcommand {\beamer@framepages {21}{21}}
+\headcommand {\slideentry {2}{2}{7}{22/22}{Our likelihood function}{0}}
+\headcommand {\beamer@framepages {22}{22}}
+\headcommand {\slideentry {2}{2}{8}{23/23}{Our likelihood function}{0}}
+\headcommand {\beamer@framepages {23}{23}}
+\headcommand {\beamer@subsectionentry {0}{2}{3}{24}{Results}}\headcommand {\beamer@subsectionpages {12}{23}}
+\headcommand {\slideentry {2}{3}{1}{24/24}{Results}{0}}
+\headcommand {\beamer@framepages {24}{24}}
+\headcommand {\slideentry {2}{3}{2}{25/25}{Results}{0}}
+\headcommand {\beamer@framepages {25}{25}}
+\headcommand {\slideentry {2}{3}{3}{26/26}{Results}{0}}
+\headcommand {\beamer@framepages {26}{26}}
+\headcommand {\slideentry {2}{3}{4}{27/27}{Results}{0}}
+\headcommand {\beamer@framepages {27}{27}}
+\headcommand {\slideentry {2}{3}{5}{28/28}{Results}{0}}
+\headcommand {\beamer@framepages {28}{28}}
+\headcommand {\slideentry {2}{3}{6}{29/29}{Results}{0}}
+\headcommand {\beamer@framepages {29}{29}}
+\headcommand {\slideentry {2}{3}{7}{30/30}{Results}{0}}
+\headcommand {\beamer@framepages {30}{30}}
+\headcommand {\slideentry {2}{3}{8}{31/31}{Results}{0}}
+\headcommand {\beamer@framepages {31}{31}}
+\headcommand {\slideentry {2}{3}{9}{32/32}{Results}{0}}
+\headcommand {\beamer@framepages {32}{32}}
+\headcommand {\slideentry {2}{3}{10}{33/33}{Results}{0}}
+\headcommand {\beamer@framepages {33}{33}}
+\headcommand {\slideentry {2}{3}{11}{34/34}{Results}{0}}
+\headcommand {\beamer@framepages {34}{34}}
+\headcommand {\slideentry {2}{3}{12}{35/35}{Results}{0}}
+\headcommand {\beamer@framepages {35}{35}}
+\headcommand {\slideentry {2}{3}{13}{36/36}{Results}{0}}
+\headcommand {\beamer@framepages {36}{36}}
+\headcommand {\sectionentry {3}{Parallel Optimization}{37}{Parallel Optimization}{0}}
+\headcommand {\beamer@sectionpages {11}{36}}
+\headcommand {\beamer@subsectionpages {24}{36}}
+\headcommand {\beamer@subsectionentry {0}{3}{1}{37}{Introduction}}\headcommand {\beamer@subsectionpages {37}{36}}
+\headcommand {\slideentry {3}{1}{1}{37/37}{Introduction}{0}}
+\headcommand {\beamer@framepages {37}{37}}
+\headcommand {\slideentry {3}{1}{2}{38/38}{Introduction}{0}}
+\headcommand {\beamer@framepages {38}{38}}
+\headcommand {\slideentry {3}{1}{3}{39/39}{Introduction}{0}}
+\headcommand {\beamer@framepages {39}{39}}
+\headcommand {\slideentry {3}{1}{4}{40/40}{Introduction}{0}}
+\headcommand {\beamer@framepages {40}{40}}
+\headcommand {\slideentry {3}{1}{5}{41/41}{Introduction}{0}}
+\headcommand {\beamer@framepages {41}{41}}
+\headcommand {\slideentry {3}{1}{6}{42/42}{Introduction}{0}}
+\headcommand {\beamer@framepages {42}{42}}
+\headcommand {\slideentry {3}{1}{7}{43/43}{Introduction}{0}}
+\headcommand {\beamer@framepages {43}{43}}
+\headcommand {\slideentry {3}{1}{8}{44/44}{Introduction}{0}}
+\headcommand {\beamer@framepages {44}{44}}
+\headcommand {\slideentry {3}{1}{9}{45/45}{Introduction}{0}}
+\headcommand {\beamer@framepages {45}{45}}
+\headcommand {\beamer@subsectionentry {0}{3}{2}{46}{EI}}\headcommand {\beamer@subsectionpages {37}{45}}
+\headcommand {\slideentry {3}{2}{1}{46/46}{EI}{0}}
+\headcommand {\beamer@framepages {46}{46}}
+\headcommand {\slideentry {3}{2}{2}{47/47}{EI}{0}}
+\headcommand {\beamer@framepages {47}{47}}
+\headcommand {\slideentry {3}{2}{3}{48/48}{EI}{0}}
+\headcommand {\beamer@framepages {48}{48}}
+\headcommand {\slideentry {3}{2}{4}{49/49}{EI}{0}}
+\headcommand {\beamer@framepages {49}{49}}
+\headcommand {\beamer@subsectionentry {0}{3}{3}{50}{EPI algorithm}}\headcommand {\beamer@subsectionpages {46}{49}}
+\headcommand {\slideentry {3}{3}{1}{50/50}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {50}{50}}
+\headcommand {\slideentry {3}{3}{2}{51/51}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {51}{51}}
+\headcommand {\slideentry {3}{3}{3}{52/52}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {52}{52}}
+\headcommand {\slideentry {3}{3}{4}{53/53}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {53}{53}}
+\headcommand {\slideentry {3}{3}{5}{54/54}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {54}{54}}
+\headcommand {\slideentry {3}{3}{6}{55/55}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {55}{55}}
+\headcommand {\slideentry {3}{3}{7}{56/56}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {56}{56}}
+\headcommand {\slideentry {3}{3}{8}{57/57}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {57}{57}}
+\headcommand {\slideentry {3}{3}{9}{58/58}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {58}{58}}
+\headcommand {\slideentry {3}{3}{10}{59/59}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {59}{59}}
+\headcommand {\slideentry {3}{3}{11}{60/60}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {60}{60}}
+\headcommand {\beamer@partpages {1}{60}}
+\headcommand {\beamer@subsectionpages {50}{60}}
+\headcommand {\beamer@sectionpages {37}{60}}
+\headcommand {\beamer@documentpages {60}}
+\headcommand {\def \inserttotalframenumber {57}}
