@@ -460,13 +460,13 @@ This function can be anything, like an assembly likelihood given either the refe
 
 \frame{
 \begin{center}
- \includegraphics[height = 7.5cm]{figures/EPI/opt_methods_woEPI.pdf}
+ \includegraphics[height = 7.5cm]{figures/EPI/opt_methods_woEPI.png}
 \end{center}
 }
 
 \frame{
 \begin{center}
- \includegraphics[height = 7.5cm]{figures/EPI/opt_methods_wEPI.pdf}
+ \includegraphics[height = 7.5cm]{figures/EPI/opt_methods_wEPI.png}
 \end{center}
 }
 
@@ -488,39 +488,65 @@ With the posterior mean and covariance,
 
 \frame{\frametitle{GPP evolving with information}
 \begin{center}
- \includegraphics[height = 6.4cm]{EPIgif1.png}
+ \includegraphics[height = 6.8cm]{figures/EPI/evolution/GP0.png}
 \end{center}
 }
 \frame{\frametitle{GPP evolving with information}
 \begin{center}
- \includegraphics[height = 6.4cm]{EPIgif2.png}
+ \includegraphics[height = 6.8cm]{figures/EPI/evolution/GP1.png}
 \end{center}
 }
 \frame{\frametitle{GPP evolving with information}
 \begin{center}
- \includegraphics[height = 6.4cm]{EPIgif3.png}
+ \includegraphics[height = 6.8cm]{figures/EPI/evolution/GP2.png}
 \end{center}
 }
 \frame{\frametitle{GPP evolving with information}
 \begin{center}
- \includegraphics[height = 6.4cm]{EPIgif4.png}
+ \includegraphics[height = 6.8cm]{figures/EPI/evolution/GP3.png}
 \end{center}
 }
 \frame{\frametitle{GPP evolving with information}
 \begin{center}
- \includegraphics[height = 6.4cm]{EPIgif5.png}
+ \includegraphics[height = 6.8cm]{figures/EPI/evolution/GP4.png}
 \end{center}
 }
 \frame{\frametitle{GPP evolving with information}
 \begin{center}
- \includegraphics[height = 6.4cm]{EPIgif6.png}
+ \includegraphics[height = 6.8cm]{figures/EPI/evolution/GP5.png}
 \end{center}
 }
 \frame{\frametitle{GPP evolving with information}
 \begin{center}
- \includegraphics[height = 6.4cm]{EPIgif7.png}
+ \includegraphics[height = 6.8cm]{figures/EPI/evolution/GP6.png}
 \end{center}
 }
+\frame{\frametitle{GPP evolving with information}
+\begin{center}
+ \includegraphics[height = 6.8cm]{figures/EPI/evolution/GP7.png}
+\end{center}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{center}
+ \includegraphics[height = 6.8cm]{figures/EPI/evolution/GP8.png}
+\end{center}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{center}
+ \includegraphics[height = 6.8cm]{figures/EPI/evolution/GP9.png}
+\end{center}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{center}
+ \includegraphics[height = 6.8cm]{figures/EPI/evolution/GP10.png}
+\end{center}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{center}
+ \includegraphics[height = 6.8cm]{figures/EPI/evolution/GP11.png}
+\end{center}
+}
+
 
 \subsection{EI}
 \frame{\frametitle{Expected Improvement}
@@ -538,10 +564,82 @@ The optimization then approximates the solution to
 
 }
 
-\frame{\frametitle{Expected Improvement 2-D}
+\frame{\frametitle{Perfect application to GPGPUs}
 \begin{center}
- \includegraphics[height = 6.4cm]{peterMeeting020911_p6_analyticT.png}
+ \includegraphics[height = 3cm]{figures/EPI/gpu.jpeg}
 \end{center}
+GPGPUs can provide high performance computing on the desktop
+\begin{itemize}
+    \item 1536 cores on a $\sim$\$500 chip (many TFLOPs)
+    \item Program in CUDA/openCL (C {\it like})
+    \item Tight memory restrictions
+        \begin{itemize}
+            \item Low memory per core
+            \item Transfer across PCI-E bus is expensive
+        \end{itemize}
+\end{itemize}
+}
+
+\frame{\frametitle{GPU speedup for MC EI}
+\begin{center}
+ \includegraphics[height = 6.8cm]{figures/EPI/exp_EI_speedup_vs_its.pdf}
+\end{center}
+}
+
+\frame{\frametitle{GPP evolving with information}
+\begin{picture}(1,1)
+     \put(-20,-60){\includegraphics[height = 4.7cm]{figures/EPI/evolution/GP1.png}\includegraphics[height = 4.7cm]{figures/EPI/evolution/EI1.png}}
+\end{picture}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{picture}(1,1)
+     \put(-20,-60){\includegraphics[height = 4.7cm]{figures/EPI/evolution/GP2.png}\includegraphics[height = 4.7cm]{figures/EPI/evolution/EI2.png}}
+\end{picture}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{picture}(1,1)
+     \put(-20,-60){\includegraphics[height = 4.7cm]{figures/EPI/evolution/GP3.png}\includegraphics[height = 4.7cm]{figures/EPI/evolution/EI3.png}}
+\end{picture}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{picture}(1,1)
+     \put(-20,-60){\includegraphics[height = 4.7cm]{figures/EPI/evolution/GP4.png}\includegraphics[height = 4.7cm]{figures/EPI/evolution/EI4.png}}
+\end{picture}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{picture}(1,1)
+     \put(-20,-60){\includegraphics[height = 4.7cm]{figures/EPI/evolution/GP5.png}\includegraphics[height = 4.7cm]{figures/EPI/evolution/EI5.png}}
+\end{picture}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{picture}(1,1)
+     \put(-20,-60){\includegraphics[height = 4.7cm]{figures/EPI/evolution/GP6.png}\includegraphics[height = 4.7cm]{figures/EPI/evolution/EI6.png}}
+\end{picture}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{picture}(1,1)
+     \put(-20,-60){\includegraphics[height = 4.7cm]{figures/EPI/evolution/GP7.png}\includegraphics[height = 4.7cm]{figures/EPI/evolution/EI7.png}}
+\end{picture}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{picture}(1,1)
+     \put(-20,-60){\includegraphics[height = 4.7cm]{figures/EPI/evolution/GP8.png}\includegraphics[height = 4.7cm]{figures/EPI/evolution/EI8.png}}
+\end{picture}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{picture}(1,1)
+     \put(-20,-60){\includegraphics[height = 4.7cm]{figures/EPI/evolution/GP9.png}\includegraphics[height = 4.7cm]{figures/EPI/evolution/EI9.png}}
+\end{picture}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{picture}(1,1)
+     \put(-20,-60){\includegraphics[height = 4.7cm]{figures/EPI/evolution/GP10.png}\includegraphics[height = 4.7cm]{figures/EPI/evolution/EI10.png}}
+\end{picture}
+}
+\frame{\frametitle{GPP evolving with information}
+\begin{picture}(1,1)
+     \put(-20,-60){\includegraphics[height = 4.7cm]{figures/EPI/evolution/GP11.png}\includegraphics[height = 4.7cm]{figures/EPI/evolution/EI11.png}}
+\end{picture}
 }
 
 \frame{\frametitle{Expected Improvement 2-D}
@@ -560,7 +658,13 @@ To optimize $\text{EI}(\vec{x})$, we calculate stochastic gradients
 
 }
 
-\frame{\frametitle{Stochastic Gradient of the Expected Improvement using MC}
+\frame{\frametitle{Expected Improvement 2-D}
+\begin{center}
+ \includegraphics[height = 6.4cm]{peterMeeting020911_p6_analyticT.png}
+\end{center}
+}
+
+\frame{\frametitle{Stochastic Gradient of the Expected Improvement}
 \begin{center}
  \includegraphics[height = 6.4cm]{041911_sampEIandGradEI.png}
 \end{center}
@@ -611,7 +715,7 @@ The Algorithm
 
 \frame{\frametitle{Speedup}
 \begin{center}
- \includegraphics[height = 6.4cm]{figures/EPI/speedup_vs_wallclock_8_core_9_its.pdf}
+ \includegraphics[height = 6.4cm]{figures/EPI/speedup_vs_wallclock_8_core_9_its.png}
 \end{center}
 }
 

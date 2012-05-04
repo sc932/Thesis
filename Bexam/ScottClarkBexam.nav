@@ -103,40 +103,76 @@
 \headcommand {\beamer@framepages {46}{46}}
 \headcommand {\slideentry {3}{1}{11}{47/47}{Introduction}{0}}
 \headcommand {\beamer@framepages {47}{47}}
-\headcommand {\beamer@subsectionentry {0}{3}{2}{48}{EI}}\headcommand {\beamer@subsectionpages {37}{47}}
-\headcommand {\slideentry {3}{2}{1}{48/48}{EI}{0}}
+\headcommand {\slideentry {3}{1}{12}{48/48}{Introduction}{0}}
 \headcommand {\beamer@framepages {48}{48}}
-\headcommand {\slideentry {3}{2}{2}{49/49}{EI}{0}}
+\headcommand {\slideentry {3}{1}{13}{49/49}{Introduction}{0}}
 \headcommand {\beamer@framepages {49}{49}}
-\headcommand {\slideentry {3}{2}{3}{50/50}{EI}{0}}
+\headcommand {\slideentry {3}{1}{14}{50/50}{Introduction}{0}}
 \headcommand {\beamer@framepages {50}{50}}
-\headcommand {\slideentry {3}{2}{4}{51/51}{EI}{0}}
+\headcommand {\slideentry {3}{1}{15}{51/51}{Introduction}{0}}
 \headcommand {\beamer@framepages {51}{51}}
-\headcommand {\beamer@subsectionentry {0}{3}{3}{52}{EPI algorithm}}\headcommand {\beamer@subsectionpages {48}{51}}
-\headcommand {\slideentry {3}{3}{1}{52/52}{EPI algorithm}{0}}
+\headcommand {\slideentry {3}{1}{16}{52/52}{Introduction}{0}}
 \headcommand {\beamer@framepages {52}{52}}
-\headcommand {\slideentry {3}{3}{2}{53/53}{EPI algorithm}{0}}
+\headcommand {\beamer@subsectionentry {0}{3}{2}{53}{EI}}\headcommand {\beamer@subsectionpages {37}{52}}
+\headcommand {\slideentry {3}{2}{1}{53/53}{EI}{0}}
 \headcommand {\beamer@framepages {53}{53}}
-\headcommand {\slideentry {3}{3}{3}{54/54}{EPI algorithm}{0}}
+\headcommand {\slideentry {3}{2}{2}{54/54}{EI}{0}}
 \headcommand {\beamer@framepages {54}{54}}
-\headcommand {\slideentry {3}{3}{4}{55/55}{EPI algorithm}{0}}
+\headcommand {\slideentry {3}{2}{3}{55/55}{EI}{0}}
 \headcommand {\beamer@framepages {55}{55}}
-\headcommand {\slideentry {3}{3}{5}{56/56}{EPI algorithm}{0}}
+\headcommand {\slideentry {3}{2}{4}{56/56}{EI}{0}}
 \headcommand {\beamer@framepages {56}{56}}
-\headcommand {\slideentry {3}{3}{6}{57/57}{EPI algorithm}{0}}
+\headcommand {\slideentry {3}{2}{5}{57/57}{EI}{0}}
 \headcommand {\beamer@framepages {57}{57}}
-\headcommand {\slideentry {3}{3}{7}{58/58}{EPI algorithm}{0}}
+\headcommand {\slideentry {3}{2}{6}{58/58}{EI}{0}}
 \headcommand {\beamer@framepages {58}{58}}
-\headcommand {\slideentry {3}{3}{8}{59/59}{EPI algorithm}{0}}
+\headcommand {\slideentry {3}{2}{7}{59/59}{EI}{0}}
 \headcommand {\beamer@framepages {59}{59}}
-\headcommand {\slideentry {3}{3}{9}{60/60}{EPI algorithm}{0}}
+\headcommand {\slideentry {3}{2}{8}{60/60}{EI}{0}}
 \headcommand {\beamer@framepages {60}{60}}
-\headcommand {\slideentry {3}{3}{10}{61/61}{EPI algorithm}{0}}
+\headcommand {\slideentry {3}{2}{9}{61/61}{EI}{0}}
 \headcommand {\beamer@framepages {61}{61}}
-\headcommand {\slideentry {3}{3}{11}{62/62}{EPI algorithm}{0}}
+\headcommand {\slideentry {3}{2}{10}{62/62}{EI}{0}}
 \headcommand {\beamer@framepages {62}{62}}
-\headcommand {\beamer@partpages {1}{62}}
-\headcommand {\beamer@subsectionpages {52}{62}}
-\headcommand {\beamer@sectionpages {37}{62}}
-\headcommand {\beamer@documentpages {62}}
-\headcommand {\def \inserttotalframenumber {59}}
+\headcommand {\slideentry {3}{2}{11}{63/63}{EI}{0}}
+\headcommand {\beamer@framepages {63}{63}}
+\headcommand {\slideentry {3}{2}{12}{64/64}{EI}{0}}
+\headcommand {\beamer@framepages {64}{64}}
+\headcommand {\slideentry {3}{2}{13}{65/65}{EI}{0}}
+\headcommand {\beamer@framepages {65}{65}}
+\headcommand {\slideentry {3}{2}{14}{66/66}{EI}{0}}
+\headcommand {\beamer@framepages {66}{66}}
+\headcommand {\slideentry {3}{2}{15}{67/67}{EI}{0}}
+\headcommand {\beamer@framepages {67}{67}}
+\headcommand {\slideentry {3}{2}{16}{68/68}{EI}{0}}
+\headcommand {\beamer@framepages {68}{68}}
+\headcommand {\slideentry {3}{2}{17}{69/69}{EI}{0}}
+\headcommand {\beamer@framepages {69}{69}}
+\headcommand {\beamer@subsectionentry {0}{3}{3}{70}{EPI algorithm}}\headcommand {\beamer@subsectionpages {53}{69}}
+\headcommand {\slideentry {3}{3}{1}{70/70}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {70}{70}}
+\headcommand {\slideentry {3}{3}{2}{71/71}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {71}{71}}
+\headcommand {\slideentry {3}{3}{3}{72/72}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {72}{72}}
+\headcommand {\slideentry {3}{3}{4}{73/73}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {73}{73}}
+\headcommand {\slideentry {3}{3}{5}{74/74}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {74}{74}}
+\headcommand {\slideentry {3}{3}{6}{75/75}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {75}{75}}
+\headcommand {\slideentry {3}{3}{7}{76/76}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {76}{76}}
+\headcommand {\slideentry {3}{3}{8}{77/77}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {77}{77}}
+\headcommand {\slideentry {3}{3}{9}{78/78}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {78}{78}}
+\headcommand {\slideentry {3}{3}{10}{79/79}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {79}{79}}
+\headcommand {\slideentry {3}{3}{11}{80/80}{EPI algorithm}{0}}
+\headcommand {\beamer@framepages {80}{80}}
+\headcommand {\beamer@partpages {1}{80}}
+\headcommand {\beamer@subsectionpages {70}{80}}
+\headcommand {\beamer@sectionpages {37}{80}}
+\headcommand {\beamer@documentpages {80}}
+\headcommand {\def \inserttotalframenumber {77}}
