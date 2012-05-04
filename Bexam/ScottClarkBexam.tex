@@ -236,7 +236,7 @@ The Likelihood needs to take at least the following into account:
  \item \textbf{Insert lengths} must be consistent.
  \item \textbf{Orientation} of mated reads needs to be consistent.
  \item \textbf{Number of reads mapping} onto the assembly.
- \item \textbf{Coverage} normally distributed.
+ \item \textbf{Coverage} Poisson distributed (Lander 1988).
  \item \textbf{$k$-\textit{mer} frequency} must be consistent. (within a contig)
 \end{itemize}
 }
@@ -250,7 +250,13 @@ The Likelihood needs to take at least the following into account:
 \end{tabular}
 \end{center}
 
-\[P_{\text{matches}}\left(r_{i}|S\right)(j) = \left\{\begin{tabular}{cc} $Q_{j}$ & if $r_{k}(j) = S(j+\Omega)$ \\ $\frac{1-Q_{j}}{4}$ & if $r_{k}(j) \neq S(j+\Omega)$ \end{tabular}\right.\]
+\[P_{\text{matches}}\left(r_{i}|S\right)(j) = \left\{
+    \begin{tabular}{cc} 
+        $Q_{j}$ & if $r_{k}(j) = S(j+\Omega)$ \\ 
+        $\frac{1-Q_{j}}{4}$ & if $r_{k}(j) \neq S(j+\Omega)$ and $r_{k}(j) \notin A$ \\
+        $A_{j}$ & if $r_{k}(j) \in A$
+    \end{tabular}
+\right.\]
 
 \[P_{\text{placement}}\left(r_{i}|S\right) = P_{\text{matches}}\left(r_{i}|S\right)P_{\text{orientation}}\left(r_{i}|S\right)\]
 
@@ -270,7 +276,7 @@ $r_{k}$ & \text{{\color{white}$\cdots$GCA}}$\underrightarrow{\text{{\color{red} 
 
 \ \\
 
-\[P_{\text{insert}}\left(r_{i}|S\right) = {\rm Normal}\left(L_{i};\mu,\sigma^{2}\right)\]
+\[P_{\text{insert}}\left(r_{i}|S\right) = {\rm Truncated Normal}\left(L_{i};\mu,\sigma^{2}\right)\]
 }
 
 
@@ -279,7 +285,7 @@ $r_{k}$ & \text{{\color{white}$\cdots$GCA}}$\underrightarrow{\text{{\color{red} 
 We expect the coverage of the reads when mapped back onto the seeds to be Poisson distributed (Lander 1988)
 
 \[P_{\text{depth}}\left(d_{j}|S,X_{i}\right) = {\rm Poisson}\left(d_{j};Y_{i}\right)\]
-\[Y_{i} \sim {\rm Gamma}(\max(10,\mu_{\text{depth}(X_{i})}), 1)\]
+\[Y_{i} \sim {\rm Exponential}(1/\max(10,\mu_{\text{depth}(X_{i})}))\]
 \[P_{\text{depth}}\left(d_{j}|S,X_{i}\right) = {\rm NegBinom}(d_{j}; \max(10, \mu_{\text{depth}(X_{i})}), 1/2)\]
 
 GC correction
@@ -441,8 +447,8 @@ In ALE we have developed an algorithm and software package that
 \frame{\frametitle{Expected Parallel Improvement}
 
 \begin{center}
-We want a fast/efficient, derivative-free and global optimization algorithm for an expensive to evaluate, ``black box" function $f$.
-\[\max_{x \in A} f(x).\]
+We want a fast/efficient, derivative-free global optimization algorithm for an expensive to evaluate, ``black box" and possibly non-convex function $f$.
+\[\min_{x \in A} f(x).\]
 
 The function $f$ has domain $A \subseteq \mathbb{R}^{d}$, possibly constrained.
 
@@ -470,13 +476,13 @@ We begin with a Gaussian process prior on a continuous function $f$.
 
 \[f \sim \text{GP}(\mu(\cdot), \Sigma(\cdot, \cdot))\]
 
-\[(f(x_{1}), \ldots, f(x_{n})) \sim N\left( \left[ \begin{tabular}{c} $\mu(x_{1})$ \\ $\vdots$ \\ $\mu(x_{n})$ \end{tabular} \right] , \left[ \begin{tabular}{ccc} $\Sigma(x_{1}, x_{1})$ & $\cdots$ & $\Sigma(x_{n}, x_{1})$ \\ $\vdots$ & $\ddots$ & $\vdots$ \\ $\Sigma(x_{1}, x_{n})$ & $\cdots$ & $\Sigma(x_{n},x_{n}$ \end{tabular} \right] \right)\]
+\[(f(\vec{x}_{1}), \ldots, f(\vec{x}_{n})) \sim N\left( \left[ \begin{tabular}{c} $\mu(\vec{x}_{1})$ \\ $\vdots$ \\ $\mu(\vec{x}_{n})$ \end{tabular} \right] , \left[ \begin{tabular}{ccc} $\Sigma(\vec{x}_{1}, \vec{x}_{1})$ & $\cdots$ & $\Sigma(\vec{x}_{n}, \vec{x}_{1})$ \\ $\vdots$ & $\ddots$ & $\vdots$ \\ $\Sigma(\vec{x}_{1}, \vec{x}_{n})$ & $\cdots$ & $\Sigma(\vec{x}_{n},\vec{x}_{n})$ \end{tabular} \right] \right)\]
 
-\[\mu_{n}(x_{\star}) = K(\vec{x}_{\star}, \textbf{X} )K(\textbf{X},\textbf{X})^{-1}\vec{y}\]
+With the posterior mean and covariance,
 
-\[\Sigma_{n}(x_{\star}) = K(\textbf{x$_{\star}$}, \textbf{x$_{\star}$}) - K(\textbf{x$_{\star}$}, \textbf{X}) K(\textbf{X}, \textbf{X})^{-1} K(\textbf{X}, \textbf{x$_{\star}$})\]
+\[\mu_{n}({\bf x_{\star}}) = K({\bf x_{\star}}, \textbf{X} )K(\textbf{X},\textbf{X})^{-1}y, \ \ K({\bf W}, {\bf Z})_{ij} = \Sigma\left({\bf W}_{i}, {\bf Z}_{j}\right)\]
 
-\[K(\vec{y}, \vec{z})_{ij} = \text{cov}(y_{i}, z_{j})\]
+\[\Sigma_{n}({\bf x_{\star}}, {\bf x_{\star}}) = K(\textbf{x$_{\star}$}, \textbf{x$_{\star}$}) - K(\textbf{x$_{\star}$}, \textbf{X}) K(\textbf{X}, \textbf{X})^{-1} K(\textbf{X}, \textbf{x$_{\star}$})\]
 
 }
 
@@ -519,16 +525,16 @@ We begin with a Gaussian process prior on a continuous function $f$.
 \subsection{EI}
 \frame{\frametitle{Expected Improvement}
 
-\[\text{EI}(x) = \mathbb{E}_{n} \left[\left[ f(x) - f_{n}^{\star} \right]^{+} \right] = \mathbb{E} \left[ f_{n+1}^{\star} - f_{n}^{\star} | x_{n} = x\right]\]
+\[\text{EI}(\vec{x}_{\star}) = \mathbb{E}_{n} \left[\left[ f(\vec{x}_{\star}) - f_{n}^{\star} \right]^{+} \right] = \mathbb{E} \left[ f_{n+1}^{\star} - f_{n}^{\star} | \vec{x}_{n+1} = \vec{x}_{\star}\right]\]
 
-\begin{center}where $f_{n}^{\star} = \max_{m \leq n} f(x_{m})$.\end{center}
+\begin{center}where $f_{n}^{\star} = \min_{m \leq n} f(\vec{x}_{m})$.\end{center}
 
-The core of this idea is that we can calculate the expected improvement for simultaneous evaluation of points $x_{n+1}, \ldots, x_{n+l} = \vec{x}$ as
-\[\text{EI}(x_{n+1}, \ldots, x_{n+l}) = \mathbb{E}_{n}\left[\left[\max\left\{f(x_{n+1}), \ldots, f(x_{n+l})\right\} - f_{n}^{\star}\right]^{+}\right].\]
+    The core of this idea is that we can calculate the expected improvement for simultaneous evaluation of points $\{\vec{x}_{n+1}, \ldots, \vec{x}_{n+\ell}\} = {\bf x_{\star}}$ as
+    \[\text{EI}({\bf x_{\star}}) = \mathbb{E}_{n}\left[\left[\min\left\{f(\vec{x}_{n+1}), \ldots, f(\vec{x}_{n+\ell})\right\} - f_{n}^{\star}\right]^{+}\right].\]
 
 The optimization then approximates the solution to
 
-\[\argmax_{\vec{x} \in \mathbb{R}^{d \times l}} \text{EI}(\vec{x}).\]
+\[\argmin_{{\bf x_{\star}} \in \mathbb{R}^{d \times \ell}} \text{EI}({\bf x_{\star}}).\]
 
 }
 
@@ -543,27 +549,15 @@ To optimize $\text{EI}(\vec{x})$, we calculate stochastic gradients
 
 \[g(\vec{x}) = \bigtriangledown \text{EI}(\vec{x})\]
 
-Which results in (skipping some derivations for the sake of time/sanity)
+\begin{itemize}
+    \item Use Infinitesimal Perturbation Analysis (IPA, Fu 1995)
+    \item Exchange the gradient and the expectation
+        \begin{itemize}
+            \item get an unbiased estimator of $g({\bf x_{\star}})$
+        \end{itemize}
+    \item use for multistart gradient descent
+\end{itemize}
 
-\[ \frac{\partial}{\partial x_{\star t}} \mu_{\star i} = \left\{ \begin{tabular}{cc}
-                                                                  $\sum_{j = 1}^{N} \left(K^{-1} \vec{y} \right)_{j} \frac{\partial}{\partial x_{\star i}} \text{cov}(x_{\star i}, X_{j})$ & for $i = t$ \\
-								  0 & otherwise
-                                                                 \end{tabular}\right.
-\]
-
-\tiny
-\[
-  \frac{\partial}{\partial x_{\star t}} \Sigma_{ij} = \left\{ \begin{tabular}{cc}
-        $2 \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \left( \mbox{cov}(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, X_{p}) \right)$ & $t = i = j$ \\
-        $\sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, X_{q})$ & $t = i \neq j$ \\
-							$\sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{p}) \frac{\partial}{\partial x_{\star j}} \mbox{cov}(x_{\star j}, X_{q})$ & $t = j \neq i$ \\
-							$0$ & otherwise
-                                                      \end{tabular} \right.
-\]
-
-\normalsize
-
-Which we use to inform the algorithm for the differentiation of the Cholesky decomposition... (see code/paper)
 }
 
 \frame{\frametitle{Stochastic Gradient of the Expected Improvement using MC}
@@ -581,7 +575,7 @@ The Algorithm
  \item As nodes return values search for new best EI along the space constrained by running simulations
 \end{enumerate}
 
-\[\vec{x}_{i}^{(t+1)} = \vec{x}_{i}^{(t)} + \frac{a}{t^{\gamma}} \nabla_{\vec{x}_{i}} {\rm EI}\left(\vec{P}^{(t)} | \vec{X}\right)\]
+\[\vec{x}_{i}^{(t+1)} = \vec{x}_{i}^{(t)} + \frac{a}{t^{\gamma}} \nabla_{\vec{x}_{i}} {\rm EI}\left({\bf x_{\star}}^{(t)} | \vec{X}\right)\]
 \[\left|\vec{x}_{i}^{(t+1)} - \vec{x}_{i}^{(t)}\right| < \epsilon\]
 }
 
