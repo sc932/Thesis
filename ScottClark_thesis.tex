@@ -67,7 +67,7 @@ Finally, we explore Velvetrope: a parallel, bitwise algorithm for finding homolo
 \begin{biosketch}
 Scott Clark grew up in Tigard, Oregon and graduated from Central Catholic High School in Portland, Oregon in 2004. He graduated Magna Cum Laude from Oregon State University in 2008, receiving Bachelor of Science degrees in Mathematics, Computational Physics and Physics with minors in Actuarial Sciences and Mathematical Sciences.
 
-In 2008 Scott was awarded a U.S. Department of Energy Computational Science Graduate Fellowship (CSGF) supporting his doctoral work at Cornell University Center for Applied Mathematics (CAM) where he was awarded his Masters degree in 2011. After graduation he plans to move to San Francisco after a celebratory trip around the world and has accepted a software engineering position at Yelp, Inc.
+In 2008 Scott was awarded a U.S. Department of Energy Computational Science Graduate Fellowship (CSGF) supporting his doctoral work at Cornell University Center for Applied Mathematics (CAM) where he was awarded his Masters degree in Computer Science in 2011. After graduation he plans to move to San Francisco after a celebratory trip around the world and has accepted a software engineering position at Yelp, Inc.
 \end{biosketch}
 
 \begin{dedication}
@@ -103,7 +103,7 @@ ALE: a Generic Assembly Likelihood Evaluation Framework for \\ Assessing the Acc
 
 \noindent
 \normalsize
-Joint work with Rob Egan\,$^{1,2}$, Peter Frazier\,$^{3,*}$ and Zhong Wang\,$^{1,2}$ \\
+Joint work with Rob Egan\,$^{1,2}$, Peter Frazier\,$^{3}$ and Zhong Wang\,$^{1,2}$ \\
 \scriptsize
 $^{1}$Department of Energy, Joint Genome Institute, Walnut Creek, CA 94598, USA\\
 $^{2}$Genomics Division, Lawrence Berkeley National Laboratory, Berkeley, CA 94720, USA\\
@@ -952,7 +952,7 @@ In this work we develop a model for expected parallel improvement based on numer
 
 Optimization attempts to find the maximum or minimum value of some function or experiment. The goal is to find the input or set of parameters that either maximizes or minimizes a particular value. This can be maximizing gains in a financial model, minimizing costs in operations, finding the best result of a drug trial or any of a number of real world examples. The basic setup is that there is something that is desirable to maximize or minimize and we want to find the parameters that obtain this. The underlying functions may be difficult to sample; whether requiring long amounts of time such as drug trials, or excessive money such as financial models, or both such as exploration of natural resources. This limitation forces a good optimization algorithm to find the best possible solution quickly and efficiently, requiring as few exploratory samplings as possible before converging to an optimal solution.
 
-The quantitative and data-intensive explosion in fields such as bioinformatics and other sciences is producing petabytes of data and increasingly complex models and computer algorithms to analyze it. As the amount of data being inputed and the complexity of these algorithms grow they take more and more time to compute. Even with modern supercomputers that can perform many peta-FLOPS ($10^{15}$ Floating Point Operations Per Second) \cite{Hopper} scientific codes simulating fluid dynamics \cite{Compo2011} and complex chemical reactions \cite{Valiev2010} can take many hours or days to compute, using millions of CPU hours or more. The assembly of a single genome using the software package Velvet \cite{Zerbino2008} can take 24 hours or more on a high memory supercomputer. The sheer amount of time and resources required to run these simulations and computations means that the fine-tuning of the parameters of the models is extremely time and resource intensive.
+The quantitative and data-intensive explosion in fields such as bioinformatics and other sciences is producing petabytes of data and increasingly complex models and computer algorithms to analyze it. As the amount of data being inputed and the complexity of these algorithms grow they take more and more time to compute. Even with modern supercomputers that can perform many peta-FLOPS ($10^{15}$ Floating Point Operations Per Second) scientific codes simulating fluid dynamics \cite{Compo2011} and complex chemical reactions \cite{Valiev2010} can take many hours or days to compute, using millions of CPU hours or more. The assembly of a single genome using the software package Velvet \cite{Zerbino2008} can take 24 hours or more on a high memory supercomputer. The sheer amount of time and resources required to run these simulations and computations means that the fine-tuning of the parameters of the models is extremely time and resource intensive.
 
 Statistical methods such as EGO \cite{Jones1998} attempt to solve this problem by estimating the underlying function that is being optimized and computing the next point to sample so that it maximizes the expected improvement over the best result observed so far. When performed sequentially this method quickly converges to a point that is locally optimal within the space of possible inputs. This method is limited by its sequential nature, however, and cannot take advantage of possible parallel computational or sampling resources allowing for samples to be drawn concurrently. There have been some heuristic attempts to address the problem of parallel expected improvement \cite{Ginsbourger2008}, but all suffer from limitations by making restrictive assumptions about points being currently sampled. In this work we develop a model for expected parallel improvement, based on numerically estimating expected improvement using multiple samples and use multi-start gradient descent to find the optimal set of points to sample next, while fully taking into account points that are currently being sampled for which the result is not yet known.
 
@@ -967,7 +967,7 @@ This problem can be constrained or unconstrained depending on the set $A$.
 
 The paper \cite{Jones1998} developed a method for choosing which points to evaluate next based on fitting a global metamodel to the points evaluated thus far, and then maximizing a merit criterion over the whole surface to choose the single point to evaluate next.
 
-Although \cite{Jones1998} describes their technique EGO, in terms of a kriging metamodel and uses frequentist language, their technique can also be understood in a Bayesian framework. This framework uses a Gaussian process prior on the function $f$, which is a probabilistic model whose estimates of $f$ have the corresponding framework described below.
+Although \cite{Jones1998} describes their technique, EGO, in terms of a kriging metamodel and uses frequentist language, their technique can also be understood in a Bayesian framework. This framework uses a Gaussian process prior on the function $f$, which is a probabilistic model whose estimates of $f$ have the corresponding framework described below.
 
 Any Gaussian process prior on $f$ is described by a mean function $\mu : A \mapsto \mathbb{R}$ and a covariance function $\Sigma : A \times A \mapsto \mathbb{R}_{+}$. The mean function is general, and sometimes reflects some overall trends believed to be in the data, but is more commonly chosen to be 0. The covariance function must satisfy certain conditions: 
 
@@ -995,7 +995,7 @@ GPs are analytically convenient. If we observe the function $f$ at $x_{1}, \ldot
 \begin{equation}
  f|x_{1:n}, y_{1:n} \sim GP(\mu_{n}, \Sigma_{n})
 \end{equation}
-where $\mu_{n}$ and $\Sigma_{n}$ are defined in the Methods section \ref{}. We can see the evolution of the GP as more points are sampled in Figure \ref{fig:GPP_evolve}.
+where $\mu_{n}$ and $\Sigma_{n}$ are defined in the Methods section \ref{comp_of_gp}. We can see the evolution of the GP as more points are sampled in Figure \ref{fig:GPP_evolve}.
 
 \begin{figure}[hpt]
  	\centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/GPP_stepper_EI.png}}
@@ -1028,7 +1028,7 @@ There are a few heuristic extensions to the EGO algorithm that attempt to allevi
 
 \subsubsection{Constant liar heuristic}
 
-In this heuristic the points that are currently being sampled are all artificially set to a constant value like $\min(\vec{y}), \max(vec{y})$ or mean$(\vec{y})$ and then normal EI maximization is performed. This method fails to accurately account for the subtleties of the model and information that the GPP provides at each location.
+In this heuristic the points that are currently being sampled are all artificially set to a constant value like $\min(\vec{y}), \max(\vec{y})$ or mean$(\vec{y})$ and then normal EI maximization is performed. This method fails to accurately account for the subtleties of the model and information that the GPP provides at each location.
 
 \subsubsection{Kriging believer heuristic}
 
@@ -1054,6 +1054,7 @@ and chooses this batch of points to evaluate next. While the purely sequential c
 \label{cha:EPI Methods}
 
 \section{Components of the Gaussian Prior}
+\label{comp_of_gp}
 
 In the following sections we will explicitly define the mean (Section \ref{methods_GP_mean}) and variance (Section \ref{methods_GP_var}) of the GP, as well as their component-wise gradients. We will also define the partial derivatives for our default covariance function, the squared exponential covariance in Section \ref{methods_GP_cov}.
 
@@ -1276,7 +1277,7 @@ where $a$ and $\gamma$ are parameters of the gradient descent model. $\vec{P}^{(
 \end{equation}
 for some threshold $\epsilon > 0$.
 
-After $R$ restarts, the set of points with the best expected EI is chosen as the set of points to sample next. Figure \ref{fig:pk_paths} shows the paths of 128 multistart gradient descent paths with $l = 2$ on the EI of the Branin function \cite{branin} (see section \ref{}).
+After $R$ restarts, the set of points with the best expected EI is chosen as the set of points to sample next. Figure \ref{fig:pk_paths} shows the paths of 128 multistart gradient descent paths with $l = 2$ on the EI of the Branin function.
 
 \begin{figure}[hpt]
  	\centerline{\includegraphics[width=\textwidth]{figures/EPI/branin_2d_32pk_paths_and_EI.png}}
@@ -1292,63 +1293,58 @@ After $R$ restarts, the set of points with the best expected EI is chosen as the
 \chapter{EPI Results} % (fold)
 \label{cha:EPI Results}
 
-TODO graphs showing gain vs wallclock time
+%TODO graphs showing gain vs wallclock time
 
 \section{Parallel speedup using function drawn from prior}
 
-TODO
-more cores, more samples, more MC runs
+%TODO
+%more cores, more samples, more MC runs
 \begin{figure}[hpt]
  	\centerline{\includegraphics[width=\textwidth]{figures/EPI/speedup_vs_wallclock_8_core_9_its.png}}
     \caption[Parallel speedup for function drawn from prior]{Parallel speedup using function drawn from prior...}
  	\label{fig:EPI_res1}
 \end{figure}
 
-TODO
-Compare EPI to EI, constant liar and kriging believer
-\begin{figure}[hpt]
- 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
-    \caption[EPI vs heuristics using prior function]{EPI vs heuristics using prior function...}
- 	\label{fig:EPI_res2}
-\end{figure}
+%TODO
+%Compare EPI to EI, constant liar and kriging believer
 
-\section{Speedup for large space}
+%\section{Speedup for large space}
 
-TODO
-if domain of sampling is large (ie $D >> l$) how does EPI compare to regular EI and random sampling
-\begin{figure}[hpt]
- 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
-    \caption[EPI comparison for large domain]{EPI vs EGO for large domain...}
- 	\label{fig:EPI_res3}
-\end{figure}
+%TODO
+%if domain of sampling is large (ie $D >> l$) how does EPI compare to regular EI and random sampling
+%\begin{figure}[hpt]
+% 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
+%    \caption[EPI comparison for large domain]{EPI vs EGO for large domain...}
+% 	\label{fig:EPI_res3}
+%\end{figure}
 
-\subsection{Comparison to other methods}
-
-TODO
-Compare EPI to space (in timing and accuracy)
-\begin{figure}[hpt]
- 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
-    \caption[EPI vs SPACE for large domain]{EPI vs SPACE for large domain...}
- 	\label{fig:EPI_res4}
-\end{figure}
-
-\section{Speedup for Branin function}
-
-TODO
-show contour of log like WITH vectors
-\begin{figure}[hpt]
- 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
-    \caption[Parallel speedup using Branin function]{Parallel speedup using Branin function...}
- 	\label{fig:EPI_res5}
-\end{figure}
-
-TODO
-show contour of log like WITH vectors
-\begin{figure}[hpt]
- 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
-    \caption[Comparison using Branin function]{Comparison using Branin function...}
- 	\label{fig:EPI_res6}
-\end{figure}
+%\subsection{Comparison to other methods}
+%
+%TODO
+%Compare EPI to space (in timing and accuracy)
+%\begin{figure}[hpt]
+% 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
+%    \caption[EPI vs SPACE for large domain]{EPI vs SPACE for large domain...}
+% 	\label{fig:EPI_res4}
+%\end{figure}
+%
+%\section{Speedup for Branin function}
+%
+%TODO
+%show contour of log like WITH vectors
+%\begin{figure}[hpt]
+% 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
+%    \caption[Parallel speedup using Branin function]{Parallel speedup using Branin function...}
+% 	\label{fig:EPI_res5}
+%\end{figure}
+%
+%TODO
+%show contour of log like WITH vectors
+%\begin{figure}[hpt]
+% 	\centerline{\includegraphics[width=0.5\textwidth]{figures/placeholder.jpg}}
+%    \caption[Comparison using Branin function]{Comparison using Branin function...}
+% 	\label{fig:EPI_res6}
+%\end{figure}
 
 % chapter EPI Results (end)
 
