@@ -1293,15 +1293,21 @@ After $R$ restarts, the set of points with the best expected EI is chosen as the
 \chapter{EPI Results} % (fold)
 \label{cha:EPI Results}
 
+In this chapter we will present preliminary results using the EPI algorithm and software package. The research is ongoing and the full results will be published in a forthcoming paper with Peter Frazier.
+
 %TODO graphs showing gain vs wallclock time
 
 \section{Parallel speedup using function drawn from prior}
+
+To test the speedup obtained by using EPI over serial methods such as EGO we generate a set of test functions from a 1-D prior and determine the average improvement at each wall clock unit of time for EGO and EPI running with 2, 4 and 8 cores. Each wall clock unit of time represents $n$ samplings of the function where $n$ is the number of cores being used.
+
+We can see in Figure \ref{fig:EPI_res1} that the number of cores (or concurrent experiments) is directly proportional to the ending average improvement after a set number of wall clock time. Future work includes refining these results, increasing the maximum number of cores and testing EPI against other heuristics in this and higher dimensional spaces.
 
 %TODO
 %more cores, more samples, more MC runs
 \begin{figure}[hpt]
  	\centerline{\includegraphics[width=\textwidth]{figures/EPI/speedup_vs_wallclock_8_core_9_its.png}}
-    \caption[Parallel speedup for function drawn from prior]{Parallel speedup using function drawn from prior...}
+    \caption[Parallel speedup for function drawn from prior]{Parallel speedup using function drawn from prior. We can see that the number of cores is directly related to the final average improvement. EPI with 8 cores results in a markedly better average improvement when compared to the serial method EGO (1 core).}
  	\label{fig:EPI_res1}
 \end{figure}
 
@@ -1388,23 +1394,21 @@ and
 
 \subsection{Example of hyperparameter evolution}
 
-TODO FILL IN
-domain = -7,7
-hyper = 1,1,0.01
-falsehyper = 2,1,0.1
-20, (x3) samples of a latin hypercube
+In this section we demonstrate the hyperparameter evolution capabilities of the software package. We start with a function drawn from the prior with hyperparameters set to $(\sigma_{f}^{2} = 1, l = 1, \sigma_{n}^{2} = 0.01)$ and a domain of $[-7,7]$. We set the initial hyperparameters at $(\sigma_{f}^{2} = 1, l = 2, \sigma_{n}^{2} = 0.1)$. As we sample points from the function we expect these hyperparameters to become closer and closer to those of the prior from which it was drawn.
+
+As we sample sets of 20 points from a latin hypercube we notice in Figure \ref{fig:EPI_hyper_1} and Figure \ref{fig:EPI_hyper_2} that the likelihood of the parameters becomes maximized near the correct values. The algorithm is able to use gradient decent to find the point of maximum likelihood, the correct values of the hyperparameters.
 
 \begin{figure}[hpt]
  	\centerline{\includegraphics[width=.85\textwidth]{figures/EPI/hyper_update_loglike_20s.pdf}}
     \centerline{\includegraphics[width=.85\textwidth]{figures/EPI/hyper_update_loglike_60s.pdf}}
-    \caption[Likelihood of hyperparameters]{Likelihood of hyperparameters...}
+    \caption[Likelihood of hyperparameters]{Likelihood of hyperparameters $l$ and $\sigma_{n}^{2}$ at various values after 20 points (top) and 60 points (bottom) have been sampled from the function.}
  	\label{fig:EPI_hyper_1}
 \end{figure}
 
 \begin{figure}[hpt]
  	\centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/hyper_update_GPP_pre.png}}
     \centerline{\includegraphics[width=0.75\textwidth]{figures/EPI/hyper_update_GPP_post.png}}
-    \caption[Evolution of hyperparameters]{Evolution of hyperparameters...}
+    \caption[Evolution of hyperparameters]{We note that visually the set of hyperparameters that the algorithm finds using the adaptive method provide a better fit to the data (bottom) than those initially provided in the experiment (top).}
  	\label{fig:EPI_hyper_2}
 \end{figure}
 
@@ -1510,12 +1514,12 @@ GPU computing allows for the cheap implementation of parallel algorithms. Modern
 
 The trivially parallelizeable Monte Carlo step in the expected improvement algorithm and relatively low memory requirements ($\mathcal{O}(l^{2})$) lends itself to GPGPU implementation perfectly. We implement this algorithm into a CUDA kernel and compare it to a serial python implementation.
 
-\subsubsection{Accuracy}
-
-When the dimension of the problem is low we can compute the expected improvement analytically. \cite{Ginsbourger2008} gives solutions for the 1-D and 2-D EI exactly. We compare our method to these and see how many MC iterations are required to achieve different levels of accuracy.
-
-TODO
-graph for 1 point, 2 points exp error vs analytic, var of error vs its
+%\subsubsection{Accuracy}
+%
+%When the dimension of the problem is low we can compute the expected improvement analytically. \cite{Ginsbourger2008} gives solutions for the 1-D and 2-D EI exactly. We compare our method to these and see how many MC iterations are required to achieve different levels of accuracy.
+%
+%TODO
+%graph for 1 point, 2 points exp error vs analytic, var of error vs its
 
 \subsubsection{Speedup}
 
@@ -1527,14 +1531,14 @@ The CUDA implementation of the EI algorithm is about 300 times faster to run on 
  	\label{GPUspeed1}
  \end{figure}
 
-\subsection{Gradient of Expected Improvement}
-
-MC step, some memory problems (see section).
-
-TODO
-graph: wall clock time vs number of iterations
-graph: wall clock time vs number of samples
-graph: wall clock time vs number of restarts (paths)
+%\subsection{Gradient of Expected Improvement}
+%
+%MC step, some memory problems (see section).
+%
+%TODO
+%graph: wall clock time vs number of iterations
+%graph: wall clock time vs number of samples
+%graph: wall clock time vs number of restarts (paths)
 
 \subsection{Memory Restrictions} % (fold)
 \label{sub:Memory Restrictions}
@@ -2063,17 +2067,31 @@ While Velvetrope does not perform a local alignment in the traditional sense it 
 \section{Comparison to other methods} % (fold)
 \label{sec:Comparison to other methods}
 
-TODO Fill in experiment details
+To compare the sensitivity and specificity of Velvetrope to other popular methods such as BLAST \cite{BLAST} and HMMer \cite{Eddy98} we contrast the regions of similarity that each algorithm reports when comparing genes from {\it E. Coli} and {\it Bacillus subtilis} \cite{GenBank}. Using each programs default parameters we obtain the results:
+
+\begin{table}[h]
+    \begin{center}
+\begin{tabular}{c|c|c}
+    Method & Reported Bases Similar & Reported Regions Similar \\
+    \hline
+    BLAST & 1112 & 3 \\
+    HMMer & 1081 & 5 \\
+    Velvetrope & 842 & 7
+\end{tabular}
+\label{vr_comp_table}
+\end{center}
+\end{table}
+We note that the default settings of Velvetrope are much more specific and less sensitive than both BLAST and HMMer. By modifying the parameters of the two filters we can increase the sensitivity at the cost of the specificity. Using the default parameters allows us to use Velvetrope as a quick first-pass algorithm to find areas of high identity that could then be expanded by algorithms such as BLAST and HMMer that are significantly more computationally intensive.
 
 \begin{figure}[htp]%figure3
  \centerline{\includegraphics[width=\textwidth]{figures/velvetrope/compare6.png}}
- \caption[Velvetrope vs. HMMer and BLAST]{Caption Here}
+ \caption[Velvetrope vs. HMMer and BLAST]{The regions within {\it E. Coli} that each algorithm found identity in when compared to {\it Bacillus subtilis}.}
  	\label{VRcompare1}
  \end{figure}
 
  \begin{figure}[htp]%figure3
  \centerline{\includegraphics[width=0.5\textwidth]{figures/velvetrope/compare5.png}}
- \caption[Comparison Venn diagram]{Caption Here}
+ \caption[Comparison Venn diagram]{The bases within {\it E. Coli} that each algorithm found identity in when compared to {\it Bacillus subtilis} and their respective overlaps between the algorithms.}
  	\label{VRcompare2}
  \end{figure}
 
@@ -2084,7 +2102,7 @@ TODO Fill in experiment details
 \chapter{Velvetrope Implementation} % (fold)
 \label{cha:Velvetrope Implementation}
 
-Velvetrope is designed to be easily parrallelizeable and far less complex than other methods. In figure \ref{fig:vr06} we compare the implementation of Vevletrope to that of BLAST \ref{BLAST}. We do not show HMMer on the plot because it is so computationally expensive that it does not fit, requiring many minutes for comparing only a few hundred sequences.
+Velvetrope is designed to be easily parrallelizeable and far less complex than other methods. In figure \ref{fig:vr06} we compare the implementation of Vevletrope to that of BLAST \cite{BLAST}. We do not show HMMer on the plot because it is so computationally expensive that it does not fit, requiring many minutes for comparing only a few hundred sequences.
 
 \begin{figure}[htp]%figure3
  \centerline{\includegraphics[width=\textwidth]{figures/velvetrope/timersSC.png}}
@@ -2169,31 +2187,55 @@ Some computations were performed on Hopper, a 153,216 processor (1.28PFlop) U.S.
         % ALE
 
 \bibitem[Aird {\it et~al}., 2011]{Aird2011} Aird,D., Chen,W.S., Ross,M., Connolly,K., Meldrim,J., Russ,C., Fisher,S., Jaffe,D., Nusbaum,C., Gnirke,A. (2011) Analyzing and minimizing bias in Illumina sequencing libraries, {\it Genome Biology}, {\bf 12}, R18.
+\bibitem[Altschul \textit{et~al}., 1990]{BLAST}
+    Altschul, S.F., Gish W., Miller W., Myers E.W., Lipman D.J. (1990) Basic local alignment search tool. \textit{Journal of Molecular Biology}, \textbf{215}(3):403-410.
+\bibitem[Altschul \textit{et~al}., 1997]{PSIBLAST}
+Altshul, S.F., \textit{et~al}. (1997) Gapped BLAST and PSI-BLAST: a new generation pf protein database search programs. \textit{Nucleic Acids Research} \textbf{25}(17), 3389-3402.
+\bibitem[Bailey \textit{et~al}., 2006]{MEME}
+Bailey, T.L., \textit{et~al}. (2006) MEME: discovering and analyzing DNA and protein sequence motifs. \textit{Nucleic Acids Research} \textbf{34} W369-W373.
+\bibitem[Brochu {\it et~al}., 2010]{Brochu2010} Brochu,E., Cora,V.M., de Freitas,N. (2010) A Tutorial on Bayesian Optimization of Expensive Cost Functions, with Application to Active User Modeling and Hierarchical Reinforcement Learning, {\it Computing Research Repository}, arXiv:1012.2599v1.
 \bibitem[Choi {\it et~al}., 2008]{Choi2008} Choi,J.H., Kim,S., Tang,H., Andrews,J., Gilbert,D.G., Colbourne,J.K. (2008) A Machine Learning Approach to Combined Evidence Validation of Genome Assemblies, {\it BMC Bioinformatics}, {\bf 24}(6), 744-750.
 \bibitem[Choudhary {\it et~al}., 2006]{Choudhary2006} Choudhary,M., Zanhua,X., Fu,Y.X., Kaplan,S. (2006) Genome analyses of three strains of Rhodobacter sphaeroides: evidence of rapid evolution of chromosome II, {\it Journal of Bacteriology}, {\bf 189}(5), 1914-1921.
+\bibitem[Compo {\it et~al}., 2011]{Compo2011} Compo,G.P., Whitaker,J.S., Sardeshmukh,P.D., Matsui,N., Allan,R.J., {\it et~al}. (2011) The Twentieth Century Reanalysis Project, {\it Quarterly Journal of the Royal Meteorological Society}, {\bf 137}(654), 1-28.
 \bibitem[Costello {\it et~al}., 2009]{Costello2009} Costello,E.K., Lauber,C.L., Hamady,M., Fierer,N., Gordon,J.I., Knight,R. (2009) Bacterial community variation in human body habitats across space and time, {\it Science}, {\bf 326}(5960), 1694-1697.
+\bibitem[Durbin {\it et~al}., 2006]{Durbin06} 
+    Durbin,R., Eddy,S., Krogh,A., Mitchison,G. (2006) Biological sequence analysis, $11^{th}$ edition.
 \bibitem[Durfee {\it et~al}., 2008]{Durfee2008} Durfee,T., Nelson,R., Baldwin,S., Plunkett,G., Burland,V., Mau,B., Petrosino,J.F., Qin,X., Muzny,D.M., Ayele,M., {\it et~al}. (2008) The complete genome sequence of Escherichia coli DH10B: insights into the biology of a laboratory workhorse, {\it Journal of Bacteriology}, {\bf 190}(7), 2597-2606.
+\bibitem[Eddy, 1998]{Eddy98} Eddy, S.R. (1998) Profile hidden Markov models. \textit{Bioinformatics}, \textbf{14}(9):755-763.
+\bibitem[Edgar, 2004]{MUSCLE}
+Edgar, R.C. (2004) MUSCLE: multiple sequence alignment with high accuracy and high throughput. \textit{Nucleic Acids Research} \textbf{32}(5) 1792-1797.
+\bibitem[Edgar, 2010]{Edgar2010}
+Edgar, R.C. (2010) Quality measures for protein alignment benchmarks. \textit{Nucleic Acids Research} \textbf{38}(7), 2145-2153.
 \bibitem[Eid {\it et~al}., 2009]{Eid2009} Eid,J., Fehr,A., Gray,J., Luong,K., Lyle,J., Otto,G., Peluso,P., Rank,D., Baybayan,P., Bettman,B., {\it et~al}. (2009) Real-Time DNA Sequencing from Single Polymerase Molecules, {\it Science}, {\bf 323}(5910), 133-138.
+\bibitem[Fu, 1994]{Fu1994} Fu,M.C. (1994) Optimization via Simulation: A Review, {\it Annals of Operations Research}, {\bf 53}(1), 199-247.
 \bibitem[Fujimoto {\it et~al}., 2010]{Fujimoto2010} Fujimoto,A., Nakagawa,H., Hosono,N., Nakano,K., Abe,T., Boroevich,K.A., Nagasaki,M., Yamaguchi,R., Shibuya,T., Kubo,M., {\it et~al}. (2010) Whole-genome sequencing and comprehensive variant analysis of a Japanese individual using massively parallel sequencing, {\it Nature Genetics}, {\bf 42}, 931-936.
 \bibitem[Gelman {\it et~al}., 2004]{Gelman2004} Gelman,A.B., Carlin,J.B., Stern,H.S., Rubin,D.B. (2004) Appendix A: Standard Probability Distributions, {\it Bayesian Data Analysis}, 2$^{\text{nd}}$ ed.
+\bibitem[GenBank, 2009]{GenBank}
+GenBank. (2009) \textit{Nucleic acids research}, doi:10.1093/nar/gkp1024.
+\bibitem[Ginsbourger {\it et~al}., 2008]{Ginsbourger2008} Ginsbourger,D., Le Riche,R., Carraro,L. (2008) A Multi-points Criterion for Deterministic Parallel Global Optimization based on Gaussian Processes, {\it Unpublished results}.
 \bibitem[Gnerre {\it et~al}., 2010]{Gnerre2010} Gnerre,S., MacCallum,I., Przybylski,D., Ribeiro,F., Burton,J., Walker,B., Sharpe,T., Hall,G., Shea,T., Sykes,S., {\it et~al}. (2010) High-quality draft assemblies of mammalian genomes from massively parallel sequence data, {\it Proceedings of the National Academy of Sciences USA}.
 \bibitem[Haiminen {\it et~al}., 2011]{Haiminen2011} Haiminen,N., Kuhn,D.N., Parida,L., Rigoutsos,I. (2011) Evaluation of Methods for De Novo Genome Assembly from High-Throughput Sequencing Reads Reveals Dependencies That Affect the Quality of the Results, {\it PLoS ONE}, {\bf 6}(9).
+\bibitem[Henikoff and Henikoff, 1992]{Henikoff1992}
+    Henikoff,S. and Henikoff,J.G. (1992) Amino acid substitution matrices from protein blocks, {\it Proceedings of the National Academy of Sciences of the United States of America}, {\bf 89}(22), 10915-10919.
 \bibitem[Hess {\it et~al}., 2011]{Hess2011} Hess,M., Sczyrba,A., Egan,R., Kim,T.W., Chokhawala,H., Schroth,G., Luo,S., Clark,D.S., Chen,F., Zhang,T., {\it et~al}. (2011) Metagenomic Discovery of Biomass-Degrading Genes and Genomes from Cow Rumen, {\it Science}, {\bf 331}(6016), 463-467.
 \bibitem[Iverson {\it et~al}., 2012]{Iverson2012} Iverson,V., Morris,R.M., Frazar,C.D., Berthiaume,C.T., Morales,R.L., Armbrust,E.V. (2012) Untangling Genomes from Metagenomes: Revealing an Uncultured Class of Marine Euryarchaeota, {\it Science}, {\bf 335}(6068), 587-590.
-\bibitem[Kent {\it et~al}., 2002]{Kent2002} Kent,J.W., Sugnet,C.W., Furey,T.S., Roskin,K.M., Pringle,T.H., {\it et~al}. (2002) The Human Genome Browser at UCSC, {\it Genome Research}, {\bf 12}, 996-1006
-.
+\bibitem[Jones {\it et~al}., 1998]{Jones1998} Jones,D.R., Schonlau,M., Welch,W.J. (1998) Efﬁcient Global Optimization of Expensive Black-Box Functions, {\it Journal of Global Optimization}, {\bf 13}, 455-492.
+\bibitem[Kent {\it et~al}., 2002]{Kent2002} Kent,J.W., Sugnet,C.W., Furey,T.S., Roskin,K.M., Pringle,T.H., {\it et~al}. (2002) The Human Genome Browser at UCSC, {\it Genome Research}, {\bf 12}, 996-1006.
+\bibitem[Kent, 2002]{BLAT} Kent, W.J. (2002) BLAT - the BLAST-like alignment tool. \textit{Genome Res.} \textbf{12}, 656-664.
 \bibitem[Lander and Waterman, 1988]{Lander1988} Lander,E.S., Waterman,M.S. (1988) Genomic mapping by fingerprinting random clones: a mathematical analysis, {\it Genomics}, {\bf 2}(3), 231-239.
 \bibitem[Langmead {\it et~al}., 2009]{Langmead2009} Langmead,B., Trapnell,C., Pop,M., Salzburg,S.L. (2009) Ultrafast and memory-efficient alignment of short DNA sequences to the human genome, {\it Genome Biology}, {\bf 10}, R25.
 \bibitem[Laserson {\it et~al}., 2011]{Laserson2011} Laserson,J., Jojic,V., Koller,D. (2011) Genovo: De Novo Assembly for Metagenomes, {\it Journal of Computational Biology}, {\bf 18}(3), 429-443.
 \bibitem[Li {\it et~al}., 2009]{Li2009} Li,H., Handsaker,B., Wysoker,A., Fennel,T., Ruan,J., Homer,N., Marth,G., Abecasis,G., Durbin,R., {\it et~al}. (2009) The Sequence alignment/map (SAM) format and SAMtools, {\it Bioinformatics}, {\bf 25} 2078-2079.
-\bibitem[Li and Homer, 2010]{Li2010} Li,H., Homer,N. (2010) A survey of sequence alignment algorithms for next-generation sequencing, {\it Briefings in Bioinformatics}, {\bf 11}, 473-483
-.
+\bibitem[Li and Homer, 2010]{Li2010} Li,H., Homer,N. (2010) A survey of sequence alignment algorithms for next-generation sequencing, {\it Briefings in Bioinformatics}, {\bf 11}, 473-483.
 \bibitem[Li {\it et~al}., 2010]{Li2010b} Li,R., Zhu,H., Ruan,J., Qian,W., Fang,X., Shi,Z., Li,Y., Li,S., Shan,G., Kristiansen,K., {\it et~al}. (2010) De novo assembly of human genomes with massively parallel short read sequencing, {\it Genome Reseach}, {\bf 20}(2), 265-272.
 \bibitem[Lin {\it et~al}., 2011]{Lin2011} Lin,Y., Li,Y., Shen,H., {\it et~al}. (2011) Comparative studies of de novo assembly tools for next-generation sequencing technologies, {\it Bioinformatics}, {\bf 27}(15), 2031-2037.
 \bibitem[Mavromatis {\it et~al}., 2010]{Mavromatis2010} Mavromatis,K., Yasawong,M., Chertkov,O., Lapidus,A., Lucas,S., Nolan,M., Glavina,D.e.l., Tice,H., Cheng,J., Pitluck,S., {\it et~al}. (2010) Complete genome sequence of Spirochaeta smaragdinae type strain, {\it Standards in Genomic Sciences}.
 \bibitem[Meader, 2010]{Meader2010} Meader,S. (2010) Genome assembly quality: Assessment and improvement using the neutral indel model, {\it Genome Research}, {\bf 20}(5), 675-684.
 \bibitem[Metzker, 2010]{Metzker2010} Metzker,M.L. Sequencing technologies - the next generation, {\it Nature Reviews Genetics}, {\bf 11}, 31-46.
 \bibitem[Narzisi and Mishra, 2011]{Narzisi2011} Narzisi,G., Mishra,B. (2011) Comparing De Novo Genome Assembly: The Long and Short of It, {\it PLoS ONE}, {\bf 6}(4), e19175.
+\bibitem[Needleman and Wunsch, 1970]{Needleman70}
+    Needleman S., Wunsch C. (1970) A general method applicable to the search for similarities in the amino acid sequence of two proteins.
+    \textit{Journal of Molecular Biology.} \textbf{48}(3),443-453
 \bibitem[Nicol {\it et~al}., 2009]{Nicol2009} Nicol,J.W., Helt,G.A., Blanchard,S.G., Raja,A., Loranine,A.E. (2009) The Integrated Genome Browser: free software for distribution and exploration of genome-scale datasets, {\it Bioinformatics}, {\bf 25}(2), 2730-2731.
 \bibitem[Olson, 2009]{Olson2009} Olson,M.R. (2009) New Methods for Assembly and Validation of Large Genomes, {\it Master's Thesis, Notre Dame}.
 \bibitem[Pati {\it et~al}., 2010]{Pati2010} Pati,A., Sikorski,J., Gronow,S., Munk,C., Lapidus,A., Copeland,A., Glavina,D.e.l., Nolan,M., Lucas,S., Chen,F., {\it et~al}. (2010) Complete genome sequence of Brachyspira murdochii type strain (56-150T), {\it Standards in Genomic Sciences}.
@@ -2201,11 +2243,23 @@ Some computations were performed on Hopper, a 153,216 processor (1.28PFlop) U.S.
 \bibitem[Pop {\it et~al}., 2009]{Pop2009} Pop,M. (2009) Genome assembly reborn: recent computational challenges, {\it Briefings in Bioinformatics}, {\bf 10}(4), 354-366.
 \bibitem[Pukall {\it et~al}., 2010]{Pukall2010} Pukall,R., Lapidus,A., Glavina,D.e.l., Copeland,A., Tice,H., Cheng,J., Lucas,S., Chen,F., Nolan,M., Bruce,D., {\it et~al}. (2010) Complete genome sequence of Conexibacter woesei type strain (ID131577T), {\it Standards in Genomic Sciences}, April.
 \bibitem[Qin {\it et~al}., 2010]{Qin2010} Qin,J., Li,R., Raes,J., Arumugam,M., Burgdorf,K.S., Manichanh,C., Nielsen,T., Pons,N., Florence,L., Yamada,T., {\it et~al}. (2010) A human gut microbial gene catalogue established by metagenomic sequencing, {\it Nature}, {\bf 464}, 59-65.
+\bibitem[Rasmussen and Williams, 2006]{RW} Rasmussen,C.E., Williams,C.K.I. (2006) Gaussian Processes for Machine Learning, {\it MIT Press} ISBN 026218253X.
 \bibitem[Salzberg {\it et~al}., 2012]{Salzberg2012} Salzberg,S.L., Phillippy,A.M., Zimin,A., Puiu,D., Magoc,T., Koren,S., Treangen,T.J., Schatz,M.C., Delcher,A.L., Roberts,M., {\it et~al}. (2012)  GAGE: A critical evaluation of genome assemblies and assembly algorithms, {\it Genome Research}, {\bf 22}(3), 557-67.
 \bibitem[Schmutz {\it et~al}., 2010]{Schmutz2010} Schmutz,J., Cannon,S.B., Schlueter,J., Ma,J., Mitros,T., Nelson,W., Hyten,D.L., Song,Q., Thelen,J.J., Cheng,J., {\it et~al}. (2010) Genome sequence of the palaeopolyploid soybean, {\it Nature}, {\bf 463}, 178-183.
+\bibitem[Schonlau, 1997]{Schonlau1997} Schonlau,M. (1997) Computer Experiments and Global Optimization, {\it University of Waterloo PhD Thesis in Statistics}.
+\bibitem[Scott {\it et~al}., 2011]{Scott2011} Scott,W., Frazier,P., Powell,W. (2011) The Correlated Knowledge Gradient for Simulation Optimization of Continuous Parameters using Gaussian Process Regression, {\it SIAM Journal of Optimization}, {\bf 21}, 996-1026.
 \bibitem[Simpson {\it et~al}., 2009]{Simpson2009} Simpson,J.T., Wong,K., Jackman,S.D., Schein,J.E., Jones,S.J., Birol,I. (2009) ABySS: A parallel assembler for short read sequence data, {\it Genome Research}, {\bf 19}(6), 1117-1123.
+\bibitem[Smith, Waterman \textit{et~al}., 1981]{SmithWaterman}
+Smith, T.F., Waterman, M.S., and Fitch W.M. (1981) Comparitive biosequence metrics. \textit{Journal of Molecular Biology}, \textbf{18}, 38-46.
+\bibitem[Smith, 1995]{Smith1995} Smith,S.P. (1995) Differentiation of the Cholesky Algorithm, {\it Journal of Computational and Graphical Statistics} {\bf 4}(2), 134-147.
+\bibitem[Subramanian \textit{et~al}., 2008]{DIALIGN-TX}
+Subramanian A.R., Kaufman M., Morgenstern B. (2008) DIALIGN-TX: greedy and progressive approaches for segment-based multiple sequence alignment, {\it Algorithms for Molecular Biology}, {\bf 3}(6).
 \bibitem[Teeling {\it et~al}., 2004]{Teeling2004} Teeling,H., Meyerdierks,A., Bauer,M., Amann,R., Glöckner,F.O. (2004) Application of tetranucleotide frequencies for the assignment of genomic fragments, {\it Environmental Microbiology}, {\bf 6}(9), 938-947.
+\bibitem[Thompson \textit{et~al}., 1999]{Balibase}
+Thompson J.D., Plewniak F., Poch O. (1999) Comparison study of several multiple alignment programs.
+\textit{Nucleic acids research} \textbf{27}(13):2682-90, 1999.
 \bibitem[Tringe {\it et~al}., 2004]{Tringe2004} Tringe,S.G., Mering,C.V., Kobayashi,A., Salamov,A.A., Chen,K., Chang,H.W., Podar,M., Short,J.M., Mathur,E.J., Detter,J.C., Bork,P., {\it et~al}. (2004) Comparitive Metagenomics of Microbial Communities, {\it Science}, {\bf 308}(5721), 554-557.
+\bibitem[Valiev {\it et~al}., 2010]{Valiev2010} Valiev,M., Bylaska,E.J., Govind,N., Kowalski,K., Straatsma,T.P., van Dam,H.J.J., {\it et~al}. (2010) NWChem: a comprehensive and scalable open-source solution for large scale molecular simulations, {\it Computational Physics Communications} {\bf 181}(1477).
 \bibitem[Venter {\it et~al}., 2004]{Venter2004} Venter,C.J., Remington,K., Heidelberg,J.F., Halpern,A.L., Rusch,D., Eisen,J.A., Wu,D., Paulsen,I., Nelson,K.E., Nelson,W., {\it et~al}. (2004) Environmental Genome Shotgun Sequencing of the Sargasso Sea, {\it Science}, {\bf 304}(5667), 66-74.
 \bibitem[Wang {\it et~al}., 2011]{Wang2011} Wang,W., Wei,Z., L,T-W., Wang,J. (2011) Next generation sequencing has lower sequence coverage and poorer SNP-detection capability in the regulatory regions, {\it Scientific Reports}, {\bf 1}, 55.
 \bibitem[Woyke {\it et~al}., 2006]{Woyke2006} Woyke,T., Teeling,H., Ivanova,N., Huntermann,M., Richter,M., Glöckner,F.O., Boffelli,D., Anderson,I.J., Barry,K.W., Shapiro,H.J. (2006) Symbiosis insights through metagenomic analysis of a microbial consortium, {\it Nature}, {\bf 443}, 950-955.    
@@ -2215,94 +2269,8 @@ Some computations were performed on Hopper, a 153,216 processor (1.28PFlop) U.S.
 \bibitem[Yooseph {\it et~al}., 2010]{Yooseph2010} Yooseph,S., Nealson,K.H., Rusch,D.B., McCrow,J.P., Dupont,C.L., Kim,M., Johnson,J., Montgomery,R., Ferriera,S., Beeson,K., {\it et~al}. (2010) Genomic and functional adaptation in surface ocean planktonic prokaryotes, {\it Nature}, {\bf 468}, 60-66.
 \bibitem[Zerbino and Birney, 2008]{Zerbino2008} Zerbino,D.R., Birney,E. (2008) Velvet: Algorithms for de novo short read assembly using de Bruijn graphs, {\it Genome Research}, {\bf 18}, 821-829.
 \bibitem[Zimin {\it et~al}., 2008]{Zimin2008} Zimin,A.V., Smith,D.R., Sutton,G., Yorke,J.A. (2008) Assembly Reconciliation, {\it BMC Bioinformatics}, {\bf 24}(1), 42-45.
-
-%%%%%%%%%%%%%%%
-    % EPI
-
-\bibitem[Smith, 1995]{Smith1995} Smith,S.P. (1995) Differentiation of the Cholesky Algorithm, {\it Journal of Computational and Graphical Statistics} {\bf 4}(2), 134-147.
-
-\bibitem[Ginsbourger {\it et~al}., 2008]{Ginsbourger2008} Ginsbourger,D., Le Riche,R., Carraro,L. (2008) A Multi-points Criterion for Deterministic Parallel Global Optimization based on Gaussian Processes, {\it Unpublished results}.
-
-\bibitem[Schonlau, 1997]{Schonlau1997} Schonlau,M. (1997) Computer Experiments and Global Optimization, {\it University of Waterloo PhD Thesis in Statistics}.
-
-\bibitem[Rasmussen and Williams, 2006]{RW} Rasmussen,C.E., Williams,C.K.I. (2006) Gaussian Processes for Machine Learning, {\it MIT Press} ISBN 026218253X.
-
-\bibitem[Scott {\it et~al}., 2011]{Scott2011} Scott,W., Frazier,P., Powell,W. (2011) The Correlated Knowledge Gradient for Simulation Optimization of Continuous Parameters using Gaussian Process Regression, {\it SIAM Journal of Optimization}, {\bf 21}, 996-1026.
-
-\bibitem[Jones {\it et~al}., 1998]{Jones1998} Jones,D.R., Schonlau,M., Welch,W.J. (1998) Efﬁcient Global Optimization of Expensive
-Black-Box Functions, {\it Journal of Global Optimization}, {\bf 13}, 455-492.
-
-\bibitem[Fu, 1994]{Fu1994} Fu,M.C. (1994) Optimization via Simulation: A Review, {\it Annals of Operations Research}, {\bf 53}(1), 199-247.
-
-\bibitem[Brochu {\it et~al}., 2010]{Brochu2010} Brochu,E., Cora,V.M., de Freitas,N. (2010) A Tutorial on Bayesian Optimization of Expensive Cost Functions, with Application to Active User Modeling and Hierarchical Reinforcement Learning, {\it Computing Research Repository}, arXiv:1012.2599v1.
-
-\bibitem[Valiev {\it et~al}., 2010]{Valiev2010} Valiev,M., Bylaska,E.J., Govind,N., Kowalski,K., Straatsma,T.P., van Dam,H.J.J., {\it et~al}. (2010) NWChem: a comprehensive and scalable open-source solution for large scale molecular simulations, {\it Computational Physics Communications} {\bf 181}(1477).
-
-\bibitem[Compo {\it et~al}., 2011]{Compo2011} Compo,G.P., Whitaker,J.S., Sardeshmukh,P.D., Matsui,N., Allan,R.J., {\it et~al}. (2011) The Twentieth Century Reanalysis Project, {\it Quarterly Journal of the Royal Meteorological Society}, {\bf 137}(654), 1-28.
-
-
-
-%%%%%%%%%%%%%%%
-    % VELVETROPE
-
-\bibitem[Durbin {\it et~al}., 2006]{Durbin06} 
-    Durbin,R., Eddy,S., Krogh,A., Mitchison,G. (2006) Biological sequence analysis, $11^{th}$ edition.
-
-\bibitem[Henikoff and Henikoff, 1992]{Henikoff1992}
-    Henikoff,S. and Henikoff,J.G. (1992) Amino acid substitution matrices from protein blocks, {\it Proceedings of the National Academy of Sciences of the United States of America}, {\bf 89}(22), 10915-10919.
-
-% Another old algorithm, one of the originals 
-\bibitem[Needleman and Wunsch, 1970]{Needleman70}
-Needleman S., Wunsch C. (1970) A general method applicable to the search for similarities in the amino acid sequence of two proteins.
-\textit{Journal of Molecular Biology.} \textbf{48}(3),443-453
-
-% k-mer then dynamic programming based local alignment method
-\bibitem[BLAST, 1990]{BLAST}
-Basic local alignment search tool. \textit{Journal of Molecular Biology}, \textbf{215}(3):403-410.
-
-% HMMer, HMM based local alignment method
-\bibitem[Eddy, 1998]{Eddy98}
-Eddy, S.R. (1998) Profile hidden Markov models. \textit{Bioinformatics}, \textbf{14}(9):755-763.
-
-% Where all sequences were taken from
-\bibitem[GenBank, 2009]{GenBank}
-GenBank. (2009) \textit{Nucleic acids research}, doi:10.1093/nar/gkp1024.
-
-% multiple alignment database, bashed by Edgar
-\bibitem[Thompson \textit{et~al}., 1999]{Balibase}
-Thompson J.D., Plewniak F., Poch O. (1999) Comparison study of several multiple alignment programs.
-\textit{Nucleic acids research} \textbf{27}(13):2682-90, 1999.
-
-\bibitem[Subramanian \textit{et~al}., 2008]{DIALIGN-TX}
-Subramanian A.R., Kaufman M., Morgenstern B. (2008) DIALIGN-TX: greedy and progressive approaches for segment-based multiple sequence alignment, {\it Algorithms for Molecular Biology}, {\bf 3}(6).
-
-% Blast-like alignment tool
-\bibitem[Kent, 2002]{BLAT}
-Kent, W.J. (2002) BLAT - the BLAST-like alignment tool. \textit{Genome Res.} \textbf{12}, 656-664.
-
-%Psi-blast, uses double k-mer and limited width dynamic programming
-\bibitem[Altschul \textit{et~al}., 1997]{PSIBLAST}
-Altshul, S.F., \textit{et~al}. (1997) Gapped BLAST and PSI-BLAST: a new generation pf protein database search programs. \textit{Nucleic Acids Research} \textbf{25}(17), 3389-3402.
-
-%MEME, similar program style
-\bibitem[Bailey \textit{et~al}., 2006]{MEME}
-Bailey, T.L., \textit{et~al}. (2006) MEME: discovering and analyzing DNA and protein sequence motifs. \textit{Nucleic Acids Research} \textbf{34} W369-W373.
-
-% Very similar algorithm, tries to speed up blast, still uses k-mer method, local dynamic programming
 \bibitem[Zhang \textit{et~al}., 2000]{Megablast}
 Zhang \textit{et~al}. (2000) A greedy algorithm for aligning DNA sequences. \textit{Journal of Computational Biology}, \textbf{7}, 203-214.
-
-% Old alignment algorithm, one of the originals
-\bibitem[Smith, Waterman \textit{et~al}., 1981]{SmithWaterman}
-Smith, T.F., Waterman, M.S., and Fitch W.M. (1981) Comparitive biosequence metrics. \textit{Journal of Molecular Biology}, \textbf{18}, 38-46.
-
-% Trouble with multiple alignment methods
-\bibitem[Edgar, 2010]{Edgar2010}
-Edgar, R.C. (2010) Quality measures for protein alignment benchmarks. \textit{Nucleic Acids Research} \textbf{38}(7), 2145-2153.
-
-% MUSCLE, multiple sequence alignment method
-\bibitem[Edgar, 2004]{MUSCLE}
-Edgar, R.C. (2004) MUSCLE: multiple sequence alignment with high accuracy and high throughput. \textit{Nucleic Acids Research} \textbf{32}(5) 1792-1797.
 
 \end{thebibliography}
 \end{document}
