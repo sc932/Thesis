@@ -954,7 +954,7 @@ Optimization attempts to find the maximum or minimum value of some function or e
 
 The quantitative and data-intensive explosion in fields such as bioinformatics and other sciences is producing petabytes of data and increasingly complex models and computer algorithms to analyze it. As the amount of data being inputed and the complexity of these algorithms grow they take more and more time to compute. Even with modern supercomputers that can perform many peta-FLOPS ($10^{15}$ Floating Point Operations Per Second) scientific codes simulating fluid dynamics \cite{Compo2011} and complex chemical reactions \cite{Valiev2010} can take many hours or days to compute, using millions of CPU hours or more. The assembly of a single genome using the software package Velvet \cite{Zerbino2008} can take 24 hours or more on a high memory supercomputer. The sheer amount of time and resources required to run these simulations and computations means that the fine-tuning of the parameters of the models is extremely time and resource intensive.
 
-Statistical methods such as EGO \cite{Jones1998} attempt to solve this problem by estimating the underlying function that is being optimized and computing the next point to sample so that it maximizes the expected improvement over the best result observed so far. When performed sequentially this method quickly converges to a point that is locally optimal within the space of possible inputs. This method is limited by its sequential nature, however, and cannot take advantage of possible parallel computational or sampling resources allowing for samples to be drawn concurrently. There have been some heuristic attempts to address the problem of parallel expected improvement \cite{Ginsbourger2008}, but all suffer from limitations by making restrictive assumptions about points being currently sampled. In this work we develop a model for expected parallel improvement, based on numerically estimating expected improvement using multiple samples and use multi-start gradient descent to find the optimal set of points to sample next, while fully taking into account points that are currently being sampled for which the result is not yet known.
+Statistical methods such as EGO \cite{Jones1998} attempt to solve this problem by estimating the underlying function that is being optimized and computing the next point to sample so that it maximizes the expected improvement over the best result observed so far. When performed sequentially, this method often quickly finds a good point within the space of possible inputs, and given more samples will continue to search for the global optimum. This method is limited by its sequential nature, however, and cannot take advantage of possible parallel computational or sampling resources allowing for samples to be drawn concurrently. There have been some heuristic attempts to address the problem of parallel expected improvement \cite{Ginsbourger2008}, but all suffer from limitations in their sequential design. In this work we develop a model for expected parallel improvement, based on numerically estimating expected improvement using multiple samples and use multi-start gradient descent to find the optimal set of points to sample next, while fully taking into account points that are currently being sampled for which the result is not yet known.
 
 \section{Gaussian Processes}
 
@@ -969,29 +969,29 @@ The paper \cite{Jones1998} developed a method for choosing which points to evalu
 
 Although \cite{Jones1998} describes their technique, EGO, in terms of a kriging metamodel and uses frequentist language, their technique can also be understood in a Bayesian framework. This framework uses a Gaussian process prior on the function $f$, which is a probabilistic model whose estimates of $f$ have the corresponding framework described below.
 
-Any Gaussian process prior on $f$ is described by a mean function $\mu : A \mapsto \mathbb{R}$ and a covariance function $\Sigma : A \times A \mapsto \mathbb{R}_{+}$. The mean function is general, and sometimes reflects some overall trends believed to be in the data, but is more commonly chosen to be 0. The covariance function must satisfy certain conditions: 
+\section{Gaussian process priors}
 
-\begin{equation}\Sigma(x,x) \geq 0,\end{equation}
-\begin{equation}\Sigma(x,y) = \Sigma(y,x),\end{equation}
+Any Gaussian process prior on $f$ is described by a mean function $\mu : A \mapsto \mathbb{R}$ and a covariance function $K : A \times A \mapsto \mathbb{R}_{+}$. The mean function is general, and sometimes reflects some overall trends believed to be in the data, but is more commonly chosen to be 0. The covariance function must satisfy certain conditions: 
 
-and it must be positive semi-definite;
+\begin{equation}K(x,x) \geq 0,\end{equation}
+\begin{equation}K(x,y) = K(y,x),\end{equation}
+
+    and it must be positive semi-definite, which is to say that for all $\vec{x}_{1}, \ldots, \vec{x}_{k} \in A$, and all finite $k$, if we construct a matrix by setting the value at row $i$ and column $j$ to be $\Sigma_{ij} = K(\vec{x}_{i}, \vec{x}_{j})$ this matrix must be positive semi-definite,
 
 \begin{equation}\vec{v}^{T}\Sigma \vec{v} \geq 0, \ \ \ \forall \vec{v} \in \mathbb{R}^{d}.\end{equation}
 
-Common choices for $\Sigma$ include the Gaussian covariance function, $\Sigma(x,x^{\prime}) = a \exp(-b \| x - x^{\prime}\|^{2})$ for some parameters $a$ and $b$ and the power exponential error function, $\Sigma(x, x^{\prime}) = a \exp(-\sum_{i} b_{i} (x_{i} - x_{i}^{\prime})^{p})$ for some parameters $\vec{b} \in \mathbb{R}^{d}, p$ and $a$.
-
-\section{Gaussian process priors}
+Common choices for $K$ include the Gaussian covariance function, $K(x,x^{\prime}) = a \exp(-b \| x - x^{\prime}\|^{2})$ for some parameters $a$ and $b$ and the power exponential error function, $K(x, x^{\prime}) = a \exp(-\sum_{i} b_{i} (x_{i} - x_{i}^{\prime})^{p})$ for some parameters $\vec{b} \in \mathbb{R}^{d}, p$ and $a$.
 
 Putting a Gaussian Process (GP) prior on $f$, written
 \begin{equation}
- f \sim \mbox{GP}(\mu(\cdot), \Sigma(\cdot, \cdot))
+ f \sim \mbox{GP}(\mu(\cdot), K(\cdot, \cdot))
 \end{equation}
 means that if we take any fixed set of points $x_{1}, \ldots, x_{n} \in A$ and consider the vector $(f(x_{1}), \ldots, f(x_{n}))$ as an unknown quantity, our prior on it is the multivariate normal,
 \begin{equation}
-(f(x_{1}), \ldots, f(x_{n})) \sim N\left( \left[ \begin{tabular}{c} $\mu(x_{1})$ \\ $\vdots$ \\ $\mu(x_{n})$ \end{tabular} \right] , \left[ \begin{tabular}{ccc} $\Sigma(x_{1}, x_{1})$ & $\cdots$ & $\Sigma(x_{n}, x_{1})$ \\ $\vdots$ & $\ddots$ & $\vdots$ \\ $\Sigma(x_{1}, x_{n})$ & $\cdots$ & $\Sigma(x_{n},x_{n}$ \end{tabular} \right] \right).
+    (f(x_{1}), \ldots, f(x_{n})) \sim N\left( \left[ \begin{tabular}{c} $\mu(x_{1})$ \\ $\vdots$ \\ $\mu(x_{n})$ \end{tabular} \right] , \Sigma_{n} = \left[ \begin{tabular}{ccc} $K(x_{1}, x_{1})$ & $\cdots$ & $K(x_{n}, x_{1})$ \\ $\vdots$ & $\ddots$ & $\vdots$ \\ $K(x_{1}, x_{n})$ & $\cdots$ & $K(x_{n},x_{n})$ \end{tabular} \right] \right).
 \end{equation}
 
-GPs are analytically convenient. If we observe the function $f$ at $x_{1}, \ldots, x_{n}$, getting values $y_{1} = f(x_{1}), \ldots y_{n} = f(x_{n})$, then the posterior of $f$ is also a GP,
+GPs are analytically convenient. If we observe the function $f$ at $x_{1}, \ldots, x_{n}$, getting values $y_{1} = f(x_{1}), \ldots, y_{n} = f(x_{n})$, then the posterior of $f$ is also a GP,
 \begin{equation}
  f|x_{1:n}, y_{1:n} \sim GP(\mu_{n}, \Sigma_{n})
 \end{equation}
@@ -1007,9 +1007,9 @@ where $\mu_{n}$ and $\Sigma_{n}$ are defined in the Methods section \ref{comp_of
 
 When considering where to measure next, the EGO algorithm, and more generally the Expectation Improvement (EI) criterion, computes a merit function defined as
 \begin{equation}
- \mbox{EI}(x) = \mathbb{E}_{n} \left[\left[ f(x) - f_{n}^{\star} \right]^{+} \right] = \mathbb{E} \left[ f_{n+1}^{\star} - f_{n}^{\star} | x_{n} = x\right]
+ \mbox{EI}(x) = \mathbb{E}_{n} \left[\left[ f_{n}^{\star} - f(x) \right]^{+} \right] = \mathbb{E} \left[ f_{n}^{\star} - f_{n+1}^{\star}| x_{n} = x\right]
 \end{equation}
-where $f_{n}^{\star} = \max_{m \leq n} f(x_{m})$.
+where $f_{n}^{\star} = \min_{m \leq n} f(x_{m})$.
 
 This is the point where we expect the greatest improvement to the best point sampled so far, $f_{n}^{\star}$. The algoritm attempts to maximize the EI at every iteration, sampling only the points with the greatest potential return. In Figure \ref{fig:GPP_EI_evolve} we show the values of EI for the GPP in Figure \ref{fig:GPP_evolve}.
 
@@ -1032,7 +1032,7 @@ In this heuristic the points that are currently being sampled are all artificial
 
 \subsubsection{Kriging believer heuristic}
 
-In this heuristic the points being sampled are assumed to return a value equal to their expectation, effectively lowering the variance to 0 at the given point. This method fails to account for the true variance at the given point and could force the algorithm to be trapped in low yielding regions that happen to have low expected mean, but a high variance that this heuristic ignores.
+In this heuristic the points being sampled are assumed to return a value equal to their expectation, effectively lowering the variance to 0 at the given point. This method fails to account for the variability at the points sampled, and the way this variability affects the value of additional evaluations at other points.
 
 \section{Expected Parallel Improvement}
 
@@ -1040,11 +1040,11 @@ We propose to extend the EI algorithm to be used in parallel systems, where we c
 
 The core of this idea is that we can calculate the expected improvement for simultaneous evaluation of points $x_{n+1}, \ldots, x_{n+l} = \vec{x}$ as
 \begin{equation}
- \mbox{EI}(x_{n+1}, \ldots, x_{n+l}) = \mathbb{E}_{n}\left[\left[\max\left\{f(x_{n+1}), \ldots, f(x_{n+l})\right\} - f_{n}^{\star}\right]^{+}\right].
+ \mbox{EI}(x_{n+1}, \ldots, x_{n+l}) = \mathbb{E}_{n}\left[\left[f_{n}^{\star} - \min\left\{f(x_{n+1}), \ldots, f(x_{n+l})\right\}\right]^{+}\right].
 \end{equation}
 The optimization then approximates the solution to
 \begin{equation}
- \argmax_{\vec{x} \in \mathbb{R}^{d \times l}} \mbox{EI}(\vec{x}),
+ \argmin_{\vec{x} \in \mathbb{R}^{d \times l}} \mbox{EI}(\vec{x}),
 \end{equation}
 and chooses this batch of points to evaluate next. While the purely sequential case allows straightforward analytic evaluation of $\mbox{EI}(x)$, calculating $\mbox{EI}(\vec{x})$ in the parallel case is more challenging and requires numerical estimation. Although straightforward estimation via standard Monte Carlo are inefficient, we deploy several techniques to more accurately estimate and optimize $\mbox{EI}(\vec{x})$.
 
@@ -1065,9 +1065,9 @@ First we try to decompose the GP mean in order to easily find an analytic expres
 \begin{equation}
  \vec{\mu_{\star}} = K(\vec{x}_{\star}, \textbf{X} )K(\textbf{X},\textbf{X})^{-1}\vec{y}.
 \end{equation}
-Where we define the matrix $K(\vec{y}, \vec{z})$ component-wise as
+Where $\textbf{X}$ is the matrix whose rows are composed of a collection of vectors in $A$. We define the matrix $K(\vec{y}, \vec{z})$ component-wise as
 \begin{equation}
- K(\vec{y}, \vec{z})_{ij} = \mbox{cov}(y_{i}, z_{j}).
+    K(\vec{y}, \vec{z})_{ij} = K(\vec{y}_{i}, \vec{z}_{j}).
 \end{equation}
 We note that if $\vec{x_{\star}}$ is a single point then the matrix $K(\vec{x}_{\star}, \textbf{X} )$ collapses to a vector. We also rewrite $K(\textbf{X},\textbf{X})^{-1}$ as $K^{-1}$ for simplicity,
 \begin{equation}
@@ -1075,17 +1075,17 @@ We note that if $\vec{x_{\star}}$ is a single point then the matrix $K(\vec{x}_{
 \end{equation}
 We further note that we can decompose the resulting vector dot product into a sum for each component of $\vec{\mu_{\star}}$,
 \begin{equation}
- \mu_{\star {i}} = \sum_{j = 1}^{N} \mbox{cov}(x_{\star i}, X_{j}) \left(K^{-1} \vec{y} \right)_{j}.
+ \mu_{\star {i}} = \sum_{j = 1}^{N} K(x_{\star i}, X_{j}) \left(K^{-1} \vec{y} \right)_{j}.
 \end{equation}
 
 When we take the gradient, we note that it can be brought inside the sum and the vector $(K^{-1}\vec{y})$ is constant with respect to $x_{\star}$,
 \begin{equation}
- \frac{\partial}{\partial x_{\star t}} \mu_{\star i} = \sum_{j = 1}^{N} \left(K^{-1} \vec{y} \right)_{j} \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, X_{j}).
+ \frac{\partial}{\partial x_{\star t}} \mu_{\star i} = \sum_{j = 1}^{N} \left(K^{-1} \vec{y} \right)_{j} \frac{\partial}{\partial x_{\star t}} K(x_{\star i}, X_{j}).
 \end{equation}
 We note that
 \begin{equation}
 \frac{\partial}{\partial x_{\star t}} \mu_{\star i} = \left\{ \begin{tabular}{cc}
-                                                                  $\sum_{j = 1}^{N} \left(K^{-1} \vec{y} \right)_{j} \frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, X_{j})$ & for $i = t$ \\
+                                                                  $\sum_{j = 1}^{N} \left(K^{-1} \vec{y} \right)_{j} \frac{\partial}{\partial x_{\star i}} K(x_{\star i}, X_{j})$ & for $i = t$ \\
 								  0 & otherwise
                                                                  \end{tabular}\right..
 \end{equation}
@@ -1095,16 +1095,16 @@ We note that
 
 Now we do the same thing for the covariance which is defined as
 \begin{equation}
- \Sigma(\mu_{star}) = K(\textbf{X$_{\star}$}, \textbf{X$_{\star}$}) - K(\textbf{X$_{\star}$}, \textbf{X}) K(\textbf{X}, \textbf{X})^{-1} K(\textbf{X}, \textbf{X$_{\star}$}).
+ K(\mu_{star}) = K(\textbf{X$_{\star}$}, \textbf{X$_{\star}$}) - K(\textbf{X$_{\star}$}, \textbf{X}) K(\textbf{X}, \textbf{X})^{-1} K(\textbf{X}, \textbf{X$_{\star}$}).
 \end{equation}
 The components $(i,j)$ of $\Sigma$ (see Section \ref{EPI_imp_var}) are
 \begin{equation}
- \Sigma_{ij} = \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p})
+ \Sigma_{ij} = K(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} K(x_{\star i}, X_{q}) K(x_{\star j}, X_{p})
 \end{equation}
 and the derivative $\frac{\partial}{\partial x_{\star t}} \Sigma_{ij}$ becomes
 \begin{equation}
- \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, x_{\star j}) - \\
- \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \left( \mbox{cov}(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star j}, X_{p}) + \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, X_{q}) \right)
+ \frac{\partial}{\partial x_{\star t}} K(x_{\star i}, x_{\star j}) - \\
+ \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \left( K(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star t}} K(x_{\star j}, X_{p}) + K(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star t}} K(x_{\star i}, X_{q}) \right)
 \end{equation}
 For a more detailed discussion see Section \ref{EPI_imp_var}.
 
@@ -1113,7 +1113,7 @@ For a more detailed discussion see Section \ref{EPI_imp_var}.
 
 A common function for the covariance is the squared exponential covariance function,
 \begin{equation}
-    \mbox{cov}(x_{i}, x_{j}) = \sigma_{f}^{2}\exp\left( -\frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right)  + \sigma_{n}^{2}\delta_{ij},
+    K(x_{i}, x_{j}) = \sigma_{f}^{2}\exp\left( -\frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right)  + \sigma_{n}^{2}\delta_{ij},
 \end{equation}
 where $\delta_{ij}$ is the Kronecker delta,
 \begin{equation}
@@ -1126,13 +1126,13 @@ We will use an instance of this covariance function where $l$ is a length scale,
 
 It will be sufficient to show the partial derivative of one of the variables because cov$(x_{i}, x_{j}) = $ cov$(x_{j}, x_{i})$.
 \begin{equation}
-    \frac{\partial}{\partial x_{i}} \mbox{cov}(x_{i}, x_{j}) = \delta_{ij} + \frac{\partial}{\partial x_{i}} \sigma_{f}^{2} \exp\left( - \frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right)
+    \frac{\partial}{\partial x_{i}} K(x_{i}, x_{j}) = \delta_{ij} + \frac{\partial}{\partial x_{i}} \sigma_{f}^{2} \exp\left( - \frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right)
 \end{equation}
 \begin{equation}
     =  \delta_{ij} + \frac{-\sigma_{f}^{2}}{2l^{2}} \exp\left( - \frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right) \frac{\partial}{\partial x_{i}} |x_{i} - x_{j}|^{2}
 \end{equation}
 \begin{equation}
-    =  \frac{x_{j} - x_{i}}{l^{2}} \mbox{cov}(x_{i}, x_{j}) + \delta_{ij}.
+    =  \frac{x_{j} - x_{i}}{l^{2}} K(x_{i}, x_{j}) + \delta_{ij}.
 \end{equation}
 
 \section{Estimation of expected improvement}
@@ -1144,9 +1144,9 @@ The mean $\vec{\mu}$ and covariance $\Sigma$ of the points to be sampled $\Sigma
 
 We can simulate drawing points from this multivariate gaussian like so,
 \begin{equation}
-    \vec{y}^{\prime} = \vec{\mu} + L \vec{n}
+    \vec{y}^{\prime} = \vec{\mu} + L \vec{w}
 \end{equation}
-where $L$ is the Cholesky decomposition of $\Sigma$ and $\vec{n}$ is a vector of independent, identically distributed normal variables with mean 0 and variance 1.
+where $L$ is the Cholesky decomposition of $\Sigma$ and $\vec{w}$ is a vector of independent, identically distributed normal variables with mean 0 and variance 1.
 
 The improvement from this simulated sample is
 \begin{equation}
@@ -1163,7 +1163,7 @@ To optimize $\mbox{EI}(\vec{x})$, we calculate stochastic gradients
 \end{equation}
 and use infinitesimal perturbation analysis \cite{Fu1994} to interchange derivative and expectation, see section \ref{EPI_proof}. Then use multistart gradient descent to find the set of points that maximize $\mbox{EI}(\vec{x})$, see section \ref{sec:multistart}.
 
-\subsection{Proof of validity of interchange}
+\subsection{Interchange of gradient}
 \label{EPI_proof}
 
 Let $\vec{x} = \left(\vec{x}_{1}, \ldots, \vec{x}_{l}\right)$ and
@@ -1179,7 +1179,7 @@ Then
     EI_{n}(\vec{x}) = \mathbb{E}_{n}\left[Z \left(\vec{x}\right)\right].
 \end{equation}
 
-We want to show
+We conjecture
 \begin{equation}
     \nabla \left[\mathbb{E}_{n}\left[Z \left(\vec{x}\right)\right]\right] = \mathbb{E}_{n}\left[\nabla Z \left(\vec{x}\right)\right] =  \mathbb{E}_{n}\left[g_{n}(\vec{x})\right]
 \end{equation}
@@ -1199,68 +1199,7 @@ and
         $\min \argmin_{i=1,\ldots,l} f(\vec{x}_{i})$ & & otherwise.
     \end{tabular} \right.
 \end{equation}
-To show this, we will show
-\begin{enumerate}
-    \item $Z(\cdot)$ is differentiable at $\vec{x}$
-    \item On the event that $Z(\cdot)$ is differentiable at $\vec{x}$ and $i^{\star}(\vec{x}) = i$, $\nabla_{\vec{x}} Z(\vec{x})$
-    \item For some $\epsilon > 0$ and each $\vec{x}^{\prime}$ with $|\vec{x}^{\prime} - \vec{x}| < \epsilon$,
-\end{enumerate}
-\begin{equation}
-    \left|Z(\vec{x}) - Z(\vec{x}^{\prime})\right| \leq \left|\vec{x}^{\prime} - \vec{x}\right|
-\end{equation}
-where $M$ is a random variable with $\mathbb{E}_{n}\left[M\right] < \infty$.
-
-We require that for some $\epsilon > 0$ and each $i = 1, \ldots, l$ that $f(\cdot)$ is almost surely differentiable at $\vec{x}_{i}$ for all $\vec{x}_{i}^{\prime\prime}$ with $|\vec{x}_{i}^{\prime\prime} - \vec{x}_{i}| < \epsilon$.
-
-(1) and (2) follow from
-\begin{equation}
-    \left\{Z(\cdot) \text{ is differentiable at } \vec{x}\right\} \subseteq \left\{f(\vec{x}_{i}) \neq f(\vec{x}_{j}) \forall i \neq j \ \text{ and } \ f(\vec{x}_{i}) \neq f_{n}^{\star} \right\}.
-\end{equation}
-This requires that $f(\cdot)$ is differentiable almost surely under $P_{n}$.
-
-Let $\vec{x}^{\prime}$ be a point.
-\begin{equation}
-    \left|Z(\vec{x}) - Z(\vec{x}^{\prime})\right| = \left|f_{i^{\star}(\vec{x})}(\vec{x}) - f_{i^{\star}(\vec{x}^{\prime})}(\vec{x}^{\prime})\right|
-    \label{ZZ}
-\end{equation}
-where
-\begin{equation}
-    f_{i}(\vec{x}) = \left\{ \begin{tabular}{cc}
-        $f(\vec{x}_{i})$ & if $i > 0$ \\
-        $f_{n}^{\star}$ & if $i = 0$
-    \end{tabular} \right.
-\end{equation}
-
-If
-\begin{equation}
-    f_{i^{\star}(\vec{x})}(\vec{x}) \geq f_{i^{\star}(\vec{x}^{\prime})}(\vec{x}^{\prime})
-\end{equation}
-then equation \ref{ZZ} becomes
-\begin{equation}
-    f_{i^{\star}(\vec{x})}(\vec{x}) - f_{i^{\star}(\vec{x}^{\prime})}(\vec{x}^{\prime}) \leq f_{i^{\star}(\vec{x}^{\prime})}(\vec{x}) - f_{i^{\star}(\vec{x}^{\prime})}(\vec{x}^{\prime}) = \left|f_{i^{\star}(\vec{x}^{\prime})}(\vec{x}) - f_{i^{\star}(\vec{x}^{\prime})}(\vec{x}^{\prime})\right|
-\end{equation}
-
-If
-\begin{equation}
-    f_{i^{\star}(\vec{x})}(\vec{x}) \leq f_{i^{\star}(\vec{x}^{\prime})}(\vec{x}^{\prime})
-\end{equation}
-then equation \ref{ZZ} becomes
-\begin{equation}
-    f_{i^{\star}(\vec{x}^{\prime})}(\vec{x}) - f_{i^{\star}(\vec{x})}(\vec{x}) \leq f_{i^{\star}(\vec{x})}(\vec{x}^{\prime}) - f_{i^{\star}(\vec{x})}(\vec{x}) = \left|f_{i^{\star}(\vec{x})}(\vec{x}^{\prime}) - f_{i^{\star}(\vec{x})}(\vec{x})\right|
-\end{equation}
-So equation \ref{ZZ} becomes
-\begin{equation}
-    \leq \left|f_{i^{\star}(\vec{x})}(\vec{x}^{\prime}) - f_{i^{\star}(\vec{x})}(\vec{x})\right| + \left|f_{i^{\star}(\vec{x}^{\prime})}(\vec{x}) - f_{i^{\star}(\vec{x}^{\prime})}(\vec{x}^{\prime})\right| \leq \sum_{i=0}^{l} \left|f_{i}(\vec{x}^{\prime}) - f_{i}(\vec{x})\right|
-\end{equation}
-
-Now, we fix $i$. Let
-\begin{equation}
-    M = \sup_{\vec{x}^{\prime\prime}:|\vec{x} - \vec{x}^{\prime\prime}| < \epsilon} \max_{\vec{u} \in \mathbb{R}^{d}} \left|\vec{u} \cdot \nabla_{\vec{x}} f_{i}(\vec{x}^{\prime\prime}) \right|
-\end{equation}
-
-\begin{equation}
-    \left|f_{i}(\vec{x}^{\prime}) - f_{i}(\vec{x})\right| \leq M \left| \left| \vec{x}^{\prime} - \vec{x}\right|\right|_{2}
-\end{equation}
+and leave the proof for a later publication.
 
 \section{Multistart gradient descent}
 \label{sec:multistart}
@@ -1285,7 +1224,7 @@ After $R$ restarts, the set of points with the best expected EI is chosen as the
  	\label{fig:pk_paths}
  \end{figure}
 
- We note that some points appear to not move in Figure \ref{fig:pk_paths}. This happens when one of the points does has a very high expected evaluation value under the GP. This causes that point to not contribute to the EI, and therefor the gradient of the EI with respect to that point is low, or zero, causing it to remain stationary while the other point rushes to the maximum EI (from section \ref{estEI}).
+ We note that some points appear to not move in Figure \ref{fig:pk_paths}. This happens when one of the points has a very high expected evaluation value under the GP. This causes that point to not contribute to the EI, and therefore the gradient of the EI with respect to that point is low, or zero, causing it to remain stationary while the other point rushes to the maximum EI (from section \ref{estEI}).
 
 
 % chapter EPI Methods (end)
@@ -1301,7 +1240,7 @@ In this chapter we will present preliminary results using the EPI algorithm and 
 
 To test the speedup obtained by using EPI over serial methods such as EGO we generate a set of test functions from a 1-D prior and determine the average improvement at each wall clock unit of time for EGO and EPI running with 2, 4 and 8 cores. Each wall clock unit of time represents $n$ samplings of the function where $n$ is the number of cores being used.
 
-We can see in Figure \ref{fig:EPI_res1} that the number of cores (or concurrent experiments) is directly proportional to the ending average improvement after a set number of wall clock time. Future work includes refining these results, increasing the maximum number of cores and testing EPI against other heuristics in this and higher dimensional spaces.
+We can see in Figure \ref{fig:EPI_res1} that the number of cores (or concurrent experiments) is directly proportional to the ending average improvement after a set number of wall clock time ($t = 10$). Future work includes refining these results, increasing the maximum number of cores and testing EPI against other heuristics in this and higher dimensional spaces.
 
 %TODO
 %more cores, more samples, more MC runs
@@ -1364,32 +1303,32 @@ In this section we show how we adapt the hyperparameters of the GP using the sam
 
 The log-likelihood of the data $\vec{y}$ given the points sampled $X$ and the hyperparameters $\theta$ is
 \begin{equation}
-    \log p(\vec{y}|X, \theta) = -\frac{1}{2}\vec{y}^{T}K^{-1}\vec{y} - \frac{1}{2}\log|K| - \frac{n}{2} \log 2\pi
+    \log p(\vec{y}|X, \theta) = -\frac{1}{2}\vec{y}^{T}\Sigma^{-1}\vec{y} - \frac{1}{2}\log|\Sigma| - \frac{n}{2} \log 2\pi
 \end{equation}
-where $K$ is the covariance function defined as before, $\theta$ are the hyperparameters of the covariance function and $|\cdot|$ is the matrix norm defined for a matrix $A$ as
+where $\Sigma$ is the covariance function defined as before, $\theta$ are the hyperparameters of the covariance function and $|\cdot|$ is the matrix norm defined for a matrix $B$ as
 \begin{equation}
-    |A| = \max \left( \frac{|A\vec{x}|}{|\vec{x}|} : \vec{x} \in \mathbb{R}^{n}\backslash\{\vec{0}\} \right).
+    |B| = \max \left( \frac{|B\vec{x}|}{|\vec{x}|} : \vec{x} \in \mathbb{R}^{n}\backslash\{\vec{0}\} \right).
 \end{equation}
 
 The partial derivative with respect to each hyperparameter $\theta_{i}$ is
 \begin{equation}
-    \frac{\partial}{\partial \theta_{i}} \log p(\vec{y}|X,\theta) = \frac{1}{2}\vec{y}^{T}K^{-1}\frac{\partial K}{\partial \theta_{i}} K^{-1}\vec{y} - \frac{1}{2} {\rm tr}\left( K^{-1}\frac{\partial K}{\partial \theta_{i}} \right)
+    \frac{\partial}{\partial \theta_{i}} \log p(\vec{y}|X,\theta) = \frac{1}{2}\vec{y}^{T}\Sigma^{-1}\frac{\partial \Sigma}{\partial \theta_{i}} \Sigma^{-1}\vec{y} - \frac{1}{2} {\rm tr}\left( \Sigma^{-1}\frac{\partial \Sigma}{\partial \theta_{i}} \right)
 \end{equation}
-where tr$(\cdot)$ is the trace of a matrix. If we set $\vec{\alpha} = K^{-1}\vec{y}$ this further reduces to
+where tr$(\cdot)$ is the trace of a matrix. If we set $\vec{\alpha} = \Sigma^{-1}\vec{y}$ this further reduces to
 \begin{equation}
-    \frac{\partial}{\partial \theta_{i}} \log p(\vec{y}|X,\theta) = \frac{1}{2} {\rm tr}\left((\vec{\alpha}\vec{\alpha}^{T} - K^{-1})\frac{\partial K}{\partial \theta_{i}}\right).
+    \frac{\partial}{\partial \theta_{i}} \log p(\vec{y}|X,\theta) = \frac{1}{2} {\rm tr}\left((\vec{\alpha}\vec{\alpha}^{T} - \Sigma^{-1})\frac{\partial \Sigma}{\partial \theta_{i}}\right).
 \end{equation}
 
-The key part of this equation is the partial derivative of $K$ with respect to each hyperparameter. For our squared exponential covariance function the partial derivatives are
+The key part of this equation is the partial derivative of $\Sigma$ with respect to each hyperparameter. For our squared exponential covariance function the partial derivatives are
 \begin{equation}
-    \frac{\partial}{\partial \sigma_{f}^{2}} \mbox{cov}(x_{i}, x_{j}) = \exp\left( -\frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right) = \frac{\mbox{cov}(x_{i}, x_{j})}{\sigma_{f}^{2}},
+    \frac{\partial}{\partial \sigma_{f}^{2}} \Sigma(x_{i}, x_{j}) = \exp\left( -\frac{1}{2l^{2}} |x_{i} - x_{j}|^{2}\right) = \frac{\Sigma(x_{i}, x_{j})}{\sigma_{f}^{2}},
 \end{equation}
 \begin{equation}
-    \frac{\partial}{\partial l} \mbox{cov}(x_{i}, x_{j}) = \frac{1}{l^{3}}|x_{i} - x_{j}|^{2}\mbox{cov}(x_{i}, x_{j})
+    \frac{\partial}{\partial l} \Sigma(x_{i}, x_{j}) = \frac{1}{l^{3}}|x_{i} - x_{j}|^{2}\Sigma(x_{i}, x_{j})
 \end{equation}
 and
 \begin{equation}
-    \frac{\partial}{\partial \sigma_{n}^{2}} \mbox{cov}(x_{i}, x_{j}) = \delta_{ij}.
+    \frac{\partial}{\partial \sigma_{n}^{2}} \Sigma(x_{i}, x_{j}) = \delta_{ij}.
 \end{equation}
 
 \subsection{Example of hyperparameter evolution}
@@ -1427,13 +1366,13 @@ From \cite{RW} we have
 \end{equation}
 We will use $K^{-1} = K(\vec{X}, \vec{X})^{-1}$. We have by definition
 \begin{equation}
- K(\vec{x_{\star}}, \vec{x_{\star}})_{ij} = \mbox{cov}(x_{\star i}, x_{\star j})
+ K(\vec{x_{\star}}, \vec{x_{\star}})_{ij} = K(x_{\star i}, x_{\star j})
 \end{equation}
 \begin{equation}
- K(\vec{x_{\star}}, \vec{X})_{ij} = \mbox{cov}(x_{\star i}, X_{j})
+ K(\vec{x_{\star}}, \vec{X})_{ij} = K(x_{\star i}, X_{j})
 \end{equation}
 \begin{equation}
- K(\vec{X}, \vec{x_{\star}})_{ij} = \mbox{cov}(X_{i}, x_{\star j}).
+ K(\vec{X}, \vec{x_{\star}})_{ij} = K(X_{i}, x_{\star j}).
 \end{equation}
 We will define a temporary matrix $T^{(1)}$ to be
 \begin{equation}
@@ -1441,7 +1380,7 @@ We will define a temporary matrix $T^{(1)}$ to be
 \end{equation}
 and decompose it into its components to get
 \begin{equation}
- T^{(1)}_{ip} = \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}).
+ T^{(1)}_{ip} = \sum_{q = 1}^{N} K^{-1}_{qp} K(x_{\star i}, X_{q}).
 \end{equation}
 We then define
 \begin{equation}
@@ -1449,28 +1388,28 @@ We then define
 \end{equation}
 and decompose it to get
 \begin{equation}
- T^{(2)}_{ij} = \sum_{p = 1}^{N} T^{(1)}_{ip} \mbox{cov}(X_{p}, x_{\star j}) = \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p}).
+ T^{(2)}_{ij} = \sum_{p = 1}^{N} T^{(1)}_{ip} K(X_{p}, x_{\star j}) = \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} K(x_{\star i}, X_{q}) K(x_{\star j}, X_{p}).
 \end{equation}
 and note
 \begin{equation}
  \Sigma_{ij} = K(\vec{x_{\star}}, \vec{x_{\star}})_{ij} - T^{(2)}_{ij}
 \end{equation}
 \begin{equation}
- \Sigma_{ij} = \mbox{cov}(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{q}) \mbox{cov}(x_{\star j}, X_{p}).
+ \Sigma_{ij} = K(x_{\star i}, x_{\star j}) - \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} K(x_{\star i}, X_{q}) K(x_{\star j}, X_{p}).
 \end{equation}
 The partial derivative is found by applying the operation component wise and a simple use of the chain rule
 \begin{equation}
  \begin{tabular}{rl}
- $\frac{\partial}{\partial x_{\star t}} \Sigma_{ij} =$ & $\frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, x_{\star j})$ \\
- & $- \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \left( \mbox{cov}(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star j}, X_{p}) + \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star t}} \mbox{cov}(x_{\star i}, X_{q}) \right)$
+ $\frac{\partial}{\partial x_{\star t}} \Sigma_{ij} =$ & $\frac{\partial}{\partial x_{\star t}} K(x_{\star i}, x_{\star j})$ \\
+ & $- \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \left( K(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star t}} K(x_{\star j}, X_{p}) + K(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star t}} K(x_{\star i}, X_{q}) \right)$
  \end{tabular}
 \end{equation}
 where we note that $\frac{\partial}{\partial x_{\star t}} T^{(2)}_{ij} = $
 \begin{equation}
     \left\{ \begin{tabular}{cc}
-        $2 \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \left( \mbox{cov}(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, X_{p}) \right)$ & $t = i = j$ \\
-        $\sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star i}} \mbox{cov}(x_{\star i}, X_{q})$ & $t = i \neq j$ \\
-							$\sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \mbox{cov}(x_{\star i}, X_{p}) \frac{\partial}{\partial x_{\star j}} \mbox{cov}(x_{\star j}, X_{q})$ & $t = j \neq i$ \\
+        $2 \sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} \left( K(x_{\star i}, X_{q}) \frac{\partial}{\partial x_{\star i}} K(x_{\star i}, X_{p}) \right)$ & $t = i = j$ \\
+        $\sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} K(x_{\star j}, X_{p}) \frac{\partial}{\partial x_{\star i}} K(x_{\star i}, X_{q})$ & $t = i \neq j$ \\
+							$\sum_{p = 1}^{N} \sum_{q = 1}^{N} K^{-1}_{qp} K(x_{\star i}, X_{p}) \frac{\partial}{\partial x_{\star j}} K(x_{\star j}, X_{q})$ & $t = j \neq i$ \\
 							$0$ & otherwise
                                                       \end{tabular} \right..
 \end{equation}
